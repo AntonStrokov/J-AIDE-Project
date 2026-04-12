@@ -1,6 +1,13 @@
 spring:
   application:
     name: j-aide
+
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] %-5level %logger{36} - %msg%n"
+
+j-aide:
+  ai:
+    ollama:
+      model: qwen2.5-coder:7b
+      base-url: http://localhost:11434
