@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/j-aide.iml" filepath="$PROJECT_DIR$/.idea/j-aide.iml" />
+      <module fileurl="file://$PROJECT_DIR$/j-aide/j-aide-app/j-aide-app.iml" filepath="$PROJECT_DIR$/j-aide/j-aide-app/j-aide-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/j-aide/j-aide-core/j-aide-core.iml" filepath="$PROJECT_DIR$/j-aide/j-aide-core/j-aide-core.iml" />
     </modules>
   </component>
 </project>

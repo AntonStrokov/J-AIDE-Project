@@ -11,6 +11,7 @@
 	<groupId>com.antonstrokov</groupId>
 	<artifactId>j-aide</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 	<name/>
 	<description/>
 	<url/>
@@ -29,6 +30,13 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+
+    <modules>
+        <module>j-aide-app</module>
+        <module>j-aide-core</module>
+        <module>j-aide-api</module>
+    </modules>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
