@@ -12,6 +12,11 @@ public class GlobalExceptionHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex) {
+		log.warn("Invalid request: {}", ex.getMessage());
+		return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
+	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception ex) {
