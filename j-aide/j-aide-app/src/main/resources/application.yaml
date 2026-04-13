@@ -11,3 +11,6 @@ j-aide:
     ollama:
       model: qwen2.5-coder:7b
       base-url: http://localhost:11434
+
+    limits:
+      code-max-length: 2000

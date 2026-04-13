@@ -3,6 +3,7 @@ package com.antonstrokov.j_aide.core.service;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +12,9 @@ public class AiService {
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
 
 	private final OllamaChatModel model;
+
+	@Value("${j-aide.ai.limits.code-max-length}")
+	private int maxCodeLength;
 
 	public AiService(OllamaChatModel model) {
 		this.model = model;
@@ -22,7 +26,7 @@ public class AiService {
 			throw new IllegalArgumentException("Code is empty");
 		}
 
-		if (code.length() > 2000) {
+		if (code.length() > maxCodeLength) {
 			throw new IllegalArgumentException("Code is too long");
 		}
 
