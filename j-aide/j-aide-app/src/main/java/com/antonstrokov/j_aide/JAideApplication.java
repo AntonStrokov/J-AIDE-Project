@@ -13,5 +13,4 @@ public class JAideApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(JAideApplication.class, args);
 	}
-
 }

@@ -6,6 +6,8 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.antonstrokov.j_aide.core.dto.StructuredExplainResponse;
 
 import java.util.Map;
 
@@ -13,6 +15,9 @@ import java.util.Map;
 public class AiService {
 
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
+	private final OllamaChatModel model;
+	private final AiProperties aiProperties;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private static final PromptTemplate FAST_TEMPLATE = PromptTemplate.from(
 			"Ты опытный Java-разработчик.\n" +
@@ -22,10 +27,18 @@ public class AiService {
 	);
 	private static final PromptTemplate SMART_TEMPLATE = PromptTemplate.from(
 			"Ты опытный Java-разработчик.\n" +
-					"Объясни код понятно и кратко (3-5 предложений).\n\n" +
+					"Объясни код.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"краткое объяснение\",\n" +
+					"  \"details\": \"подробное объяснение\",\n" +
+					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"}\n\n" +
+					"Не добавляй никаких пояснений.\n\n" +
 					"Код:\n{{code}}"
 	);
-
 	private static final PromptTemplate DEEP_TEMPLATE = PromptTemplate.from(
 			"Ты опытный Java-разработчик.\n" +
 					"Подробно объясни код.\n" +
@@ -34,15 +47,15 @@ public class AiService {
 					"Не добавляй лишние примеры.\n\n" +
 					"Код:\n{{code}}"
 	);
-	private final OllamaChatModel model;
-	private final AiProperties aiProperties;
+
+
 
 	public AiService(OllamaChatModel model, AiProperties aiProperties) {
 		this.model = model;
 		this.aiProperties = aiProperties;
 	}
 
-	public String explain(String code, String mode) {
+	public StructuredExplainResponse explain(String code, String mode) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
@@ -73,6 +86,21 @@ public class AiService {
 
 		String prompt = template.apply(Map.of("code", code)).text();
 
-		return model.chat(prompt);
+		String response = model.chat(prompt);
+
+		response = response.replace("```json", "")
+				.replace("```", "")
+				.trim();
+
+		try {
+			StructuredExplainResponse structured =
+					objectMapper.readValue(response, StructuredExplainResponse.class);
+
+			return structured;
+
+		} catch (Exception e) {
+			log.warn("Failed to parse AI response, returning empty", e);
+			return new StructuredExplainResponse();
+		}
 	}
 }

@@ -22,6 +22,6 @@ public class AiController {
 	@PostMapping("/ai/explain")
 	public ExplainResponse explain(@RequestBody ExplainRequest request) {
 		log.info("Received explain request, code length={}", request.getCode().length());
-		return new ExplainResponse(aiService.explain(request.getCode(), request.getMode()));
+		return new ExplainResponse(aiService.explain(request.getCode(), request.getMode()), null);
 	}
 }
