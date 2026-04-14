@@ -14,16 +14,26 @@ public class AiService {
 
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
 
-	private static final PromptTemplate EXPLAIN_TEMPLATE = PromptTemplate.from(
+	private static final PromptTemplate FAST_TEMPLATE = PromptTemplate.from(
 			"Ты опытный Java-разработчик.\n" +
-					"Объясни следующий код простым и понятным языком на русском.\n\n" +
-					"ВАЖНО:\n" +
-					"- Отвечай кратко (не более 5-7 предложений)\n" +
-					"- Не добавляй лишние примеры\n" +
-					"- Только объяснение\n\n" +
+					"Объясни код очень кратко (1-2 предложения).\n" +
+					"Только суть.\n\n" +
+					"Код:\n{{code}}"
+	);
+	private static final PromptTemplate SMART_TEMPLATE = PromptTemplate.from(
+			"Ты опытный Java-разработчик.\n" +
+					"Объясни код понятно и кратко (3-5 предложений).\n\n" +
 					"Код:\n{{code}}"
 	);
 
+	private static final PromptTemplate DEEP_TEMPLATE = PromptTemplate.from(
+			"Ты опытный Java-разработчик.\n" +
+					"Подробно объясни код.\n" +
+					"Разбей ответ на пункты.\n" +
+					"Объясняй только данный код.\n" +
+					"Не добавляй лишние примеры.\n\n" +
+					"Код:\n{{code}}"
+	);
 	private final OllamaChatModel model;
 	private final AiProperties aiProperties;
 
@@ -32,7 +42,7 @@ public class AiService {
 		this.aiProperties = aiProperties;
 	}
 
-	public String explain(String code) {
+	public String explain(String code, String mode) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
@@ -45,9 +55,23 @@ public class AiService {
 			throw new IllegalArgumentException("Code is too long");
 		}
 
-		log.info("Processing explain request, code length={}", code.length());
 
-		String prompt = EXPLAIN_TEMPLATE.apply(Map.of("code", code)).text();
+		String effectiveMode = (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
+
+		PromptTemplate template;
+
+		switch (effectiveMode) {
+			case "FAST":
+				template = FAST_TEMPLATE;
+				break;
+			case "DEEP":
+				template = DEEP_TEMPLATE;
+				break;
+			default:
+				template = SMART_TEMPLATE;
+		}
+
+		String prompt = template.apply(Map.of("code", code)).text();
 
 		return model.chat(prompt);
 	}
