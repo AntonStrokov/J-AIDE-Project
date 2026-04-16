@@ -55,6 +55,72 @@ public class AiService {
 		this.objectMapper = objectMapper;
 	}
 
+	private void validateStructuredResponse(StructuredExplainResponse structured) {
+		if (structured.getSummary() == null || structured.getSummary().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: summary is missing");
+		}
+
+		if (structured.getDetails() == null || structured.getDetails().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: details are missing");
+		}
+	}
+
+	private StructuredExplainResponse parseStructuredResponse(String response) throws Exception {
+		StructuredExplainResponse structured =
+				objectMapper.readValue(response, StructuredExplainResponse.class);
+
+		validateStructuredResponse(structured);
+
+		return structured;
+	}
+
+	private String normalizeJsonCandidate(String response) {
+		response = response.replace("```json", "")
+				.replace("```", "")
+				.trim();
+
+		int start = response.indexOf("{\"summary\"");
+		int end = response.lastIndexOf('}');
+
+		if (start != -1 && end != -1 && start < end) {
+			response = response.substring(start, end + 1);
+		}
+
+		return response;
+	}
+
+	private PromptTemplate resolveTemplate(String effectiveMode) {
+		switch (effectiveMode) {
+			case "FAST":
+				return FAST_TEMPLATE;
+			case "DEEP":
+				return DEEP_TEMPLATE;
+			default:
+				return SMART_TEMPLATE;
+		}
+	}
+
+	private String buildRetryPrompt(String prompt) {
+		return prompt + "\n\n" +
+				"Твой предыдущий ответ был невалидным.\n" +
+				"Исправь его и верни только корректный JSON строго по указанной структуре.\n" +
+				"Без markdown, без ``` и без пояснений.";
+	}
+
+	private AiExplainResult buildFallbackResult(String rawResponse) {
+		StructuredExplainResponse fallback = new StructuredExplainResponse();
+		fallback.setSummary("Не удалось структурировать ответ AI");
+		fallback.setDetails(rawResponse);
+		fallback.setComplexity("unknown");
+
+		return new AiExplainResult(fallback, rawResponse);
+	}
+
+	private AiExplainResult tryParseResponse(String response) throws Exception {
+		StructuredExplainResponse structured = parseStructuredResponse(response);
+		return new AiExplainResult(structured, null);
+	}
+
 	public AiExplainResult explain(String code, String mode) {
 
 		if (code == null || code.isBlank()) {
@@ -62,60 +128,56 @@ public class AiService {
 		}
 
 		int maxCodeLength = aiProperties.limits().codeMaxLength();
+
 		log.info("Configured maxCodeLength={}", maxCodeLength);
 
 		if (code.length() > maxCodeLength) {
 			throw new IllegalArgumentException("Code is too long");
 		}
 
-
 		String effectiveMode = (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
 
-		PromptTemplate template;
-
-		switch (effectiveMode) {
-			case "FAST":
-				template = FAST_TEMPLATE;
-				break;
-			case "DEEP":
-				template = DEEP_TEMPLATE;
-				break;
-			default:
-				template = SMART_TEMPLATE;
-		}
+		PromptTemplate template = resolveTemplate(effectiveMode);
 
 		String prompt = template.apply(Map.of("code", code)).text();
 
 		String response = model.chat(prompt);
 
-		response = response.trim();
+		response = normalizeJsonCandidate(response);
 
-		int start = response.indexOf('{');
-		int end = response.lastIndexOf('}');
-
-		if (start != -1 && end != -1 && start < end) {
-			response = response.substring(start, end + 1);
-		}
+		boolean shouldRetry = "SMART".equals(effectiveMode);
 
 		try {
-			StructuredExplainResponse structured =
-					objectMapper.readValue(response, StructuredExplainResponse.class);
-
-			if (structured.getSummary() == null || structured.getDetails() == null) {
-				throw new RuntimeException("Invalid AI JSON structure");
-			}
-
-			return new AiExplainResult(structured, null);
+			return tryParseResponse(response);
 
 		} catch (Exception e) {
-			log.warn("Failed to parse AI response, returning fallback", e);
+			if (!shouldRetry) {
+				log.warn("AI response parsing failed, returning fallback without retry", e);
 
-			StructuredExplainResponse fallback = new StructuredExplainResponse();
-			fallback.setSummary("Не удалось структурировать ответ AI");
-			fallback.setDetails(response);
-			fallback.setComplexity("unknown");
+				return buildFallbackResult(response);
+			}
 
-			return new AiExplainResult(fallback, response);
+			log.warn("First AI response parsing failed, retrying once", e);
+
+			String retryResponse = null;
+
+			try {
+				String retryPrompt = buildRetryPrompt(prompt);
+
+				retryResponse = model.chat(retryPrompt);
+
+				retryResponse = normalizeJsonCandidate(retryResponse);
+
+				AiExplainResult retryResult = tryParseResponse(retryResponse);
+				log.info("Retry succeeded and returned valid structured response");
+
+				return retryResult;
+
+			} catch (Exception retryException) {
+				log.warn("Retry also failed, returning fallback", retryException);
+
+				return buildFallbackResult(retryResponse != null ? retryResponse : response);
+			}
 		}
 	}
 }
