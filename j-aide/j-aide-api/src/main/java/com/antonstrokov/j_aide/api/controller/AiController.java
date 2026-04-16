@@ -2,6 +2,7 @@ package com.antonstrokov.j_aide.api.controller;
 
 import com.antonstrokov.j_aide.api.dto.ExplainRequest;
 import com.antonstrokov.j_aide.api.dto.ExplainResponse;
+import com.antonstrokov.j_aide.core.dto.AiExplainResult;
 import com.antonstrokov.j_aide.core.service.AiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,9 @@ public class AiController {
 	@PostMapping("/ai/explain")
 	public ExplainResponse explain(@RequestBody ExplainRequest request) {
 		log.info("Received explain request, code length={}", request.getCode().length());
-		return new ExplainResponse(aiService.explain(request.getCode(), request.getMode()), null);
+
+		AiExplainResult result = aiService.explain(request.getCode(), request.getMode());
+
+		return new ExplainResponse(result.getExplanation(), result.getRawJson());
 	}
 }

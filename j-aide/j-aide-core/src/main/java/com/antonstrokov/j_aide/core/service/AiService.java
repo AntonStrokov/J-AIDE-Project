@@ -1,13 +1,14 @@
 package com.antonstrokov.j_aide.core.service;
 
 import com.antonstrokov.j_aide.core.config.AiProperties;
+import com.antonstrokov.j_aide.core.dto.AiExplainResult;
+import com.antonstrokov.j_aide.core.dto.StructuredExplainResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.antonstrokov.j_aide.core.dto.StructuredExplainResponse;
 
 import java.util.Map;
 
@@ -15,10 +16,6 @@ import java.util.Map;
 public class AiService {
 
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
-	private final OllamaChatModel model;
-	private final AiProperties aiProperties;
-	private final ObjectMapper objectMapper;
-
 	private static final PromptTemplate FAST_TEMPLATE = PromptTemplate.from(
 			"Ты опытный Java-разработчик.\n" +
 					"Объясни код очень кратко (1-2 предложения).\n" +
@@ -47,7 +44,9 @@ public class AiService {
 					"Не добавляй лишние примеры.\n\n" +
 					"Код:\n{{code}}"
 	);
-
+	private final OllamaChatModel model;
+	private final AiProperties aiProperties;
+	private final ObjectMapper objectMapper;
 
 
 	public AiService(OllamaChatModel model, AiProperties aiProperties, ObjectMapper objectMapper) {
@@ -56,7 +55,7 @@ public class AiService {
 		this.objectMapper = objectMapper;
 	}
 
-	public StructuredExplainResponse explain(String code, String mode) {
+	public AiExplainResult explain(String code, String mode) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
@@ -102,11 +101,21 @@ public class AiService {
 			StructuredExplainResponse structured =
 					objectMapper.readValue(response, StructuredExplainResponse.class);
 
-			return structured;
+			if (structured.getSummary() == null || structured.getDetails() == null) {
+				throw new RuntimeException("Invalid AI JSON structure");
+			}
+
+			return new AiExplainResult(structured, null);
 
 		} catch (Exception e) {
-			log.warn("Failed to parse AI response, returning empty", e);
-			return new StructuredExplainResponse();
+			log.warn("Failed to parse AI response, returning fallback", e);
+
+			StructuredExplainResponse fallback = new StructuredExplainResponse();
+			fallback.setSummary("Не удалось структурировать ответ AI");
+			fallback.setDetails(response);
+			fallback.setComplexity("unknown");
+
+			return new AiExplainResult(fallback, response);
 		}
 	}
 }
