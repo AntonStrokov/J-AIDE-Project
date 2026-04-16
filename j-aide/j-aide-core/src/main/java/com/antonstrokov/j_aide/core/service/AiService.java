@@ -17,7 +17,7 @@ public class AiService {
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
 	private final OllamaChatModel model;
 	private final AiProperties aiProperties;
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper;
 
 	private static final PromptTemplate FAST_TEMPLATE = PromptTemplate.from(
 			"Ты опытный Java-разработчик.\n" +
@@ -50,9 +50,10 @@ public class AiService {
 
 
 
-	public AiService(OllamaChatModel model, AiProperties aiProperties) {
+	public AiService(OllamaChatModel model, AiProperties aiProperties, ObjectMapper objectMapper) {
 		this.model = model;
 		this.aiProperties = aiProperties;
+		this.objectMapper = objectMapper;
 	}
 
 	public StructuredExplainResponse explain(String code, String mode) {
@@ -88,9 +89,14 @@ public class AiService {
 
 		String response = model.chat(prompt);
 
-		response = response.replace("```json", "")
-				.replace("```", "")
-				.trim();
+		response = response.trim();
+
+		int start = response.indexOf('{');
+		int end = response.lastIndexOf('}');
+
+		if (start != -1 && end != -1 && start < end) {
+			response = response.substring(start, end + 1);
+		}
 
 		try {
 			StructuredExplainResponse structured =
