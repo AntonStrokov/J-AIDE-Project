@@ -8,4 +8,6 @@ import lombok.Data;
 public class AiExplainResult {
 	private StructuredExplainResponse explanation;
 	private String rawJson;
+	private String mode;
+	private String language;
 }

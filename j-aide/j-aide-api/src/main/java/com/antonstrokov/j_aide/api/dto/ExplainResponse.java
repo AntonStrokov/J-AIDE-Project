@@ -9,4 +9,6 @@ import lombok.Data;
 public class ExplainResponse {
 	private StructuredExplainResponse explanation;
 	private String rawJson;
+	private String mode;
+	private String language;
 }

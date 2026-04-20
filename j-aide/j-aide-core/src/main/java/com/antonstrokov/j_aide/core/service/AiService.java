@@ -54,11 +54,13 @@ public class AiService {
 					"ВАЖНО:\n" +
 					"- Все значения в JSON должны быть строками\n" +
 					"- Поле details должно быть строкой, а не объектом и не массивом\n" +
-					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
+					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь " +
+					"отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"краткий вывод\",\n" +
-					"  \"details\": \"подробное объяснение в несколько предложений, можно с нумерацией внутри строки\",\n" +
+					"  \"details\": \"подробное объяснение в несколько предложений, можно с нумерацией внутри " +
+					"строки\",\n" +
 					"  \"complexity\": \"easy/medium/hard\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
@@ -127,18 +129,19 @@ public class AiService {
 				"Без markdown, без ``` и без пояснений.";
 	}
 
-	private AiExplainResult buildFallbackResult(String rawResponse) {
+	private AiExplainResult buildFallbackResult(String rawResponse, String effectiveMode, String effectiveLanguage) {
 		StructuredExplainResponse fallback = new StructuredExplainResponse();
 		fallback.setSummary("Не удалось структурировать ответ AI");
 		fallback.setDetails(rawResponse);
 		fallback.setComplexity("unknown");
 
-		return new AiExplainResult(fallback, rawResponse);
+		return new AiExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage);
 	}
 
-	private AiExplainResult tryParseResponse(String response) throws Exception {
+	private AiExplainResult tryParseResponse(String response, String effectiveMode, String effectiveLanguage)
+			throws Exception {
 		StructuredExplainResponse structured = parseStructuredResponse(response);
-		return new AiExplainResult(structured, null);
+		return new AiExplainResult(structured, null, effectiveMode, effectiveLanguage);
 	}
 
 	public AiExplainResult explain(String code, String mode, String language) {
@@ -173,13 +176,13 @@ public class AiService {
 		boolean shouldRetry = "SMART".equals(effectiveMode);
 
 		try {
-			return tryParseResponse(response);
+			return tryParseResponse(response, effectiveMode, effectiveLanguage);
 
 		} catch (Exception e) {
 			if (!shouldRetry) {
 				log.warn("AI response parsing failed, returning fallback without retry", e);
 
-				return buildFallbackResult(response);
+				return buildFallbackResult(response, effectiveMode, effectiveLanguage);
 			}
 
 			log.warn("First AI response parsing failed, retrying once", e);
@@ -193,7 +196,8 @@ public class AiService {
 
 				retryResponse = normalizeJsonCandidate(retryResponse);
 
-				AiExplainResult retryResult = tryParseResponse(retryResponse);
+				AiExplainResult retryResult = tryParseResponse(retryResponse, effectiveMode, effectiveLanguage);
+
 				log.info("Retry succeeded and returned valid structured response");
 
 				return retryResult;
@@ -201,7 +205,7 @@ public class AiService {
 			} catch (Exception retryException) {
 				log.warn("Retry also failed, returning fallback", retryException);
 
-				return buildFallbackResult(retryResponse != null ? retryResponse : response);
+				return buildFallbackResult(retryResponse != null ? retryResponse : response, effectiveMode, effectiveLanguage);
 			}
 		}
 	}

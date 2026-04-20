@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AiController {
 
-	private final AiService aiService;
 	private static final Logger log = LoggerFactory.getLogger(AiController.class);
+	private final AiService aiService;
 
 	public AiController(AiService aiService) {
 		this.aiService = aiService;
@@ -30,6 +30,11 @@ public class AiController {
 				request.getLanguage()
 		);
 
-		return new ExplainResponse(result.getExplanation(), result.getRawJson());
+		return new ExplainResponse(
+				result.getExplanation(),
+				result.getRawJson(),
+				result.getMode(),
+				result.getLanguage()
+		);
 	}
 }
