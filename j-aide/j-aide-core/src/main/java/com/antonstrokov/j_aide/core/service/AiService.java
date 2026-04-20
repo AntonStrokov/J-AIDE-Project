@@ -17,13 +17,21 @@ public class AiService {
 
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
 	private static final PromptTemplate FAST_TEMPLATE = PromptTemplate.from(
-			"Ты опытный Java-разработчик.\n" +
-					"Объясни код очень кратко (1-2 предложения).\n" +
-					"Только суть.\n\n" +
+			"Ты опытный {{language}}-разработчик.\n" +
+					"Объясни код очень кратко.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"очень краткое объяснение\",\n" +
+					"  \"details\": \"1-2 коротких предложения\",\n" +
+					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"}\n\n" +
+					"Не добавляй никаких пояснений.\n\n" +
 					"Код:\n{{code}}"
 	);
 	private static final PromptTemplate SMART_TEMPLATE = PromptTemplate.from(
-			"Ты опытный Java-разработчик.\n" +
+			"Ты опытный {{language}}-разработчик.\n" +
 					"Объясни код.\n\n" +
 					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
 					"Только чистый JSON.\n\n" +
@@ -37,11 +45,23 @@ public class AiService {
 					"Код:\n{{code}}"
 	);
 	private static final PromptTemplate DEEP_TEMPLATE = PromptTemplate.from(
-			"Ты опытный Java-разработчик.\n" +
+			"Ты опытный {{language}}-разработчик.\n" +
 					"Подробно объясни код.\n" +
-					"Разбей ответ на пункты.\n" +
 					"Объясняй только данный код.\n" +
 					"Не добавляй лишние примеры.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"ВАЖНО:\n" +
+					"- Все значения в JSON должны быть строками\n" +
+					"- Поле details должно быть строкой, а не объектом и не массивом\n" +
+					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"краткий вывод\",\n" +
+					"  \"details\": \"подробное объяснение в несколько предложений, можно с нумерацией внутри строки\",\n" +
+					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"}\n\n" +
+					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Код:\n{{code}}"
 	);
 	private final OllamaChatModel model;
@@ -121,7 +141,7 @@ public class AiService {
 		return new AiExplainResult(structured, null);
 	}
 
-	public AiExplainResult explain(String code, String mode) {
+	public AiExplainResult explain(String code, String mode, String language) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
@@ -137,9 +157,14 @@ public class AiService {
 
 		String effectiveMode = (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
 
+		String effectiveLanguage = (language == null || language.isBlank()) ? "java" : language.toLowerCase();
+
 		PromptTemplate template = resolveTemplate(effectiveMode);
 
-		String prompt = template.apply(Map.of("code", code)).text();
+		String prompt = template.apply(Map.of(
+				"code", code,
+				"language", effectiveLanguage
+		)).text();
 
 		String response = model.chat(prompt);
 

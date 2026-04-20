@@ -24,7 +24,11 @@ public class AiController {
 	public ExplainResponse explain(@RequestBody ExplainRequest request) {
 		log.info("Received explain request, code length={}", request.getCode().length());
 
-		AiExplainResult result = aiService.explain(request.getCode(), request.getMode());
+		AiExplainResult result = aiService.explain(
+				request.getCode(),
+				request.getMode(),
+				request.getLanguage()
+		);
 
 		return new ExplainResponse(result.getExplanation(), result.getRawJson());
 	}

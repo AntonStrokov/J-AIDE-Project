@@ -6,4 +6,5 @@ import lombok.Data;
 public class ExplainRequest {
 	private String code;
 	private String mode;
+	private String language;
 }
