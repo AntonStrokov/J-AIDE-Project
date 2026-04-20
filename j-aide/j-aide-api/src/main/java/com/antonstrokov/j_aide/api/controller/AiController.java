@@ -6,6 +6,7 @@ import com.antonstrokov.j_aide.core.dto.AiExplainResult;
 import com.antonstrokov.j_aide.core.service.AiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,11 +31,17 @@ public class AiController {
 				request.getLanguage()
 		);
 
+		String traceId = MDC.get("traceId");
+
+		boolean success = result.getRawJson() == null;
+
 		return new ExplainResponse(
 				result.getExplanation(),
 				result.getRawJson(),
 				result.getMode(),
-				result.getLanguage()
+				result.getLanguage(),
+				traceId,
+				success
 		);
 	}
 }

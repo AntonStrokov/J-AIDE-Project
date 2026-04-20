@@ -11,4 +11,6 @@ public class ExplainResponse {
 	private String rawJson;
 	private String mode;
 	private String language;
+	private String traceId;
+	private boolean success;
 }

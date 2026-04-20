@@ -142,6 +142,7 @@ public class AiService {
 		fallback.setSummary("Не удалось структурировать ответ AI");
 		fallback.setDetails(rawResponse);
 		fallback.setComplexity("unknown");
+		fallback.setSuggestion("Проверь сырой ответ модели в rawJson");
 
 		return new AiExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage);
 	}
