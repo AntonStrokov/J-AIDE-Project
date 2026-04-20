@@ -13,4 +13,5 @@ public class ExplainResponse {
 	private String language;
 	private String traceId;
 	private boolean success;
+	private boolean supportedLanguage;
 }

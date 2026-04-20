@@ -3,6 +3,7 @@ package com.antonstrokov.j_aide.core.service;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.dto.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.StructuredExplainResponse;
+import com.antonstrokov.j_aide.core.dto.SupportedLanguage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -169,7 +170,8 @@ public class AiService {
 
 		String effectiveMode = (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
 
-		String effectiveLanguage = (language == null || language.isBlank()) ? "java" : language.toLowerCase();
+		SupportedLanguage resolvedLanguage = resolveLanguage(language);
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
 
 		PromptTemplate template = resolveTemplate(effectiveMode);
 
@@ -217,6 +219,28 @@ public class AiService {
 				return buildFallbackResult(retryResponse != null ? retryResponse : response, effectiveMode,
 						effectiveLanguage);
 			}
+		}
+	}
+
+	private SupportedLanguage resolveLanguage(String language) {
+		if (language == null || language.isBlank()) {
+			return SupportedLanguage.JAVA;
+		}
+
+		switch (language.toLowerCase()) {
+			case "java":
+				return SupportedLanguage.JAVA;
+			case "kotlin":
+				return SupportedLanguage.KOTLIN;
+			case "sql":
+				return SupportedLanguage.SQL;
+			case "xml":
+				return SupportedLanguage.XML;
+			case "javascript":
+			case "js":
+				return SupportedLanguage.JAVASCRIPT;
+			default:
+				return SupportedLanguage.PLAIN_TEXT;
 		}
 	}
 }

@@ -35,13 +35,16 @@ public class AiController {
 
 		boolean success = result.getRawJson() == null;
 
+		boolean supportedLanguage = !"plain_text".equals(result.getLanguage());
+
 		return new ExplainResponse(
 				result.getExplanation(),
 				result.getRawJson(),
 				result.getMode(),
 				result.getLanguage(),
 				traceId,
-				success
+				success,
+				supportedLanguage
 		);
 	}
 }
