@@ -26,6 +26,7 @@ public class AiService {
 					"  \"summary\": \"очень краткое объяснение\",\n" +
 					"  \"details\": \"1-2 коротких предложения\",\n" +
 					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"  \"suggestion\": \"короткая рекомендация\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Код:\n{{code}}"
@@ -40,6 +41,7 @@ public class AiService {
 					"  \"summary\": \"краткое объяснение\",\n" +
 					"  \"details\": \"подробное объяснение\",\n" +
 					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Код:\n{{code}}"
@@ -54,7 +56,8 @@ public class AiService {
 					"ВАЖНО:\n" +
 					"- Все значения в JSON должны быть строками\n" +
 					"- Поле details должно быть строкой, а не объектом и не массивом\n" +
-					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь " +
+					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь" +
+					" " +
 					"отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
 					"Формат:\n" +
 					"{\n" +
@@ -62,6 +65,7 @@ public class AiService {
 					"  \"details\": \"подробное объяснение в несколько предложений, можно с нумерацией внутри " +
 					"строки\",\n" +
 					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Код:\n{{code}}"
@@ -84,6 +88,10 @@ public class AiService {
 
 		if (structured.getDetails() == null || structured.getDetails().isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: details are missing");
+		}
+
+		if (structured.getSuggestion() == null || structured.getSuggestion().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: suggestion is missing");
 		}
 	}
 
@@ -205,7 +213,8 @@ public class AiService {
 			} catch (Exception retryException) {
 				log.warn("Retry also failed, returning fallback", retryException);
 
-				return buildFallbackResult(retryResponse != null ? retryResponse : response, effectiveMode, effectiveLanguage);
+				return buildFallbackResult(retryResponse != null ? retryResponse : response, effectiveMode,
+						effectiveLanguage);
 			}
 		}
 	}

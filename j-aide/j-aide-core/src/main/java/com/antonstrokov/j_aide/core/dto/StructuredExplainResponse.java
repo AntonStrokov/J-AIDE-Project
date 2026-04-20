@@ -9,4 +9,5 @@ public class StructuredExplainResponse {
 	private String summary;
 	private String details;
 	private String complexity;
+	private String suggestion;
 }
