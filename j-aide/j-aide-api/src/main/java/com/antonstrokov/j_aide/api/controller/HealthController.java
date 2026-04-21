@@ -39,6 +39,7 @@ public class HealthController {
 				ExplainMode.SMART.name(),
 				SupportedLanguage.JAVA.name(),
 				"OLLAMA",
+				"UP",
 				List.of(
 						ExplainMode.FAST.name(),
 						ExplainMode.SMART.name(),
