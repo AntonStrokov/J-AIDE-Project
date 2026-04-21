@@ -12,6 +12,7 @@ public class BackendInfoResponse {
 	private String backendVersion;
 	private String defaultMode;
 	private String defaultLanguage;
+	private String llmProvider;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;
 

@@ -38,6 +38,7 @@ public class HealthController {
 				appProperties.version(),
 				ExplainMode.SMART.name(),
 				SupportedLanguage.JAVA.name(),
+				"OLLAMA",
 				List.of(
 						ExplainMode.FAST.name(),
 						ExplainMode.SMART.name(),
