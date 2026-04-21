@@ -2,6 +2,7 @@ package com.antonstrokov.j_aide.api.controller;
 
 import com.antonstrokov.j_aide.api.dto.ExplainRequest;
 import com.antonstrokov.j_aide.api.dto.ExplainResponse;
+import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.AiExplainResult;
 import com.antonstrokov.j_aide.core.service.AiService;
 import org.slf4j.Logger;
@@ -16,9 +17,11 @@ public class AiController {
 
 	private static final Logger log = LoggerFactory.getLogger(AiController.class);
 	private final AiService aiService;
+	private final AppProperties appProperties;
 
-	public AiController(AiService aiService) {
+	public AiController(AiService aiService, AppProperties appProperties) {
 		this.aiService = aiService;
+		this.appProperties = appProperties;
 	}
 
 	@PostMapping("/ai/explain")
@@ -37,6 +40,8 @@ public class AiController {
 
 		boolean supportedLanguage = !"plain_text".equals(result.getLanguage());
 
+		String backendVersion = appProperties.version();
+
 		return new ExplainResponse(
 				result.getExplanation(),
 				result.getRawJson(),
@@ -44,7 +49,8 @@ public class AiController {
 				result.getLanguage(),
 				traceId,
 				success,
-				supportedLanguage
+				supportedLanguage,
+				backendVersion
 		);
 	}
 }

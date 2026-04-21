@@ -14,4 +14,5 @@ public class ExplainResponse {
 	private String traceId;
 	private boolean success;
 	private boolean supportedLanguage;
+	private String backendVersion;
 }
