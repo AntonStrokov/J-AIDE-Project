@@ -36,6 +36,8 @@ public class HealthController {
 		return new BackendInfoResponse(
 				appProperties.name(),
 				appProperties.version(),
+				ExplainMode.SMART.name(),
+				SupportedLanguage.JAVA.name(),
 				List.of(
 						ExplainMode.FAST.name(),
 						ExplainMode.SMART.name(),

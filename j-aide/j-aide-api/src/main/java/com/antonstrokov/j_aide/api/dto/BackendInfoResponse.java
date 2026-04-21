@@ -10,6 +10,9 @@ import java.util.List;
 public class BackendInfoResponse {
 	private String backendName;
 	private String backendVersion;
+	private String defaultMode;
+	private String defaultLanguage;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;
+
 }
