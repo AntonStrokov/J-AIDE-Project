@@ -15,6 +15,7 @@ public class BackendInfoResponse {
 	private String llmProvider;
 	private String llmModel;
 	private String status;
+	private String explainEndpoint;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;
 	private List<String> supportedFeatures;

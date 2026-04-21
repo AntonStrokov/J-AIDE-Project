@@ -45,6 +45,7 @@ public class HealthController {
 				"OLLAMA",
 				aiProperties.ollama().model(),
 				"UP",
+				"/ai/explain",
 				Arrays.stream(ExplainMode.values())
 						.map(Enum::name)
 						.toList(),
