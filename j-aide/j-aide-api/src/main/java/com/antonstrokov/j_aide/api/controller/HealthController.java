@@ -1,6 +1,7 @@
 package com.antonstrokov.j_aide.api.controller;
 
 import com.antonstrokov.j_aide.api.dto.BackendInfoResponse;
+import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.ExplainMode;
 import com.antonstrokov.j_aide.core.dto.SupportedFeature;
@@ -16,10 +17,12 @@ public class HealthController {
 
 	private final HealthService healthService;
 	private final AppProperties appProperties;
+	private final AiProperties aiProperties;
 
-	public HealthController(HealthService healthService, AppProperties appProperties) {
+	public HealthController(HealthService healthService, AppProperties appProperties, AiProperties aiProperties) {
 		this.healthService = healthService;
 		this.appProperties = appProperties;
+		this.aiProperties = aiProperties;
 	}
 
 	@GetMapping("/ping")
@@ -40,6 +43,7 @@ public class HealthController {
 				ExplainMode.SMART.name(),
 				SupportedLanguage.JAVA.name(),
 				"OLLAMA",
+				aiProperties.ollama().model(),
 				"UP",
 				Arrays.stream(ExplainMode.values())
 						.map(Enum::name)

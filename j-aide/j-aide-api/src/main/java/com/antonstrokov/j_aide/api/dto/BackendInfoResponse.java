@@ -13,6 +13,7 @@ public class BackendInfoResponse {
 	private String defaultMode;
 	private String defaultLanguage;
 	private String llmProvider;
+	private String llmModel;
 	private String status;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;
