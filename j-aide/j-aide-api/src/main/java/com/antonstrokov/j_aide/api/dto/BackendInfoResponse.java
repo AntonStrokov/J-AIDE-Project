@@ -16,5 +16,6 @@ public class BackendInfoResponse {
 	private String status;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;
+	private List<String> supportedFeatures;
 
 }

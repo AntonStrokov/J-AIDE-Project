@@ -3,6 +3,7 @@ package com.antonstrokov.j_aide.api.controller;
 import com.antonstrokov.j_aide.api.dto.BackendInfoResponse;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.ExplainMode;
+import com.antonstrokov.j_aide.core.dto.SupportedFeature;
 import com.antonstrokov.j_aide.core.dto.SupportedLanguage;
 import com.antonstrokov.j_aide.core.service.HealthService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +53,13 @@ public class HealthController {
 						SupportedLanguage.XML.name(),
 						SupportedLanguage.JAVASCRIPT.name(),
 						SupportedLanguage.PLAIN_TEXT.name()
+				),
+				List.of(
+						SupportedFeature.EXPLAIN.name(),
+						SupportedFeature.STRUCTURED_RESPONSE.name(),
+						SupportedFeature.TRACE_ID.name(),
+						SupportedFeature.RETRY.name(),
+						SupportedFeature.FALLBACK.name()
 				)
 		);
 	}
