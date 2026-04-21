@@ -9,7 +9,7 @@ import com.antonstrokov.j_aide.core.service.HealthService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Arrays;
 
 @RestController
 public class HealthController {
@@ -41,26 +41,15 @@ public class HealthController {
 				SupportedLanguage.JAVA.name(),
 				"OLLAMA",
 				"UP",
-				List.of(
-						ExplainMode.FAST.name(),
-						ExplainMode.SMART.name(),
-						ExplainMode.DEEP.name()
-				),
-				List.of(
-						SupportedLanguage.JAVA.name(),
-						SupportedLanguage.KOTLIN.name(),
-						SupportedLanguage.SQL.name(),
-						SupportedLanguage.XML.name(),
-						SupportedLanguage.JAVASCRIPT.name(),
-						SupportedLanguage.PLAIN_TEXT.name()
-				),
-				List.of(
-						SupportedFeature.EXPLAIN.name(),
-						SupportedFeature.STRUCTURED_RESPONSE.name(),
-						SupportedFeature.TRACE_ID.name(),
-						SupportedFeature.RETRY.name(),
-						SupportedFeature.FALLBACK.name()
-				)
+				Arrays.stream(ExplainMode.values())
+						.map(Enum::name)
+						.toList(),
+				Arrays.stream(SupportedLanguage.values())
+						.map(Enum::name)
+						.toList(),
+				Arrays.stream(SupportedFeature.values())
+						.map(Enum::name)
+						.toList()
 		);
 	}
 }
