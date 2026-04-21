@@ -34,6 +34,7 @@ public class HealthController {
 	@GetMapping("/backend-info")
 	public BackendInfoResponse backendInfo() {
 		return new BackendInfoResponse(
+				appProperties.name(),
 				appProperties.version(),
 				List.of(
 						ExplainMode.FAST.name(),

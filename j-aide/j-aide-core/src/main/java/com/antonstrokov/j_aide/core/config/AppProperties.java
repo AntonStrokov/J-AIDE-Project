@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "j-aide.app")
 public record AppProperties(
+		String name,
 		String version
 ) {
 }

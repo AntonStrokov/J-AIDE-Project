@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class BackendInfoResponse {
+	private String backendName;
 	private String backendVersion;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;

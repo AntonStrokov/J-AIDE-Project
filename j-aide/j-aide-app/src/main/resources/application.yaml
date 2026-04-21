@@ -14,4 +14,5 @@ j-aide:
     limits:
       code-max-length: 2000
   app:
+    name: J-Aide
     version: 0.1.0
