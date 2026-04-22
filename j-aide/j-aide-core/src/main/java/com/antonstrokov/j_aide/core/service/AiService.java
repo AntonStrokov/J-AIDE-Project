@@ -47,6 +47,7 @@ public class AiService {
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя файла: {{fileName}}\n\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
 					"Код:\n{{code}}"
 	);
 	private static final PromptTemplate DEEP_TEMPLATE = PromptTemplate.from(
@@ -157,7 +158,8 @@ public class AiService {
 		return new AiExplainResult(structured, null, effectiveMode, effectiveLanguage);
 	}
 
-	public AiExplainResult explain(String code, String mode, String language, String fileName) {
+	public AiExplainResult explain(String code, String mode, String language, String fileName,
+	                               Integer lineStart, Integer lineEnd) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
@@ -181,7 +183,9 @@ public class AiService {
 		String prompt = template.apply(Map.of(
 				"code", code,
 				"language", effectiveLanguage,
-				"fileName", fileName
+				"fileName", fileName,
+				"lineStart", lineStart,
+				"lineEnd", lineEnd
 		)).text();
 
 		String response = model.chat(prompt);

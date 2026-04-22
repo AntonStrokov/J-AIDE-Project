@@ -41,7 +41,9 @@ public class AiController {
 				request.getCode(),
 				request.getMode(),
 				request.getLanguage(),
-				request.getFileName()
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd()
 		);
 
 		String traceId = MDC.get("traceId");
@@ -52,6 +54,10 @@ public class AiController {
 
 		String backendVersion = appProperties.version();
 
+		String lineRange = (request.getLineStart() != null && request.getLineEnd() != null)
+				? request.getLineStart() + "-" + request.getLineEnd()
+				: null;
+
 		return new ExplainResponse(
 				result.getExplanation(),
 				result.getRawJson(),
@@ -61,7 +67,8 @@ public class AiController {
 				success,
 				supportedLanguage,
 				backendVersion,
-				request.getFileName()
+				request.getFileName(),
+				lineRange
 		);
 	}
 }
