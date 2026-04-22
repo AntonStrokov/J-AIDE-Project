@@ -40,7 +40,8 @@ public class AiController {
 		AiExplainResult result = aiService.explain(
 				request.getCode(),
 				request.getMode(),
-				request.getLanguage()
+				request.getLanguage(),
+				request.getFileName()
 		);
 
 		String traceId = MDC.get("traceId");
