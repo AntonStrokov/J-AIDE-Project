@@ -30,7 +30,10 @@ public class AiService {
 					"  \"suggestion\": \"короткая рекомендация\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
-					"Имя файла: {{fileName}}\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
+					"Имя файла: {{fileName}}\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
 					"Код:\n{{code}}"
 	);
 	private static final PromptTemplate SMART_TEMPLATE = PromptTemplate.from(
@@ -46,6 +49,8 @@ public class AiService {
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
 					"Имя файла: {{fileName}}\n\n" +
 					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
 					"Код:\n{{code}}"
@@ -72,7 +77,10 @@ public class AiService {
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
-					"Имя файла: {{fileName}}\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
+					"Имя файла: {{fileName}}\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
 					"Код:\n{{code}}"
 	);
 	private final OllamaChatModel model;
@@ -158,8 +166,15 @@ public class AiService {
 		return new AiExplainResult(structured, null, effectiveMode, effectiveLanguage);
 	}
 
-	public AiExplainResult explain(String code, String mode, String language, String fileName,
-	                               Integer lineStart, Integer lineEnd) {
+	public AiExplainResult explain(
+			String code,
+			String mode,
+			String language,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
@@ -185,7 +200,9 @@ public class AiService {
 				"language", effectiveLanguage,
 				"fileName", fileName,
 				"lineStart", lineStart,
-				"lineEnd", lineEnd
+				"lineEnd", lineEnd,
+				"projectName", projectName,
+				"moduleName", moduleName
 		)).text();
 
 		String response = model.chat(prompt);

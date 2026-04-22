@@ -43,7 +43,9 @@ public class AiController {
 				request.getLanguage(),
 				request.getFileName(),
 				request.getLineStart(),
-				request.getLineEnd()
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName()
 		);
 
 		String traceId = MDC.get("traceId");
