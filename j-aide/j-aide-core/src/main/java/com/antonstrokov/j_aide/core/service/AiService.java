@@ -41,7 +41,7 @@ public class AiService {
 					"{\n" +
 					"  \"summary\": \"краткое объяснение\",\n" +
 					"  \"details\": \"подробное объяснение\",\n" +
-					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"  \"complexity\": \"easy/medium/hard\",\n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +

@@ -15,4 +15,5 @@ public class ExplainResponse {
 	private boolean success;
 	private boolean supportedLanguage;
 	private String backendVersion;
+	private String fileName;
 }

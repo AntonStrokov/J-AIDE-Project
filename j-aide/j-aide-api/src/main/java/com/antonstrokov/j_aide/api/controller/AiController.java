@@ -28,6 +28,15 @@ public class AiController {
 	public ExplainResponse explain(@RequestBody ExplainRequest request) {
 		log.info("Received explain request, code length={}", request.getCode().length());
 
+		log.info(
+				"Explain context: language={}, mode={}, fileName={}, projectName={}, moduleName={}",
+				request.getLanguage(),
+				request.getMode(),
+				request.getFileName(),
+				request.getProjectName(),
+				request.getModuleName()
+		);
+
 		AiExplainResult result = aiService.explain(
 				request.getCode(),
 				request.getMode(),
@@ -50,7 +59,8 @@ public class AiController {
 				traceId,
 				success,
 				supportedLanguage,
-				backendVersion
+				backendVersion,
+				request.getFileName()
 		);
 	}
 }
