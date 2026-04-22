@@ -68,7 +68,9 @@ public class AiController {
 				supportedLanguage,
 				backendVersion,
 				request.getFileName(),
-				lineRange
+				lineRange,
+				request.getProjectName(),
+				request.getModuleName()
 		);
 	}
 }

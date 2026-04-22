@@ -17,4 +17,6 @@ public class ExplainResponse {
 	private String backendVersion;
 	private String fileName;
 	private String lineRange;
+	private String projectName;
+	private String moduleName;
 }
