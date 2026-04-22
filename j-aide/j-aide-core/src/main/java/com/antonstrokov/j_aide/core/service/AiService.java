@@ -26,7 +26,7 @@ public class AiService {
 					"{\n" +
 					"  \"summary\": \"очень краткое объяснение\",\n" +
 					"  \"details\": \"1-2 коротких предложения\",\n" +
-					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"короткая рекомендация\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
@@ -41,7 +41,7 @@ public class AiService {
 					"{\n" +
 					"  \"summary\": \"краткое объяснение\",\n" +
 					"  \"details\": \"подробное объяснение\",\n" +
-					"  \"complexity\": \"easy/medium/hard\",\n" +
+					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
@@ -65,7 +65,7 @@ public class AiService {
 					"  \"summary\": \"краткий вывод\",\n" +
 					"  \"details\": \"подробное объяснение в несколько предложений, можно с нумерацией внутри " +
 					"строки\",\n" +
-					"  \"complexity\": \"easy/medium/hard\"\n" +
+					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
