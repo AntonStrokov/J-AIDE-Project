@@ -19,4 +19,5 @@ public class ExplainResponse {
 	private String lineRange;
 	private String projectName;
 	private String moduleName;
+	private Long responseTimeMs;
 }

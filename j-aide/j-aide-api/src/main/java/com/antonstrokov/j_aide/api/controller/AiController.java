@@ -26,6 +26,8 @@ public class AiController {
 
 	@PostMapping("/ai/explain")
 	public ExplainResponse explain(@RequestBody ExplainRequest request) {
+		long startTime = System.currentTimeMillis();
+
 		log.info("Received explain request, code length={}", request.getCode().length());
 
 		log.info(
@@ -47,6 +49,8 @@ public class AiController {
 				request.getProjectName(),
 				request.getModuleName()
 		);
+
+		long responseTimeMs = System.currentTimeMillis() - startTime;
 
 		String traceId = MDC.get("traceId");
 
@@ -72,7 +76,8 @@ public class AiController {
 				request.getFileName(),
 				lineRange,
 				request.getProjectName(),
-				request.getModuleName()
+				request.getModuleName(),
+				responseTimeMs
 		);
 	}
 }
