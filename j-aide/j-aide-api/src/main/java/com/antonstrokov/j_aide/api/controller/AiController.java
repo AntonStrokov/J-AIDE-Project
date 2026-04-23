@@ -47,7 +47,9 @@ public class AiController {
 				request.getLineStart(),
 				request.getLineEnd(),
 				request.getProjectName(),
-				request.getModuleName()
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
 		);
 
 		long responseTimeMs = System.currentTimeMillis() - startTime;

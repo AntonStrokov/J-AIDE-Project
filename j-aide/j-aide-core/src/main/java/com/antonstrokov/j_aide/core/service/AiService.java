@@ -213,10 +213,44 @@ public class AiService {
 			Integer lineStart,
 			Integer lineEnd,
 			String projectName,
-			String moduleName) {
+			String moduleName,
+			String pluginVersion,
+			String ideVersion) {
 
 		if (code == null || code.isBlank()) {
 			throw new IllegalArgumentException("Code is empty");
+		}
+
+		if (lineStart != null && lineStart < 1) {
+			throw new IllegalArgumentException("lineStart must be >= 1");
+		}
+
+		if (lineEnd != null && lineEnd < 1) {
+			throw new IllegalArgumentException("lineEnd must be >= 1");
+		}
+
+		if (lineStart != null && lineEnd != null && lineStart > lineEnd) {
+			throw new IllegalArgumentException("lineStart must be <= lineEnd");
+		}
+
+		if (fileName != null && fileName.isBlank()) {
+			throw new IllegalArgumentException("fileName must not be blank");
+		}
+
+		if (projectName != null && projectName.isBlank()) {
+			throw new IllegalArgumentException("projectName must not be blank");
+		}
+
+		if (moduleName != null && moduleName.isBlank()) {
+			throw new IllegalArgumentException("moduleName must not be blank");
+		}
+
+		if (pluginVersion != null && pluginVersion.isBlank()) {
+			throw new IllegalArgumentException("pluginVersion must not be blank");
+		}
+
+		if (ideVersion != null && ideVersion.isBlank()) {
+			throw new IllegalArgumentException("ideVersion must not be blank");
 		}
 
 		int maxCodeLength = aiProperties.limits().codeMaxLength();
