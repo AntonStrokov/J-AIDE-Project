@@ -12,4 +12,5 @@ public class StructuredExplainResponse {
 	private String suggestion;
 	private String bestPractice;
 	private String riskHint;
+	private String confidence;
 }

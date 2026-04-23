@@ -58,11 +58,21 @@ public class AiController {
 
 		boolean supportedLanguage = !"plain_text".equals(result.getLanguage());
 
+		log.info(
+				"Explain result: complexity={}, confidence={}, success={}, responseTimeMs={}",
+				result.getExplanation().getComplexity(),
+				result.getExplanation().getConfidence(),
+				success,
+				responseTimeMs
+		);
+
 		String backendVersion = appProperties.version();
 
 		String lineRange = (request.getLineStart() != null && request.getLineEnd() != null)
 				? request.getLineStart() + "-" + request.getLineEnd()
 				: null;
+
+
 
 		return new ExplainResponse(
 				result.getExplanation(),

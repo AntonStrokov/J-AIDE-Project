@@ -29,7 +29,8 @@ public class AiService {
 					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"короткая рекомендация\", \n" +
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
-					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\"\n" +
+					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -50,7 +51,8 @@ public class AiService {
 					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
-					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\"\n" +
+					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -80,7 +82,8 @@ public class AiService {
 					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
-					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\"\n" +
+					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -119,6 +122,10 @@ public class AiService {
 
 		if (structured.getRiskHint() == null || structured.getRiskHint().isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: riskHint is missing");
+		}
+
+		if (structured.getConfidence() == null || structured.getConfidence().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: confidence is missing");
 		}
 	}
 
