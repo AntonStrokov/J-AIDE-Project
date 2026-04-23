@@ -91,7 +91,10 @@ public class AiController {
 				request.getModuleName(),
 				responseTimeMs,
 				request.getLanguage(),
-				request.getMode()
+				request.getMode(),
+				request.getFileName(),
+				request.getProjectName(),
+				request.getModuleName()
 		);
 	}
 }

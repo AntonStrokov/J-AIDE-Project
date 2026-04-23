@@ -22,4 +22,7 @@ public class ExplainResponse {
 	private Long responseTimeMs;
 	private String requestLanguage;
 	private String requestMode;
+	private String requestFileName;
+	private String requestProjectName;
+	private String requestModuleName;
 }
