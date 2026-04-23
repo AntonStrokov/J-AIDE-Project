@@ -28,7 +28,8 @@ public class AiService {
 					"  \"details\": \"1-2 коротких предложения\",\n" +
 					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"короткая рекомендация\", \n" +
-					"  \"bestPractice\": \"какая хорошая практика здесь уместна\"\n" +
+					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
+					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -48,7 +49,8 @@ public class AiService {
 					"  \"details\": \"подробное объяснение\",\n" +
 					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
-					"  \"bestPractice\": \"какая хорошая практика здесь уместна\"\n" +
+					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
+					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -77,7 +79,8 @@ public class AiService {
 					"строки\",\n" +
 					"  \"complexity\": \"easy/medium/hard\", \n" +
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
-					"  \"bestPractice\": \"какая хорошая практика здесь уместна\"\n" +
+					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
+					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -112,6 +115,10 @@ public class AiService {
 
 		if (structured.getBestPractice() == null || structured.getBestPractice().isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: bestPractice is missing");
+		}
+
+		if (structured.getRiskHint() == null || structured.getRiskHint().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: riskHint is missing");
 		}
 	}
 
