@@ -87,7 +87,9 @@ public class AiController {
 				lineRange,
 				request.getProjectName(),
 				request.getModuleName(),
-				responseTimeMs
+				responseTimeMs,
+				request.getLanguage(),
+				request.getMode()
 		);
 	}
 }

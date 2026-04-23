@@ -20,4 +20,6 @@ public class ExplainResponse {
 	private String projectName;
 	private String moduleName;
 	private Long responseTimeMs;
+	private String requestLanguage;
+	private String requestMode;
 }
