@@ -10,4 +10,5 @@ public class StructuredExplainResponse {
 	private String details;
 	private String complexity;
 	private String suggestion;
+	private String bestPractice;
 }

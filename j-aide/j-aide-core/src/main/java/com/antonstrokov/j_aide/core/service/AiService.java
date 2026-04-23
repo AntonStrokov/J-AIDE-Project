@@ -27,7 +27,8 @@ public class AiService {
 					"  \"summary\": \"очень краткое объяснение\",\n" +
 					"  \"details\": \"1-2 коротких предложения\",\n" +
 					"  \"complexity\": \"easy/medium/hard\", \n" +
-					"  \"suggestion\": \"короткая рекомендация\"\n" +
+					"  \"suggestion\": \"короткая рекомендация\", \n" +
+					"  \"bestPractice\": \"какая хорошая практика здесь уместна\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -46,7 +47,8 @@ public class AiService {
 					"  \"summary\": \"краткое объяснение\",\n" +
 					"  \"details\": \"подробное объяснение\",\n" +
 					"  \"complexity\": \"easy/medium/hard\", \n" +
-					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
+					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
+					"  \"bestPractice\": \"какая хорошая практика здесь уместна\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -74,7 +76,8 @@ public class AiService {
 					"  \"details\": \"подробное объяснение в несколько предложений, можно с нумерацией внутри " +
 					"строки\",\n" +
 					"  \"complexity\": \"easy/medium/hard\", \n" +
-					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\"\n" +
+					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
+					"  \"bestPractice\": \"какая хорошая практика здесь уместна\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -105,6 +108,10 @@ public class AiService {
 
 		if (structured.getSuggestion() == null || structured.getSuggestion().isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: suggestion is missing");
+		}
+
+		if (structured.getBestPractice() == null || structured.getBestPractice().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: bestPractice is missing");
 		}
 	}
 
