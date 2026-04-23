@@ -30,7 +30,8 @@ public class AiService {
 					"  \"suggestion\": \"короткая рекомендация\", \n" +
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
 					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
-					"  \"confidence\": \"high/medium/low\"\n" +
+					"  \"confidence\": \"high/medium/low\", \n" +
+					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -52,7 +53,8 @@ public class AiService {
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
 					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
-					"  \"confidence\": \"high/medium/low\"\n" +
+					"  \"confidence\": \"high/medium/low\", \n" +
+					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -83,7 +85,8 @@ public class AiService {
 					"  \"suggestion\": \"что можно улучшить или на что обратить внимание\", \n" +
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
 					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
-					"  \"confidence\": \"high/medium/low\"\n" +
+					"  \"confidence\": \"high/medium/low\", \n" +
+					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -126,6 +129,10 @@ public class AiService {
 
 		if (structured.getConfidence() == null || structured.getConfidence().isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: confidence is missing");
+		}
+
+		if (structured.getCodeSmell() == null || structured.getCodeSmell().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: codeSmell is missing");
 		}
 	}
 
