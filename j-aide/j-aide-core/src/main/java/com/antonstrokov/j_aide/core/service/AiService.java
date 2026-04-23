@@ -19,9 +19,11 @@ public class AiService {
 	private static final Logger log = LoggerFactory.getLogger(AiService.class);
 	private static final PromptTemplate FAST_TEMPLATE = PromptTemplate.from(
 			"Ты опытный {{language}}-разработчик.\n" +
-					"Объясни код очень кратко.\n\n" +
+					"Объясни код очень кратко на русском языке.\n\n" +
 					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
 					"Только чистый JSON.\n\n" +
+					"- Если вход содержит синтаксис языка программирования, inputType должен быть code\n" +
+					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть plain_text\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"очень краткое объяснение\",\n" +
@@ -31,7 +33,8 @@ public class AiService {
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
 					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
 					"  \"confidence\": \"high/medium/low\", \n" +
-					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\"\n" +
+					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\", \n" +
+					"  \"inputType\": \"одно значение: code или plain_text\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -42,9 +45,11 @@ public class AiService {
 	);
 	private static final PromptTemplate SMART_TEMPLATE = PromptTemplate.from(
 			"Ты опытный {{language}}-разработчик.\n" +
-					"Объясни код.\n\n" +
+					"Объясни код на русском языке.\n\n" +
 					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
 					"Только чистый JSON.\n\n" +
+					"- Если вход содержит синтаксис языка программирования, inputType должен быть code\n" +
+					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть plain_text\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"краткое объяснение\",\n" +
@@ -54,7 +59,8 @@ public class AiService {
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
 					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
 					"  \"confidence\": \"high/medium/low\", \n" +
-					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\"\n" +
+					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\", \n" +
+					"  \"inputType\": \"одно значение: code или plain_text\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -65,7 +71,7 @@ public class AiService {
 	);
 	private static final PromptTemplate DEEP_TEMPLATE = PromptTemplate.from(
 			"Ты опытный {{language}}-разработчик.\n" +
-					"Подробно объясни код.\n" +
+					"Подробно объясни код на русском языке.\n" +
 					"Объясняй только данный код.\n" +
 					"Не добавляй лишние примеры.\n\n" +
 					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
@@ -73,9 +79,9 @@ public class AiService {
 					"ВАЖНО:\n" +
 					"- Все значения в JSON должны быть строками\n" +
 					"- Поле details должно быть строкой, а не объектом и не массивом\n" +
-					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь" +
-					" " +
-					"отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
+					"- Если вход содержит синтаксис языка программирования, inputType должен быть code\n" +
+					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть plain_text\n" +
+					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"краткий вывод\",\n" +
@@ -86,7 +92,8 @@ public class AiService {
 					"  \"bestPractice\": \"какая хорошая практика здесь уместна\", \n" +
 					"  \"riskHint\": \"есть ли здесь риск или на что стоит обратить внимание\", \n" +
 					"  \"confidence\": \"high/medium/low\", \n" +
-					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\"\n" +
+					"  \"codeSmell\": \"есть ли здесь запах кода или краткая оценка качества\", \n" +
+					"  \"inputType\": \"одно значение: code или plain_text\"\n" +
 					"}\n\n" +
 					"Не добавляй никаких пояснений вне JSON.\n\n" +
 					"Имя проекта: {{projectName}}\n" +
@@ -133,6 +140,10 @@ public class AiService {
 
 		if (structured.getCodeSmell() == null || structured.getCodeSmell().isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: codeSmell is missing");
+		}
+
+		if (structured.getInputType() == null || structured.getInputType().isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: inputType is missing");
 		}
 	}
 
