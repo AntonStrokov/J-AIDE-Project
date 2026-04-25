@@ -58,7 +58,7 @@ public class AiController {
 
 		boolean success = isSuccess(result);
 
-		boolean supportedLanguage = !"plain_text".equals(result.getLanguage());
+		boolean supportedLanguage = isSupportedLanguage(result);
 
 		log.info(
 				"Explain result: complexity={}, confidence={}, success={}, responseTimeMs={}",
@@ -129,5 +129,9 @@ public class AiController {
 
 	private boolean isSuccess(AiExplainResult result) {
 		return result.getRawJson() == null;
+	}
+
+	private boolean isSupportedLanguage(AiExplainResult result) {
+		return !"plain_text".equals(result.getLanguage());
 	}
 }
