@@ -74,8 +74,28 @@ public class AiController {
 				? request.getLineStart() + "-" + request.getLineEnd()
 				: null;
 
+		return buildExplainResponse(
+				request,
+				result,
+				traceId,
+				success,
+				supportedLanguage,
+				backendVersion,
+				lineRange,
+				responseTimeMs
+		);
+	}
 
-
+	private ExplainResponse buildExplainResponse(
+			ExplainRequest request,
+			AiExplainResult result,
+			String traceId,
+			boolean success,
+			boolean supportedLanguage,
+			String backendVersion,
+			String lineRange,
+			long responseTimeMs
+	) {
 		ExplainResponse response = new ExplainResponse();
 
 		response.setExplanation(result.getExplanation());
