@@ -95,8 +95,14 @@ public final class AiPromptTemplates {
 					"Код:\n{{code}}"
 	);
 
-	private AiPromptTemplates() {
-
-
+	public static PromptTemplate resolveTemplate(String effectiveMode) {
+		switch (effectiveMode) {
+			case "FAST":
+				return FAST_TEMPLATE;
+			case "DEEP":
+				return DEEP_TEMPLATE;
+			default:
+				return SMART_TEMPLATE;
+		}
 	}
 }

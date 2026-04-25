@@ -86,16 +86,6 @@ public class AiService {
 		return response;
 	}
 
-	private PromptTemplate resolveTemplate(String effectiveMode) {
-		switch (effectiveMode) {
-			case "FAST":
-				return AiPromptTemplates.FAST_TEMPLATE;
-			case "DEEP":
-				return AiPromptTemplates.DEEP_TEMPLATE;
-			default:
-				return AiPromptTemplates.SMART_TEMPLATE;
-		}
-	}
 
 	private String buildRetryPrompt(String prompt) {
 		return prompt + "\n\n" +
@@ -181,7 +171,7 @@ public class AiService {
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
 		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
 
-		PromptTemplate template = resolveTemplate(effectiveMode);
+		PromptTemplate template = AiPromptTemplates.resolveTemplate(effectiveMode);
 
 		String prompt = template.apply(Map.of(
 				"code", code,
