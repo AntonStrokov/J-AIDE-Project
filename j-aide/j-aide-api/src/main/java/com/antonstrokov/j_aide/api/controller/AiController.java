@@ -45,7 +45,7 @@ public class AiController {
 				request.getIdeVersion()
 		);
 
-		long responseTimeMs = System.currentTimeMillis() - startTime;
+		long responseTimeMs = calculateResponseTimeMs(startTime);
 
 		String traceId = getTraceId();
 
@@ -149,5 +149,9 @@ public class AiController {
 				success,
 				responseTimeMs
 		);
+	}
+
+	private long calculateResponseTimeMs(long startTime) {
+		return System.currentTimeMillis() - startTime;
 	}
 }
