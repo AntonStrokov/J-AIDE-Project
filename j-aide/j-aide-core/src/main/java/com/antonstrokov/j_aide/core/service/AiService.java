@@ -115,17 +115,16 @@ public class AiService {
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
 		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
 
-		PromptTemplate template = AiPromptTemplates.resolveTemplate(effectiveMode);
-
-		String prompt = template.apply(Map.of(
-				"code", code,
-				"language", effectiveLanguage,
-				"fileName", fileName,
-				"lineStart", lineStart,
-				"lineEnd", lineEnd,
-				"projectName", projectName,
-				"moduleName", moduleName
-		)).text();
+		String prompt = buildPrompt(
+				effectiveMode,
+				code,
+				effectiveLanguage,
+				fileName,
+				lineStart,
+				lineEnd,
+				projectName,
+				moduleName
+		);
 
 		String response = askModel(prompt);
 
@@ -250,5 +249,28 @@ public class AiService {
 	private String askModel(String prompt) {
 		String response = model.chat(prompt);
 		return normalizeJsonCandidate(response);
+	}
+
+	private String buildPrompt(
+			String effectiveMode,
+			String code,
+			String effectiveLanguage,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName
+	) {
+		PromptTemplate template = AiPromptTemplates.resolveTemplate(effectiveMode);
+
+		return template.apply(Map.of(
+				"code", code,
+				"language", effectiveLanguage,
+				"fileName", fileName,
+				"lineStart", lineStart,
+				"lineEnd", lineEnd,
+				"projectName", projectName,
+				"moduleName", moduleName
+		)).text();
 	}
 }
