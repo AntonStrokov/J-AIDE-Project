@@ -70,9 +70,7 @@ public class AiController {
 
 		String backendVersion = appProperties.version();
 
-		String lineRange = (request.getLineStart() != null && request.getLineEnd() != null)
-				? request.getLineStart() + "-" + request.getLineEnd()
-				: null;
+		String lineRange = buildLineRange(request);
 
 		return buildExplainResponse(
 				request,
@@ -121,5 +119,11 @@ public class AiController {
 		response.setRetried(result.getRetried());
 
 		return response;
+	}
+
+	private String buildLineRange(ExplainRequest request) {
+		return (request.getLineStart() != null && request.getLineEnd() != null)
+				? request.getLineStart() + "-" + request.getLineEnd()
+				: null;
 	}
 }
