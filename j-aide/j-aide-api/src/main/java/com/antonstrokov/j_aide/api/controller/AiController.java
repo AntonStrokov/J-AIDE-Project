@@ -30,14 +30,7 @@ public class AiController {
 
 		log.info("Received explain request, code length={}", request.getCode().length());
 
-		log.info(
-				"Explain context: language={}, mode={}, fileName={}, projectName={}, moduleName={}",
-				request.getLanguage(),
-				request.getMode(),
-				request.getFileName(),
-				request.getProjectName(),
-				request.getModuleName()
-		);
+		logExplainContext(request);
 
 		AiExplainResult result = aiService.explain(
 				request.getCode(),
@@ -141,5 +134,16 @@ public class AiController {
 
 	private String getTraceId() {
 		return MDC.get("traceId");
+	}
+
+	private void logExplainContext(ExplainRequest request) {
+		log.info(
+				"Explain context: language={}, mode={}, fileName={}, projectName={}, moduleName={}",
+				request.getLanguage(),
+				request.getMode(),
+				request.getFileName(),
+				request.getProjectName(),
+				request.getModuleName()
+		);
 	}
 }
