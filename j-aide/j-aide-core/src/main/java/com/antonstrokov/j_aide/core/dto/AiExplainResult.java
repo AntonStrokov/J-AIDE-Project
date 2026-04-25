@@ -10,4 +10,5 @@ public class AiExplainResult {
 	private String rawJson;
 	private String mode;
 	private String language;
+	private Boolean retried;
 }

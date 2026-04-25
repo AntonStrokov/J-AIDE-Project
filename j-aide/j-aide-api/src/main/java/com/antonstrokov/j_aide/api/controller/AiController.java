@@ -94,7 +94,10 @@ public class AiController {
 				request.getMode(),
 				request.getFileName(),
 				request.getProjectName(),
-				request.getModuleName()
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion(),
+				result.getRetried()
 		);
 	}
 }

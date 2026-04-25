@@ -23,7 +23,8 @@ public class AiService {
 					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
 					"Только чистый JSON.\n\n" +
 					"- Если вход содержит синтаксис языка программирования, inputType должен быть code\n" +
-					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть plain_text\n\n" +
+					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть " +
+					"plain_text\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"очень краткое объяснение\",\n" +
@@ -49,7 +50,8 @@ public class AiService {
 					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
 					"Только чистый JSON.\n\n" +
 					"- Если вход содержит синтаксис языка программирования, inputType должен быть code\n" +
-					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть plain_text\n\n" +
+					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть " +
+					"plain_text\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"краткое объяснение\",\n" +
@@ -80,8 +82,10 @@ public class AiService {
 					"- Все значения в JSON должны быть строками\n" +
 					"- Поле details должно быть строкой, а не объектом и не массивом\n" +
 					"- Если вход содержит синтаксис языка программирования, inputType должен быть code\n" +
-					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть plain_text\n" +
-					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
+					"- Если вход является обычным текстом без программного синтаксиса, inputType должен быть " +
+					"plain_text\n" +
+					"- В details обязательно опиши: 1) что делает код, 2) ключевые элементы синтаксиса, 3) что здесь " +
+					"отсутствует или упрощено, 4) где такой код может использоваться\n\n" +
 					"Формат:\n" +
 					"{\n" +
 					"  \"summary\": \"краткий вывод\",\n" +
@@ -196,13 +200,13 @@ public class AiService {
 		fallback.setComplexity("unknown");
 		fallback.setSuggestion("Проверь сырой ответ модели в rawJson");
 
-		return new AiExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage);
+		return new AiExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
 	}
 
 	private AiExplainResult tryParseResponse(String response, String effectiveMode, String effectiveLanguage)
 			throws Exception {
 		StructuredExplainResponse structured = parseStructuredResponse(response);
-		return new AiExplainResult(structured, null, effectiveMode, effectiveLanguage);
+		return new AiExplainResult(structured, null, effectiveMode, effectiveLanguage, false);
 	}
 
 	public AiExplainResult explain(
@@ -306,6 +310,7 @@ public class AiService {
 				retryResponse = normalizeJsonCandidate(retryResponse);
 
 				AiExplainResult retryResult = tryParseResponse(retryResponse, effectiveMode, effectiveLanguage);
+				retryResult.setRetried(true);
 
 				log.info("Retry succeeded and returned valid structured response");
 

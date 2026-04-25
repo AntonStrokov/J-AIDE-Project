@@ -25,4 +25,7 @@ public class ExplainResponse {
 	private String requestFileName;
 	private String requestProjectName;
 	private String requestModuleName;
+	private String requestPluginVersion;
+	private String requestIdeVersion;
+	private Boolean retried;
 }
