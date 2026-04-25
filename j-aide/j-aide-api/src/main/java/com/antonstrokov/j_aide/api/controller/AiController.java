@@ -53,13 +53,7 @@ public class AiController {
 
 		boolean supportedLanguage = isSupportedLanguage(result);
 
-		log.info(
-				"Explain result: complexity={}, confidence={}, success={}, responseTimeMs={}",
-				result.getExplanation().getComplexity(),
-				result.getExplanation().getConfidence(),
-				success,
-				responseTimeMs
-		);
+		logExplainResult(result, success, responseTimeMs);
 
 		String backendVersion = getBackendVersion();
 
@@ -144,6 +138,16 @@ public class AiController {
 				request.getFileName(),
 				request.getProjectName(),
 				request.getModuleName()
+		);
+	}
+
+	private void logExplainResult(AiExplainResult result, boolean success, long responseTimeMs) {
+		log.info(
+				"Explain result: complexity={}, confidence={}, success={}, responseTimeMs={}",
+				result.getExplanation().getComplexity(),
+				result.getExplanation().getConfidence(),
+				success,
+				responseTimeMs
 		);
 	}
 }
