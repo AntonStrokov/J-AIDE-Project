@@ -122,49 +122,16 @@ public class AiService {
 			String pluginVersion,
 			String ideVersion) {
 
-		if (code == null || code.isBlank()) {
-			throw new IllegalArgumentException("Code is empty");
-		}
-
-		if (lineStart != null && lineStart < 1) {
-			throw new IllegalArgumentException("lineStart must be >= 1");
-		}
-
-		if (lineEnd != null && lineEnd < 1) {
-			throw new IllegalArgumentException("lineEnd must be >= 1");
-		}
-
-		if (lineStart != null && lineEnd != null && lineStart > lineEnd) {
-			throw new IllegalArgumentException("lineStart must be <= lineEnd");
-		}
-
-		if (fileName != null && fileName.isBlank()) {
-			throw new IllegalArgumentException("fileName must not be blank");
-		}
-
-		if (projectName != null && projectName.isBlank()) {
-			throw new IllegalArgumentException("projectName must not be blank");
-		}
-
-		if (moduleName != null && moduleName.isBlank()) {
-			throw new IllegalArgumentException("moduleName must not be blank");
-		}
-
-		if (pluginVersion != null && pluginVersion.isBlank()) {
-			throw new IllegalArgumentException("pluginVersion must not be blank");
-		}
-
-		if (ideVersion != null && ideVersion.isBlank()) {
-			throw new IllegalArgumentException("ideVersion must not be blank");
-		}
-
-		int maxCodeLength = aiProperties.limits().codeMaxLength();
-
-		log.info("Configured maxCodeLength={}", maxCodeLength);
-
-		if (code.length() > maxCodeLength) {
-			throw new IllegalArgumentException("Code is too long");
-		}
+		validateExplainInput(
+				code,
+				fileName,
+				lineStart,
+				lineEnd,
+				projectName,
+				moduleName,
+				pluginVersion,
+				ideVersion
+		);
 
 		String effectiveMode = (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
 
@@ -246,5 +213,58 @@ public class AiService {
 			default:
 				return SupportedLanguage.PLAIN_TEXT;
 		}
+	}
+
+	private void validateOptionalTextField(String value, String fieldName) {
+		if (value != null && value.isBlank()) {
+			throw new IllegalArgumentException(fieldName + " must not be blank");
+		}
+	}
+
+	private void validateLineRange(Integer lineStart, Integer lineEnd) {
+		if (lineStart != null && lineStart < 1) {
+			throw new IllegalArgumentException("lineStart must be >= 1");
+		}
+
+		if (lineEnd != null && lineEnd < 1) {
+			throw new IllegalArgumentException("lineEnd must be >= 1");
+		}
+
+		if (lineStart != null && lineEnd != null && lineStart > lineEnd) {
+			throw new IllegalArgumentException("lineStart must be <= lineEnd");
+		}
+	}
+
+	private void validateCode(String code) {
+		if (code == null || code.isBlank()) {
+			throw new IllegalArgumentException("Code is empty");
+		}
+
+		int maxCodeLength = aiProperties.limits().codeMaxLength();
+
+		log.info("Configured maxCodeLength={}", maxCodeLength);
+
+		if (code.length() > maxCodeLength) {
+			throw new IllegalArgumentException("Code is too long");
+		}
+	}
+
+	private void validateExplainInput(
+			String code,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName,
+			String pluginVersion,
+			String ideVersion
+	) {
+		validateCode(code);
+		validateLineRange(lineStart, lineEnd);
+		validateOptionalTextField(fileName, "fileName");
+		validateOptionalTextField(projectName, "projectName");
+		validateOptionalTextField(moduleName, "moduleName");
+		validateOptionalTextField(pluginVersion, "pluginVersion");
+		validateOptionalTextField(ideVersion, "ideVersion");
 	}
 }
