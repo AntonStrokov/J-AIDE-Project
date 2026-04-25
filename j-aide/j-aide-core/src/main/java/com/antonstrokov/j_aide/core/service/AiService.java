@@ -110,7 +110,7 @@ public class AiService {
 				ideVersion
 		);
 
-		String effectiveMode = (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
+		String effectiveMode = resolveMode(mode);
 
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
 		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
@@ -291,5 +291,9 @@ public class AiService {
 				);
 			}
 		}
+	}
+
+	private String resolveMode(String mode) {
+		return (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
 	}
 }
