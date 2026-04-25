@@ -127,9 +127,7 @@ public class AiService {
 				"moduleName", moduleName
 		)).text();
 
-		String response = model.chat(prompt);
-
-		response = normalizeJsonCandidate(response);
+		String response = askModel(prompt);
 
 		boolean shouldRetry = "SMART".equals(effectiveMode);
 
@@ -150,9 +148,7 @@ public class AiService {
 			try {
 				String retryPrompt = buildRetryPrompt(prompt);
 
-				retryResponse = model.chat(retryPrompt);
-
-				retryResponse = normalizeJsonCandidate(retryResponse);
+				retryResponse = askModel(retryPrompt);
 
 				AiExplainResult retryResult = tryParseResponse(retryResponse, effectiveMode, effectiveLanguage);
 				retryResult.setRetried(true);
@@ -249,5 +245,10 @@ public class AiService {
 		if (value == null || value.isBlank()) {
 			throw new RuntimeException("Invalid AI JSON structure: " + fieldName + " is missing");
 		}
+	}
+
+	private String askModel(String prompt) {
+		String response = model.chat(prompt);
+		return normalizeJsonCandidate(response);
 	}
 }
