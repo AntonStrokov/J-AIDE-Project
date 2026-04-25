@@ -54,7 +54,7 @@ public class AiController {
 
 		long responseTimeMs = System.currentTimeMillis() - startTime;
 
-		String traceId = MDC.get("traceId");
+		String traceId = getTraceId();
 
 		boolean success = isSuccess(result);
 
@@ -137,5 +137,9 @@ public class AiController {
 
 	private String getBackendVersion() {
 		return appProperties.version();
+	}
+
+	private String getTraceId() {
+		return MDC.get("traceId");
 	}
 }
