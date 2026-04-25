@@ -56,7 +56,7 @@ public class AiController {
 
 		String traceId = MDC.get("traceId");
 
-		boolean success = result.getRawJson() == null;
+		boolean success = isSuccess(result);
 
 		boolean supportedLanguage = !"plain_text".equals(result.getLanguage());
 
@@ -125,5 +125,9 @@ public class AiController {
 		return (request.getLineStart() != null && request.getLineEnd() != null)
 				? request.getLineStart() + "-" + request.getLineEnd()
 				: null;
+	}
+
+	private boolean isSuccess(AiExplainResult result) {
+		return result.getRawJson() == null;
 	}
 }
