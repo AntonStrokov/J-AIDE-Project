@@ -68,7 +68,7 @@ public class AiController {
 				responseTimeMs
 		);
 
-		String backendVersion = appProperties.version();
+		String backendVersion = getBackendVersion();
 
 		String lineRange = buildLineRange(request);
 
@@ -133,5 +133,9 @@ public class AiController {
 
 	private boolean isSupportedLanguage(AiExplainResult result) {
 		return !"plain_text".equals(result.getLanguage());
+	}
+
+	private String getBackendVersion() {
+		return appProperties.version();
 	}
 }
