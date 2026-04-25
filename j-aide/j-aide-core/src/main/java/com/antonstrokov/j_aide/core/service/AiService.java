@@ -29,37 +29,14 @@ public class AiService {
 	}
 
 	private void validateStructuredResponse(StructuredExplainResponse structured) {
-		if (structured.getSummary() == null || structured.getSummary().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: summary is missing");
-		}
-
-		if (structured.getDetails() == null || structured.getDetails().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: details are missing");
-		}
-
-		if (structured.getSuggestion() == null || structured.getSuggestion().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: suggestion is missing");
-		}
-
-		if (structured.getBestPractice() == null || structured.getBestPractice().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: bestPractice is missing");
-		}
-
-		if (structured.getRiskHint() == null || structured.getRiskHint().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: riskHint is missing");
-		}
-
-		if (structured.getConfidence() == null || structured.getConfidence().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: confidence is missing");
-		}
-
-		if (structured.getCodeSmell() == null || structured.getCodeSmell().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: codeSmell is missing");
-		}
-
-		if (structured.getInputType() == null || structured.getInputType().isBlank()) {
-			throw new RuntimeException("Invalid AI JSON structure: inputType is missing");
-		}
+		validateRequiredAiField(structured.getSummary(), "summary");
+		validateRequiredAiField(structured.getDetails(), "details");
+		validateRequiredAiField(structured.getSuggestion(), "suggestion");
+		validateRequiredAiField(structured.getBestPractice(), "bestPractice");
+		validateRequiredAiField(structured.getRiskHint(), "riskHint");
+		validateRequiredAiField(structured.getConfidence(), "confidence");
+		validateRequiredAiField(structured.getCodeSmell(), "codeSmell");
+		validateRequiredAiField(structured.getInputType(), "inputType");
 	}
 
 	private StructuredExplainResponse parseStructuredResponse(String response) throws Exception {
@@ -266,5 +243,11 @@ public class AiService {
 		validateOptionalTextField(moduleName, "moduleName");
 		validateOptionalTextField(pluginVersion, "pluginVersion");
 		validateOptionalTextField(ideVersion, "ideVersion");
+	}
+
+	private void validateRequiredAiField(String value, String fieldName) {
+		if (value == null || value.isBlank()) {
+			throw new RuntimeException("Invalid AI JSON structure: " + fieldName + " is missing");
+		}
 	}
 }
