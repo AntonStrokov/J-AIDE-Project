@@ -130,39 +130,13 @@ public class AiService {
 
 		boolean shouldRetry = "SMART".equals(effectiveMode);
 
-		try {
-			return tryParseResponse(response, effectiveMode, effectiveLanguage);
-
-		} catch (Exception e) {
-			if (!shouldRetry) {
-				log.warn("AI response parsing failed, returning fallback without retry", e);
-
-				return buildFallbackResult(response, effectiveMode, effectiveLanguage);
-			}
-
-			log.warn("First AI response parsing failed, retrying once", e);
-
-			String retryResponse = null;
-
-			try {
-				String retryPrompt = buildRetryPrompt(prompt);
-
-				retryResponse = askModel(retryPrompt);
-
-				AiExplainResult retryResult = tryParseResponse(retryResponse, effectiveMode, effectiveLanguage);
-				retryResult.setRetried(true);
-
-				log.info("Retry succeeded and returned valid structured response");
-
-				return retryResult;
-
-			} catch (Exception retryException) {
-				log.warn("Retry also failed, returning fallback", retryException);
-
-				return buildFallbackResult(retryResponse != null ? retryResponse : response, effectiveMode,
-						effectiveLanguage);
-			}
-		}
+		return parseWithRetry(
+				response,
+				prompt,
+				shouldRetry,
+				effectiveMode,
+				effectiveLanguage
+		);
 	}
 
 	private SupportedLanguage resolveLanguage(String language) {
@@ -272,5 +246,50 @@ public class AiService {
 				"projectName", projectName,
 				"moduleName", moduleName
 		)).text();
+	}
+
+	private AiExplainResult parseWithRetry(
+			String response,
+			String prompt,
+			boolean shouldRetry,
+			String effectiveMode,
+			String effectiveLanguage
+	) {
+		try {
+			return tryParseResponse(response, effectiveMode, effectiveLanguage);
+
+		} catch (Exception e) {
+			if (!shouldRetry) {
+				log.warn("AI response parsing failed, returning fallback without retry", e);
+
+				return buildFallbackResult(response, effectiveMode, effectiveLanguage);
+			}
+
+			log.warn("First AI response parsing failed, retrying once", e);
+
+			String retryResponse = null;
+
+			try {
+				String retryPrompt = buildRetryPrompt(prompt);
+
+				retryResponse = askModel(retryPrompt);
+
+				AiExplainResult retryResult = tryParseResponse(retryResponse, effectiveMode, effectiveLanguage);
+				retryResult.setRetried(true);
+
+				log.info("Retry succeeded and returned valid structured response");
+
+				return retryResult;
+
+			} catch (Exception retryException) {
+				log.warn("Retry also failed, returning fallback", retryException);
+
+				return buildFallbackResult(
+						retryResponse != null ? retryResponse : response,
+						effectiveMode,
+						effectiveLanguage
+				);
+			}
+		}
 	}
 }
