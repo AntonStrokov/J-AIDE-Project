@@ -104,8 +104,32 @@ public class AiController {
 		response.setRequestIdeVersion(request.getIdeVersion());
 		response.setRetried(result.getRetried());
 
+		ExplainMetadata metadata = buildMetadata(
+				traceId,
+				backendVersion,
+				responseTimeMs,
+				result.getRetried()
+		);
+
+		response.setMetadata(metadata);
+
+		ExplainEffectiveContext effectiveContext = buildEffectiveContext(
+				result,
+				supportedLanguage
+		);
+
+		response.setEffectiveContext(effectiveContext);
+
+		ExplainFileContext fileContext = buildFileContext(request, lineRange);
+		response.setFileContext(fileContext);
+
+		ExplainRequestContext requestContext = buildRequestContext(request);
+		response.setRequestContext(requestContext);
+
 		return response;
+
 	}
+
 
 	private String buildLineRange(ExplainRequest request) {
 		return (request.getLineStart() != null && request.getLineEnd() != null)

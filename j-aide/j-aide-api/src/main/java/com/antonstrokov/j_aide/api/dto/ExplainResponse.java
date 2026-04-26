@@ -28,4 +28,9 @@ public class ExplainResponse {
 	private String requestPluginVersion;
 	private String requestIdeVersion;
 	private Boolean retried;
+
+	private ExplainMetadata metadata;
+	private ExplainEffectiveContext effectiveContext;
+	private ExplainFileContext fileContext;
+	private ExplainRequestContext requestContext;
 }
