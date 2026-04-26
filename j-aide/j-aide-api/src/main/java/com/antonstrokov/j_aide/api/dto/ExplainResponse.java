@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 public class ExplainResponse {
 	private StructuredExplainResponse explanation;
 	private String rawJson;
-	private String mode;
-	private String language;
 	private boolean success;
-	private boolean supportedLanguage;
 	private String fileName;
 	private String lineRange;
 	private String projectName;
