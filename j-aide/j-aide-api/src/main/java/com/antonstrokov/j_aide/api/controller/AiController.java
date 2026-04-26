@@ -85,14 +85,6 @@ public class AiController {
 		response.setExplanation(result.getExplanation());
 		response.setRawJson(result.getRawJson());
 		response.setSuccess(success);
-		response.setRequestLanguage(request.getLanguage());
-		response.setRequestMode(request.getMode());
-		response.setRequestFileName(request.getFileName());
-		response.setRequestProjectName(request.getProjectName());
-		response.setRequestModuleName(request.getModuleName());
-		response.setRequestPluginVersion(request.getPluginVersion());
-		response.setRequestIdeVersion(request.getIdeVersion());
-
 
 		ExplainMetadata metadata = buildMetadata(
 				traceId,
