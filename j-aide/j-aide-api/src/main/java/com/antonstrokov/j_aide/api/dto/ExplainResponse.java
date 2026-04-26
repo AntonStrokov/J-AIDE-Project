@@ -11,15 +11,12 @@ public class ExplainResponse {
 	private String rawJson;
 	private String mode;
 	private String language;
-	private String traceId;
 	private boolean success;
 	private boolean supportedLanguage;
-	private String backendVersion;
 	private String fileName;
 	private String lineRange;
 	private String projectName;
 	private String moduleName;
-	private Long responseTimeMs;
 	private String requestLanguage;
 	private String requestMode;
 	private String requestFileName;
@@ -27,7 +24,6 @@ public class ExplainResponse {
 	private String requestModuleName;
 	private String requestPluginVersion;
 	private String requestIdeVersion;
-	private Boolean retried;
 
 	private ExplainMetadata metadata;
 	private ExplainEffectiveContext effectiveContext;

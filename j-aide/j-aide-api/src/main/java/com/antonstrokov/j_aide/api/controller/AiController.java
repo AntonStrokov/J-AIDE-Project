@@ -86,15 +86,12 @@ public class AiController {
 		response.setRawJson(result.getRawJson());
 		response.setMode(result.getMode());
 		response.setLanguage(result.getLanguage());
-		response.setTraceId(traceId);
 		response.setSuccess(success);
 		response.setSupportedLanguage(supportedLanguage);
-		response.setBackendVersion(backendVersion);
 		response.setFileName(request.getFileName());
 		response.setLineRange(lineRange);
 		response.setProjectName(request.getProjectName());
 		response.setModuleName(request.getModuleName());
-		response.setResponseTimeMs(responseTimeMs);
 		response.setRequestLanguage(request.getLanguage());
 		response.setRequestMode(request.getMode());
 		response.setRequestFileName(request.getFileName());
@@ -102,7 +99,7 @@ public class AiController {
 		response.setRequestModuleName(request.getModuleName());
 		response.setRequestPluginVersion(request.getPluginVersion());
 		response.setRequestIdeVersion(request.getIdeVersion());
-		response.setRetried(result.getRetried());
+
 
 		ExplainMetadata metadata = buildMetadata(
 				traceId,
