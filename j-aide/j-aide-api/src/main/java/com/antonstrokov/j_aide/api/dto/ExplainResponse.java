@@ -10,10 +10,6 @@ public class ExplainResponse {
 	private StructuredExplainResponse explanation;
 	private String rawJson;
 	private boolean success;
-	private String fileName;
-	private String lineRange;
-	private String projectName;
-	private String moduleName;
 	private String requestLanguage;
 	private String requestMode;
 	private String requestFileName;

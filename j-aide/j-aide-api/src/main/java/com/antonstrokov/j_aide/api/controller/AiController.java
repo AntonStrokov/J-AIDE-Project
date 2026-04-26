@@ -85,10 +85,6 @@ public class AiController {
 		response.setExplanation(result.getExplanation());
 		response.setRawJson(result.getRawJson());
 		response.setSuccess(success);
-		response.setFileName(request.getFileName());
-		response.setLineRange(lineRange);
-		response.setProjectName(request.getProjectName());
-		response.setModuleName(request.getModuleName());
 		response.setRequestLanguage(request.getLanguage());
 		response.setRequestMode(request.getMode());
 		response.setRequestFileName(request.getFileName());
