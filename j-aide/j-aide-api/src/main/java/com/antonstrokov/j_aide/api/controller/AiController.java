@@ -1,7 +1,6 @@
 package com.antonstrokov.j_aide.api.controller;
 
-import com.antonstrokov.j_aide.api.dto.ExplainRequest;
-import com.antonstrokov.j_aide.api.dto.ExplainResponse;
+import com.antonstrokov.j_aide.api.dto.*;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.AiExplainResult;
 import com.antonstrokov.j_aide.core.service.AiService;
@@ -153,5 +152,58 @@ public class AiController {
 
 	private long calculateResponseTimeMs(long startTime) {
 		return System.currentTimeMillis() - startTime;
+	}
+
+	private ExplainMetadata buildMetadata(
+			String traceId,
+			String backendVersion,
+			long responseTimeMs,
+			Boolean retried
+	) {
+		ExplainMetadata metadata = new ExplainMetadata();
+		metadata.setTraceId(traceId);
+		metadata.setBackendVersion(backendVersion);
+		metadata.setResponseTimeMs(responseTimeMs);
+		metadata.setRetried(retried);
+
+		return metadata;
+	}
+
+	private ExplainEffectiveContext buildEffectiveContext(
+			AiExplainResult result,
+			boolean supportedLanguage
+	) {
+		ExplainEffectiveContext effectiveContext = new ExplainEffectiveContext();
+		effectiveContext.setMode(result.getMode());
+		effectiveContext.setLanguage(result.getLanguage());
+		effectiveContext.setSupportedLanguage(supportedLanguage);
+
+		return effectiveContext;
+	}
+
+	private ExplainFileContext buildFileContext(
+			ExplainRequest request,
+			String lineRange
+	) {
+		ExplainFileContext fileContext = new ExplainFileContext();
+		fileContext.setFileName(request.getFileName());
+		fileContext.setLineRange(lineRange);
+		fileContext.setProjectName(request.getProjectName());
+		fileContext.setModuleName(request.getModuleName());
+
+		return fileContext;
+	}
+
+	private ExplainRequestContext buildRequestContext(ExplainRequest request) {
+		ExplainRequestContext requestContext = new ExplainRequestContext();
+		requestContext.setRequestLanguage(request.getLanguage());
+		requestContext.setRequestMode(request.getMode());
+		requestContext.setRequestFileName(request.getFileName());
+		requestContext.setRequestProjectName(request.getProjectName());
+		requestContext.setRequestModuleName(request.getModuleName());
+		requestContext.setRequestPluginVersion(request.getPluginVersion());
+		requestContext.setRequestIdeVersion(request.getIdeVersion());
+
+		return requestContext;
 	}
 }
