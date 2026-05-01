@@ -15,13 +15,13 @@ public class BackendInfoResponse {
 	private BackendEndpoints endpoints;
 	private BackendCapabilities capabilities;
 
-	private String backendName;
-	private String backendVersion;
+//	private String backendName;
+//	private String backendVersion;
 	private String defaultMode;
 	private String defaultLanguage;
 	private String llmProvider;
 	private String llmModel;
-	private String status;
+//	private String status;
 	private String explainEndpoint;
 	private List<String> supportedModes;
 	private List<String> supportedLanguages;
