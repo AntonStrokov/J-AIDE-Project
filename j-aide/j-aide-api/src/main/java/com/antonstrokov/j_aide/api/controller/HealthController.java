@@ -55,24 +55,6 @@ public class HealthController {
 		BackendCapabilities capabilities = buildBackendCapabilities();
 		response.setCapabilities(capabilities);
 
-//		response.setBackendName(appProperties.name());
-//		response.setBackendVersion(appProperties.version());
-//		response.setDefaultMode(ExplainMode.SMART.name());
-//		response.setDefaultLanguage(SupportedLanguage.JAVA.name());
-//		response.setLlmProvider("OLLAMA");
-//		response.setLlmModel(aiProperties.ollama().model());
-//		response.setStatus("UP");
-		response.setExplainEndpoint("/ai/explain");
-		response.setSupportedModes(Arrays.stream(ExplainMode.values())
-				.map(Enum::name)
-				.toList());
-		response.setSupportedLanguages(Arrays.stream(SupportedLanguage.values())
-				.map(Enum::name)
-				.toList());
-		response.setSupportedFeatures(Arrays.stream(SupportedFeature.values())
-				.map(Enum::name)
-				.toList());
-
 		return response;
 	}
 
