@@ -1,6 +1,11 @@
 package com.antonstrokov.j_aide.api.controller;
 
-import com.antonstrokov.j_aide.api.dto.*;
+import com.antonstrokov.j_aide.api.dto.BackendCapabilities;
+import com.antonstrokov.j_aide.api.dto.BackendDefaults;
+import com.antonstrokov.j_aide.api.dto.BackendEndpoints;
+import com.antonstrokov.j_aide.api.dto.BackendInfoResponse;
+import com.antonstrokov.j_aide.api.dto.BackendLlmInfo;
+import com.antonstrokov.j_aide.api.dto.BackendMetadata;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.ExplainMode;
@@ -13,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 
 @RestController
-
 public class HealthController {
 
 	private final HealthService healthService;
