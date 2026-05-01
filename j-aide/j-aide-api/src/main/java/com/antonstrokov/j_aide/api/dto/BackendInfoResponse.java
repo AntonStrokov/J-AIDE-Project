@@ -17,8 +17,8 @@ public class BackendInfoResponse {
 
 //	private String backendName;
 //	private String backendVersion;
-	private String defaultMode;
-	private String defaultLanguage;
+//	private String defaultMode;
+//	private String defaultLanguage;
 	private String llmProvider;
 	private String llmModel;
 //	private String status;

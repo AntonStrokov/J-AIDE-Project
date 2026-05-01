@@ -57,8 +57,8 @@ public class HealthController {
 
 //		response.setBackendName(appProperties.name());
 //		response.setBackendVersion(appProperties.version());
-		response.setDefaultMode(ExplainMode.SMART.name());
-		response.setDefaultLanguage(SupportedLanguage.JAVA.name());
+//		response.setDefaultMode(ExplainMode.SMART.name());
+//		response.setDefaultLanguage(SupportedLanguage.JAVA.name());
 		response.setLlmProvider("OLLAMA");
 		response.setLlmModel(aiProperties.ollama().model());
 //		response.setStatus("UP");
