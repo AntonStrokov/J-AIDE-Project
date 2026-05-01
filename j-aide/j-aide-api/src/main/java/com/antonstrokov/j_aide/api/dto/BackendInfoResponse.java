@@ -1,13 +1,20 @@
 package com.antonstrokov.j_aide.api.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class BackendInfoResponse {
+
+	private BackendMetadata metadata;
+	private BackendDefaults defaults;
+	private BackendLlmInfo llmInfo;
+	private BackendEndpoints endpoints;
+	private BackendCapabilities capabilities;
+
 	private String backendName;
 	private String backendVersion;
 	private String defaultMode;

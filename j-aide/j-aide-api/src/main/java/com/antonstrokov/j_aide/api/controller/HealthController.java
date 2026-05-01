@@ -1,6 +1,6 @@
 package com.antonstrokov.j_aide.api.controller;
 
-import com.antonstrokov.j_aide.api.dto.BackendInfoResponse;
+import com.antonstrokov.j_aide.api.dto.*;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.ExplainMode;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 
 @RestController
+
 public class HealthController {
 
 	private final HealthService healthService;
@@ -37,24 +38,91 @@ public class HealthController {
 
 	@GetMapping("/backend-info")
 	public BackendInfoResponse backendInfo() {
-		return new BackendInfoResponse(
-				appProperties.name(),
-				appProperties.version(),
-				ExplainMode.SMART.name(),
-				SupportedLanguage.JAVA.name(),
-				"OLLAMA",
-				aiProperties.ollama().model(),
-				"UP",
-				"/ai/explain",
-				Arrays.stream(ExplainMode.values())
-						.map(Enum::name)
-						.toList(),
-				Arrays.stream(SupportedLanguage.values())
-						.map(Enum::name)
-						.toList(),
-				Arrays.stream(SupportedFeature.values())
-						.map(Enum::name)
-						.toList()
-		);
+		BackendInfoResponse response = new BackendInfoResponse();
+
+		BackendMetadata metadata = buildBackendMetadata();
+		response.setMetadata(metadata);
+
+		BackendDefaults defaults = buildBackendDefaults();
+		response.setDefaults(defaults);
+
+		BackendLlmInfo llmInfo = buildBackendLlmInfo();
+		response.setLlmInfo(llmInfo);
+
+		BackendEndpoints endpoints = buildBackendEndpoints();
+		response.setEndpoints(endpoints);
+
+		BackendCapabilities capabilities = buildBackendCapabilities();
+		response.setCapabilities(capabilities);
+
+		response.setBackendName(appProperties.name());
+		response.setBackendVersion(appProperties.version());
+		response.setDefaultMode(ExplainMode.SMART.name());
+		response.setDefaultLanguage(SupportedLanguage.JAVA.name());
+		response.setLlmProvider("OLLAMA");
+		response.setLlmModel(aiProperties.ollama().model());
+		response.setStatus("UP");
+		response.setExplainEndpoint("/ai/explain");
+		response.setSupportedModes(Arrays.stream(ExplainMode.values())
+				.map(Enum::name)
+				.toList());
+		response.setSupportedLanguages(Arrays.stream(SupportedLanguage.values())
+				.map(Enum::name)
+				.toList());
+		response.setSupportedFeatures(Arrays.stream(SupportedFeature.values())
+				.map(Enum::name)
+				.toList());
+
+		return response;
+	}
+
+	private BackendMetadata buildBackendMetadata() {
+		BackendMetadata metadata = new BackendMetadata();
+		metadata.setBackendName(appProperties.name());
+		metadata.setBackendVersion(appProperties.version());
+		metadata.setStatus("UP");
+
+		return metadata;
+	}
+
+	private BackendDefaults buildBackendDefaults() {
+		BackendDefaults defaults = new BackendDefaults();
+		defaults.setDefaultMode(ExplainMode.SMART.name());
+		defaults.setDefaultLanguage(SupportedLanguage.JAVA.name());
+
+		return defaults;
+	}
+
+	private BackendLlmInfo buildBackendLlmInfo() {
+		BackendLlmInfo llmInfo = new BackendLlmInfo();
+		llmInfo.setLlmProvider("OLLAMA");
+		llmInfo.setLlmModel(aiProperties.ollama().model());
+
+		return llmInfo;
+	}
+
+	private BackendEndpoints buildBackendEndpoints() {
+		BackendEndpoints endpoints = new BackendEndpoints();
+		endpoints.setExplainEndpoint("/ai/explain");
+
+		return endpoints;
+	}
+
+	private BackendCapabilities buildBackendCapabilities() {
+		BackendCapabilities capabilities = new BackendCapabilities();
+
+		capabilities.setSupportedModes(Arrays.stream(ExplainMode.values())
+				.map(Enum::name)
+				.toList());
+
+		capabilities.setSupportedLanguages(Arrays.stream(SupportedLanguage.values())
+				.map(Enum::name)
+				.toList());
+
+		capabilities.setSupportedFeatures(Arrays.stream(SupportedFeature.values())
+				.map(Enum::name)
+				.toList());
+
+		return capabilities;
 	}
 }
