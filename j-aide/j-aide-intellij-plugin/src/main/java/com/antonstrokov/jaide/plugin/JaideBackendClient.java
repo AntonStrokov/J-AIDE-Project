@@ -32,7 +32,26 @@ public class JaideBackendClient {
 				HttpResponse.BodyHandlers.ofString()
 		);
 
-		return response.body();
+		return extractSummary(response.body());
+	}
+
+	private String extractSummary(String responseBody) {
+		String marker = "\"summary\":\"";
+		int startIndex = responseBody.indexOf(marker);
+
+		if (startIndex == -1) {
+			return "Summary not found";
+		}
+
+		startIndex += marker.length();
+
+		int endIndex = responseBody.indexOf("\"", startIndex);
+
+		if (endIndex == -1) {
+			return "Summary parsing failed";
+		}
+
+		return responseBody.substring(startIndex, endIndex);
 	}
 
 	private String escapeJson(String value) {

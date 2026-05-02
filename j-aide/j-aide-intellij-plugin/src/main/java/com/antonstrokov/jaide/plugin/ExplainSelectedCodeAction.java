@@ -31,17 +31,15 @@ public class ExplainSelectedCodeAction extends AnAction {
 			return;
 		}
 
-		showNotification(e, "Sending selected code length: " + selectedText.length(), NotificationType.INFORMATION);
-
 		new Task.Backgroundable(e.getProject(), "J-Aide: Explaining selected code", false) {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
-					String response = backendClient.explain(selectedText);
+					String summary = backendClient.explain(selectedText);
 
 					showNotification(
 							e,
-							"Selected: " + selectedText.length() + ", response: " + response.length(),
+							"J-Aide: " + summary,
 							NotificationType.INFORMATION
 					);
 				} catch (Exception ex) {
