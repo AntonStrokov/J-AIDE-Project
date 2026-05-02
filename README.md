@@ -17,6 +17,12 @@ The project provides REST API endpoints that can explain source code, return str
 
 Make sure Ollama is running locally and the required model is available.
 
+Check available Ollama models:
+
+```bash
+ollama list
+```
+
 Current model:
 
 ```text
@@ -35,19 +41,17 @@ By default, the application starts on:
 http://localhost:8080
 ```
 
-Make sure Ollama is running locally and the required model is available.
-
-Current model:
-
-```text
-qwen2.5-coder:7b
-```
 
 ## API Endpoints
 
 ### GET /backend-info
 
 Returns backend metadata, default settings, available endpoints, and supported capabilities.
+Example curl request:
+
+```bash
+curl http://localhost:8080/backend-info
+```
 Example response:
 
 ```json
@@ -63,6 +67,14 @@ Example response:
 ### POST /ai/explain
 
 Explains a source code snippet and returns a structured AI response with metadata and context.
+Example curl request:
+
+```bash
+curl -X POST http://localhost:8080/ai/explain \
+  -H "Content-Type: application/json" \
+  -d "{\"code\":\"public class Test {}\",\"mode\":\"SMART\",\"language\":\"java\"}"
+```
+
 Example request:
 
 ```json
@@ -158,6 +170,17 @@ Current status:
 - Structured AI responses are supported.
 - Backend capability handshake is available via `/backend-info`.
 - The project is being prepared for future IDE plugin integration.
+
+## Next Step: IntelliJ Plugin MVP
+
+The next planned step is to prepare a minimal IntelliJ IDEA plugin that can communicate with the J-Aide backend.
+
+Planned MVP features:
+
+- Send selected code from IntelliJ IDEA to `POST /ai/explain`.
+- Display structured explanation results inside the IDE.
+- Use `GET /backend-info` to check backend capabilities.
+- Start with local backend communication via `http://localhost:8080`.
 ## Environment Configuration
 
 The project includes an `.env.example` file with example environment variables.

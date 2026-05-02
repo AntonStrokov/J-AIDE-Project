@@ -1,4 +1,4 @@
-HELP.md
+j-aide/HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Gradle / IntelliJ plugin local files
+.gradle/
+.intellijPlatform/
+out/
+
+# IntelliJ IDEA local settings
+.idea/

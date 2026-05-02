@@ -1,0 +1,28 @@
+<idea-plugin>
+    <id>com.antonstrokov.jaide</id>
+    <name>J-Aide</name>
+    <vendor email="89173442264@mail.ru">Anton Strokov</vendor>
+
+    <description>
+        J-Aide plugin for explaining selected code using local AI backend.
+    </description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup
+                id="J-Aide Notifications"
+                displayType="BALLOON"/>
+    </extensions>
+
+    <actions>
+        <action
+                id="J-Aide.ExplainSelectedCode"
+                class="com.antonstrokov.jaide.plugin.ExplainSelectedCodeAction"
+                text="J-Aide: Explain Selected Code"
+                description="Explain selected code using J-Aide backend">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+
+</idea-plugin>
