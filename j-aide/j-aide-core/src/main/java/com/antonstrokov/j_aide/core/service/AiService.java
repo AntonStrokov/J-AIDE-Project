@@ -240,12 +240,20 @@ public class AiService {
 		return template.apply(Map.of(
 				"code", code,
 				"language", effectiveLanguage,
-				"fileName", fileName,
-				"lineStart", lineStart,
-				"lineEnd", lineEnd,
-				"projectName", projectName,
-				"moduleName", moduleName
+				"fileName", safeText(fileName),
+				"lineStart", safeNumber(lineStart),
+				"lineEnd", safeNumber(lineEnd),
+				"projectName", safeText(projectName),
+				"moduleName", safeText(moduleName)
 		)).text();
+	}
+
+	private String safeText(String value) {
+		return value == null ? "not provided" : value;
+	}
+
+	private String safeNumber(Integer value) {
+		return value == null ? "not provided" : value.toString();
 	}
 
 	private AiExplainResult parseWithRetry(

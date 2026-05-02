@@ -6,8 +6,13 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
+import org.jetbrains.annotations.NotNull;
 
 public class ExplainSelectedCodeAction extends AnAction {
+
+	private final JaideBackendClient backendClient = new JaideBackendClient();
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -26,7 +31,24 @@ public class ExplainSelectedCodeAction extends AnAction {
 			return;
 		}
 
-		showNotification(e, "Selected code length: " + selectedText.length(), NotificationType.INFORMATION);
+		showNotification(e, "Sending selected code length: " + selectedText.length(), NotificationType.INFORMATION);
+
+		new Task.Backgroundable(e.getProject(), "J-Aide: Explaining selected code", false) {
+			@Override
+			public void run(@NotNull ProgressIndicator indicator) {
+				try {
+					String response = backendClient.explain(selectedText);
+
+					showNotification(
+							e,
+							"Selected: " + selectedText.length() + ", response: " + response.length(),
+							NotificationType.INFORMATION
+					);
+				} catch (Exception ex) {
+					showNotification(e, "J-Aide backend error: " + ex.getMessage(), NotificationType.ERROR);
+				}
+			}
+		}.queue();
 	}
 
 	private void showNotification(AnActionEvent e, String message, NotificationType type) {
