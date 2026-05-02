@@ -4,14 +4,35 @@ import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.SelectionModel;
 
 public class ExplainSelectedCodeAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
+		Editor editor = e.getData(com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR);
+
+		if (editor == null) {
+			showNotification(e, "No editor found", NotificationType.WARNING);
+			return;
+		}
+
+		SelectionModel selectionModel = editor.getSelectionModel();
+		String selectedText = selectionModel.getSelectedText();
+
+		if (selectedText == null || selectedText.isBlank()) {
+			showNotification(e, "Please select code first", NotificationType.WARNING);
+			return;
+		}
+
+		showNotification(e, "Selected code length: " + selectedText.length(), NotificationType.INFORMATION);
+	}
+
+	private void showNotification(AnActionEvent e, String message, NotificationType type) {
 		NotificationGroupManager.getInstance()
 				.getNotificationGroup("J-Aide Notifications")
-				.createNotification("J-Aide action works!", NotificationType.INFORMATION)
+				.createNotification(message, type)
 				.notify(e.getProject());
 	}
 }
