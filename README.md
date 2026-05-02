@@ -158,3 +158,16 @@ Current status:
 - Structured AI responses are supported.
 - Backend capability handshake is available via `/backend-info`.
 - The project is being prepared for future IDE plugin integration.
+## Environment Configuration
+
+The project includes an `.env.example` file with example environment variables.
+
+Available variables:
+
+- `OLLAMA_BASE_URL` — Ollama server URL.
+- `OLLAMA_MODEL` — local model used for AI explanations.
+- `J_AIDE_APP_NAME` — backend application name.
+- `J_AIDE_APP_VERSION` — backend version.
+- `J_AIDE_CODE_MAX_LENGTH` — maximum allowed code length for explain requests.
+
+If these variables are not provided, default values from `application.yaml` are used.
