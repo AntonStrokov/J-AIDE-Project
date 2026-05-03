@@ -13,6 +13,11 @@
         <notificationGroup
                 id="J-Aide Notifications"
                 displayType="BALLOON"/>
+
+        <toolWindow
+                id="J-Aide"
+                anchor="right"
+                factoryClass="com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory"/>
     </extensions>
 
     <actions>

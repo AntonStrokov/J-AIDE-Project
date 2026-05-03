@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin;
 
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -37,9 +38,11 @@ public class ExplainSelectedCodeAction extends AnAction {
 				try {
 					String summary = backendClient.explain(selectedText);
 
+					JaideToolWindowFactory.updateSummary(summary);
+
 					showNotification(
 							e,
-							"J-Aide: " + summary,
+							"J-Aide result updated in Tool Window",
 							NotificationType.INFORMATION
 					);
 				} catch (Exception ex) {
