@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin;
 
+import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
@@ -36,9 +37,9 @@ public class ExplainSelectedCodeAction extends AnAction {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
-					String summary = backendClient.explain(selectedText);
+					JaideExplanation explanation = backendClient.explain(selectedText);
 
-					JaideToolWindowFactory.updateSummary(summary);
+					JaideToolWindowFactory.updateExplanation(explanation);
 
 					showNotification(
 							e,

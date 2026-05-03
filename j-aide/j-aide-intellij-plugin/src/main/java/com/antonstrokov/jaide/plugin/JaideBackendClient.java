@@ -1,6 +1,7 @@
 package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
+import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class JaideBackendClient {
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	public String explain(String selectedCode) throws IOException, InterruptedException {
+	public JaideExplanation explain(String selectedCode) throws IOException, InterruptedException {
 		String requestBody = """
                 {
                   "code": "%s",
@@ -36,20 +37,30 @@ public class JaideBackendClient {
 				HttpResponse.BodyHandlers.ofString()
 		);
 
-		return extractSummary(response.body());
+		return parseExplanation(response.body());
 	}
 
-	private String extractSummary(String responseBody) throws IOException {
+	private JaideExplanation parseExplanation(String responseBody) throws IOException {
 		JaideExplainResponse explainResponse = objectMapper.readValue(
 				responseBody,
 				JaideExplainResponse.class
 		);
 
-		if (explainResponse.explanation() == null || explainResponse.explanation().summary() == null) {
-			return "Summary not found";
+		if (explainResponse.explanation() == null) {
+			return new JaideExplanation(
+					"Summary not found",
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null
+			);
 		}
 
-		return explainResponse.explanation().summary();
+		return explainResponse.explanation();
 	}
 
 	private String escapeJson(String value) {

@@ -31,11 +31,7 @@ public class AiService {
 	private void validateStructuredResponse(StructuredExplainResponse structured) {
 		validateRequiredAiField(structured.getSummary(), "summary");
 		validateRequiredAiField(structured.getDetails(), "details");
-		validateRequiredAiField(structured.getSuggestion(), "suggestion");
-		validateRequiredAiField(structured.getBestPractice(), "bestPractice");
-		validateRequiredAiField(structured.getRiskHint(), "riskHint");
-		validateRequiredAiField(structured.getConfidence(), "confidence");
-		validateRequiredAiField(structured.getCodeSmell(), "codeSmell");
+		validateRequiredAiField(structured.getComplexity(), "complexity");
 		validateRequiredAiField(structured.getInputType(), "inputType");
 	}
 
