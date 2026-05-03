@@ -1,5 +1,8 @@
 package com.antonstrokov.jaide.plugin;
 
+import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,6 +14,7 @@ public class JaideBackendClient {
 	private static final String EXPLAIN_URL = "http://localhost:8080/ai/explain";
 
 	private final HttpClient httpClient = HttpClient.newHttpClient();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public String explain(String selectedCode) throws IOException, InterruptedException {
 		String requestBody = """
@@ -35,23 +39,17 @@ public class JaideBackendClient {
 		return extractSummary(response.body());
 	}
 
-	private String extractSummary(String responseBody) {
-		String marker = "\"summary\":\"";
-		int startIndex = responseBody.indexOf(marker);
+	private String extractSummary(String responseBody) throws IOException {
+		JaideExplainResponse explainResponse = objectMapper.readValue(
+				responseBody,
+				JaideExplainResponse.class
+		);
 
-		if (startIndex == -1) {
+		if (explainResponse.explanation() == null || explainResponse.explanation().summary() == null) {
 			return "Summary not found";
 		}
 
-		startIndex += marker.length();
-
-		int endIndex = responseBody.indexOf("\"", startIndex);
-
-		if (endIndex == -1) {
-			return "Summary parsing failed";
-		}
-
-		return responseBody.substring(startIndex, endIndex);
+		return explainResponse.explanation().summary();
 	}
 
 	private String escapeJson(String value) {
