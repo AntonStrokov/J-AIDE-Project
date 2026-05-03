@@ -42,7 +42,11 @@ public class ExplainSelectedCodeAction extends AnAction {
 					JaideToolWindowFactory.updateExplanation(explanation);
 
 				} catch (Exception ex) {
-					showNotification(e, "J-Aide backend error: " + ex.getMessage(), NotificationType.ERROR);
+					showNotification(
+							e,
+							buildErrorMessage(ex),
+							NotificationType.ERROR
+					);
 				}
 			}
 		}.queue();
@@ -53,5 +57,25 @@ public class ExplainSelectedCodeAction extends AnAction {
 				.getNotificationGroup("J-Aide Notifications")
 				.createNotification(message, type)
 				.notify(e.getProject());
+	}
+
+	private String buildErrorMessage(Exception ex) {
+		String message = ex.getMessage();
+		Throwable cause = ex.getCause();
+		String causeMessage = cause == null ? null : cause.getMessage();
+
+		if (containsConnectionRefused(message) || containsConnectionRefused(causeMessage)) {
+			return "J-Aide backend is not available. Please start the backend on http://localhost:8080.";
+		}
+
+		if (message == null || message.isBlank()) {
+			return "J-Aide backend error. Please check that the backend is running.";
+		}
+
+		return "J-Aide backend error: " + message;
+	}
+
+	private boolean containsConnectionRefused(String value) {
+		return value != null && value.contains("Connection refused");
 	}
 }
