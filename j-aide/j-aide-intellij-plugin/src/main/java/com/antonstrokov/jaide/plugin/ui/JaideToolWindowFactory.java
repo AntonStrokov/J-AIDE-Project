@@ -31,32 +31,41 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 	private static String formatExplanation(JaideExplanation explanation) {
 		return """
-				J-Aide Explanation
-				
-				Summary:
-				%s
-				
-				Details:
-				%s
-				
-				Complexity:
-				%s
-				
-				Suggestion:
-				%s
-				
-				Best Practice:
-				%s
-				
-				Risk Hint:
-				%s
-				
-				Confidence:
-				%s
-				
-				Code Smell:
-				%s
-				""".formatted(
+            J-Aide Explanation
+            ==================
+
+            Summary
+            -------
+            %s
+
+            Details
+            -------
+            %s
+
+            Complexity
+            ----------
+            %s
+
+            Suggestion
+            ----------
+            %s
+
+            Best Practice
+            -------------
+            %s
+
+            Risk Hint
+            ---------
+            %s
+
+            Confidence
+            ----------
+            %s
+
+            Code Smell
+            ----------
+            %s
+            """.formatted(
 				safeText(explanation.summary()),
 				safeText(explanation.details()),
 				safeText(explanation.complexity()),
