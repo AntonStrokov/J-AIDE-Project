@@ -11,6 +11,9 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.application.ApplicationManager;
 
 public class ExplainSelectedCodeAction extends AnAction {
 
@@ -40,6 +43,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 					JaideExplanation explanation = backendClient.explain(selectedText);
 
 					JaideToolWindowFactory.updateExplanation(explanation);
+					openJaideToolWindow(e);
 
 				} catch (Exception ex) {
 					showNotification(
@@ -77,5 +81,21 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 	private boolean containsConnectionRefused(String value) {
 		return value != null && value.contains("Connection refused");
+	}
+
+	private void openJaideToolWindow(AnActionEvent e) {
+		if (e.getProject() == null) {
+			return;
+		}
+
+		ApplicationManager.getApplication().invokeLater(() -> {
+			ToolWindow toolWindow = ToolWindowManager
+					.getInstance(e.getProject())
+					.getToolWindow("J-Aide");
+
+			if (toolWindow != null) {
+				toolWindow.activate(null);
+			}
+		});
 	}
 }
