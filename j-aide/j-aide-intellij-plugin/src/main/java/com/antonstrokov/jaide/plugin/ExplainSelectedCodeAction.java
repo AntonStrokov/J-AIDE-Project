@@ -41,11 +41,6 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 					JaideToolWindowFactory.updateExplanation(explanation);
 
-					showNotification(
-							e,
-							"J-Aide result updated in Tool Window",
-							NotificationType.INFORMATION
-					);
 				} catch (Exception ex) {
 					showNotification(e, "J-Aide backend error: " + ex.getMessage(), NotificationType.ERROR);
 				}
