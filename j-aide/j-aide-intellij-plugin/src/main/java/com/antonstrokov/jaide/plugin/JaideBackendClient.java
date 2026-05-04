@@ -39,11 +39,7 @@ public class JaideBackendClient {
 				ideVersion
 		);
 
-		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create(EXPLAIN_URL))
-				.header("Content-Type", "application/json")
-				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
-				.build();
+		HttpRequest request = buildExplainHttpRequest(requestBody);
 
 		HttpResponse<String> response = httpClient.send(
 				request,
@@ -151,5 +147,13 @@ public class JaideBackendClient {
 				escapeJson(PLUGIN_VERSION),
 				escapeJson(ideVersion)
 		);
+	}
+
+	private HttpRequest buildExplainHttpRequest(String requestBody) {
+		return HttpRequest.newBuilder()
+				.uri(URI.create(EXPLAIN_URL))
+				.header("Content-Type", "application/json")
+				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
+				.build();
 	}
 }
