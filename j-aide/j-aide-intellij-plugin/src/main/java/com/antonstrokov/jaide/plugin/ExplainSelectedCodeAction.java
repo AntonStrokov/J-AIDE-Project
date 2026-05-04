@@ -16,6 +16,9 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
 
 public class ExplainSelectedCodeAction extends AnAction {
 
@@ -24,6 +27,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
 		Editor editor = e.getData(com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR);
+		Project project = e.getProject();
 
 		if (editor == null) {
 			showNotification(e, "No editor found", NotificationType.WARNING);
@@ -32,7 +36,14 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 		VirtualFile virtualFile = e.getData(com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE);
 		String fileName = virtualFile == null ? null : virtualFile.getName();
-		String projectName = e.getProject() == null ? null : e.getProject().getName();
+		String projectName = project == null ? null : project.getName();
+
+		Module module = virtualFile == null || project == null
+				? null
+				: ModuleUtilCore.findModuleForFile(virtualFile, project);
+
+		String moduleName = module == null ? null : module.getName();
+
 		String ideVersion = ApplicationInfo.getInstance().getFullVersion();
 
 		SelectionModel selectionModel = editor.getSelectionModel();
@@ -56,6 +67,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 							lineStart,
 							lineEnd,
 							projectName,
+							moduleName,
 							ideVersion
 					);
 

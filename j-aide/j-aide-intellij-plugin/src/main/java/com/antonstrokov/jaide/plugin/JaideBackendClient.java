@@ -24,6 +24,7 @@ public class JaideBackendClient {
 			int lineStart,
 			int lineEnd,
 			String projectName,
+			String moduleName,
 			String ideVersion
 	) throws IOException, InterruptedException {
 		String requestBody = """
@@ -35,6 +36,7 @@ public class JaideBackendClient {
           "lineStart": %d,
           "lineEnd": %d,
           "projectName": "%s",
+          "moduleName": "%s",
           "pluginVersion": "%s",
           "ideVersion": "%s"
         }
@@ -44,6 +46,7 @@ public class JaideBackendClient {
 				lineStart,
 				lineEnd,
 				escapeJson(projectName),
+				escapeJson(moduleName),
 				escapeJson(PLUGIN_VERSION),
 				escapeJson(ideVersion)
 		);
