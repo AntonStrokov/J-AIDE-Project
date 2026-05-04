@@ -27,8 +27,6 @@ public class JaideBackendClient {
 			String moduleName,
 			String ideVersion
 	) throws IOException, InterruptedException {
-		String language = resolveLanguage(fileName);
-
 		String requestBody = buildExplainRequestBody(
 				selectedCode,
 				fileName,
@@ -121,19 +119,19 @@ public class JaideBackendClient {
 		String language = resolveLanguage(fileName);
 
 		return """
-            {
-              "code": "%s",
-              "mode": "SMART",
-              "language": "%s",
-              "fileName": "%s",
-              "lineStart": %d,
-              "lineEnd": %d,
-              "projectName": "%s",
-              "moduleName": "%s",
-              "pluginVersion": "%s",
-              "ideVersion": "%s"
-            }
-            """.formatted(
+				{
+				  "code": "%s",
+				  "mode": "SMART",
+				  "language": "%s",
+				  "fileName": "%s",
+				  "lineStart": %d,
+				  "lineEnd": %d,
+				  "projectName": "%s",
+				  "moduleName": "%s",
+				  "pluginVersion": "%s",
+				  "ideVersion": "%s"
+				}
+				""".formatted(
 				escapeJson(selectedCode),
 				escapeJson(language),
 				escapeJson(fileName),
