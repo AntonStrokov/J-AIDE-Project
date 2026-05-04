@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 public class JaideBackendClient {
 
 	private static final String EXPLAIN_URL = "http://localhost:8080/ai/explain";
+	private static final String PLUGIN_VERSION = "0.1.0";
 
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
@@ -22,7 +23,8 @@ public class JaideBackendClient {
 			String fileName,
 			int lineStart,
 			int lineEnd,
-			String projectName
+			String projectName,
+			String ideVersion
 	) throws IOException, InterruptedException {
 		String requestBody = """
         {
@@ -32,14 +34,18 @@ public class JaideBackendClient {
           "fileName": "%s",
           "lineStart": %d,
           "lineEnd": %d,
-          "projectName": "%s"
+          "projectName": "%s",
+          "pluginVersion": "%s",
+          "ideVersion": "%s"
         }
         """.formatted(
 				escapeJson(selectedCode),
 				escapeJson(fileName),
 				lineStart,
 				lineEnd,
-				escapeJson(projectName)
+				escapeJson(projectName),
+				escapeJson(PLUGIN_VERSION),
+				escapeJson(ideVersion)
 		);
 
 		HttpRequest request = HttpRequest.newBuilder()

@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.application.ApplicationInfo;
 
 public class ExplainSelectedCodeAction extends AnAction {
 
@@ -32,6 +33,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 		VirtualFile virtualFile = e.getData(com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE);
 		String fileName = virtualFile == null ? null : virtualFile.getName();
 		String projectName = e.getProject() == null ? null : e.getProject().getName();
+		String ideVersion = ApplicationInfo.getInstance().getFullVersion();
 
 		SelectionModel selectionModel = editor.getSelectionModel();
 		String selectedText = selectionModel.getSelectedText();
@@ -53,7 +55,8 @@ public class ExplainSelectedCodeAction extends AnAction {
 							fileName,
 							lineStart,
 							lineEnd,
-							projectName
+							projectName,
+							ideVersion
 					);
 
 					JaideToolWindowFactory.updateExplanation(explanation);
