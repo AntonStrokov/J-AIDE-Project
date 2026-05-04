@@ -27,11 +27,13 @@ public class JaideBackendClient {
 			String moduleName,
 			String ideVersion
 	) throws IOException, InterruptedException {
+		String language = resolveLanguage(fileName);
+
 		String requestBody = """
         {
           "code": "%s",
           "mode": "SMART",
-          "language": "java",
+          "language": "%s",
           "fileName": "%s",
           "lineStart": %d,
           "lineEnd": %d,
@@ -42,6 +44,7 @@ public class JaideBackendClient {
         }
         """.formatted(
 				escapeJson(selectedCode),
+				escapeJson(language),
 				escapeJson(fileName),
 				lineStart,
 				lineEnd,
@@ -99,5 +102,32 @@ public class JaideBackendClient {
 				.replace("\n", "\\n")
 				.replace("\r", "\\r")
 				.replace("\t", "\\t");
+	}
+
+	private String resolveLanguage(String fileName) {
+		String extension = resolveExtension(fileName);
+
+		return switch (extension) {
+			case "java" -> "java";
+			case "kt" -> "kotlin";
+			case "sql" -> "sql";
+			case "xml" -> "xml";
+			case "js" -> "javascript";
+			default -> "plain_text";
+		};
+	}
+
+	private String resolveExtension(String fileName) {
+		if (fileName == null || fileName.isBlank()) {
+			return "";
+		}
+
+		int dotIndex = fileName.lastIndexOf('.');
+
+		if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
+			return "";
+		}
+
+		return fileName.substring(dotIndex + 1).toLowerCase();
 	}
 }
