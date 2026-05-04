@@ -8,6 +8,8 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -94,6 +96,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JBScrollPane scrollPane = new JBScrollPane(resultTextArea);
 		panel.add(scrollPane, BorderLayout.CENTER);
 
-		toolWindow.getComponent().add(panel);
+		Content content = ContentFactory.getInstance().createContent(panel, "", false);
+		toolWindow.getContentManager().addContent(content);
 	}
 }
