@@ -41,12 +41,9 @@ public class JaideBackendClient {
 
 		HttpRequest request = buildExplainHttpRequest(requestBody);
 
-		HttpResponse<String> response = httpClient.send(
-				request,
-				HttpResponse.BodyHandlers.ofString()
-		);
+		String responseBody = send(request);
 
-		return parseExplanation(response.body());
+		return parseExplanation(responseBody);
 	}
 
 	private JaideExplanation parseExplanation(String responseBody) throws IOException {
@@ -155,5 +152,14 @@ public class JaideBackendClient {
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
+	}
+
+	private String send(HttpRequest request) throws IOException, InterruptedException {
+		HttpResponse<String> response = httpClient.send(
+				request,
+				HttpResponse.BodyHandlers.ofString()
+		);
+
+		return response.body();
 	}
 }
