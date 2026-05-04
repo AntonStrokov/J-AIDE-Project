@@ -29,29 +29,14 @@ public class JaideBackendClient {
 	) throws IOException, InterruptedException {
 		String language = resolveLanguage(fileName);
 
-		String requestBody = """
-        {
-          "code": "%s",
-          "mode": "SMART",
-          "language": "%s",
-          "fileName": "%s",
-          "lineStart": %d,
-          "lineEnd": %d,
-          "projectName": "%s",
-          "moduleName": "%s",
-          "pluginVersion": "%s",
-          "ideVersion": "%s"
-        }
-        """.formatted(
-				escapeJson(selectedCode),
-				escapeJson(language),
-				escapeJson(fileName),
+		String requestBody = buildExplainRequestBody(
+				selectedCode,
+				fileName,
 				lineStart,
 				lineEnd,
-				escapeJson(projectName),
-				escapeJson(moduleName),
-				escapeJson(PLUGIN_VERSION),
-				escapeJson(ideVersion)
+				projectName,
+				moduleName,
+				ideVersion
 		);
 
 		HttpRequest request = HttpRequest.newBuilder()
@@ -129,5 +114,42 @@ public class JaideBackendClient {
 		}
 
 		return fileName.substring(dotIndex + 1).toLowerCase();
+	}
+
+	private String buildExplainRequestBody(
+			String selectedCode,
+			String fileName,
+			int lineStart,
+			int lineEnd,
+			String projectName,
+			String moduleName,
+			String ideVersion
+	) {
+		String language = resolveLanguage(fileName);
+
+		return """
+            {
+              "code": "%s",
+              "mode": "SMART",
+              "language": "%s",
+              "fileName": "%s",
+              "lineStart": %d,
+              "lineEnd": %d,
+              "projectName": "%s",
+              "moduleName": "%s",
+              "pluginVersion": "%s",
+              "ideVersion": "%s"
+            }
+            """.formatted(
+				escapeJson(selectedCode),
+				escapeJson(language),
+				escapeJson(fileName),
+				lineStart,
+				lineEnd,
+				escapeJson(projectName),
+				escapeJson(moduleName),
+				escapeJson(PLUGIN_VERSION),
+				escapeJson(ideVersion)
+		);
 	}
 }
