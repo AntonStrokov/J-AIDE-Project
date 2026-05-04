@@ -17,14 +17,30 @@ public class JaideBackendClient {
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	public JaideExplanation explain(String selectedCode) throws IOException, InterruptedException {
+	public JaideExplanation explain(
+			String selectedCode,
+			String fileName,
+			int lineStart,
+			int lineEnd,
+			String projectName
+	) throws IOException, InterruptedException {
 		String requestBody = """
-                {
-                  "code": "%s",
-                  "mode": "SMART",
-                  "language": "java"
-                }
-                """.formatted(escapeJson(selectedCode));
+        {
+          "code": "%s",
+          "mode": "SMART",
+          "language": "java",
+          "fileName": "%s",
+          "lineStart": %d,
+          "lineEnd": %d,
+          "projectName": "%s"
+        }
+        """.formatted(
+				escapeJson(selectedCode),
+				escapeJson(fileName),
+				lineStart,
+				lineEnd,
+				escapeJson(projectName)
+		);
 
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(EXPLAIN_URL))
@@ -64,6 +80,10 @@ public class JaideBackendClient {
 	}
 
 	private String escapeJson(String value) {
+		if (value == null) {
+			return "";
+		}
+
 		return value
 				.replace("\\", "\\\\")
 				.replace("\"", "\\\"")

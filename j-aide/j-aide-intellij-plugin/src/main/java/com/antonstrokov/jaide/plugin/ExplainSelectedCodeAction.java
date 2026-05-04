@@ -6,14 +6,15 @@ import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.application.ApplicationManager;
+import org.jetbrains.annotations.NotNull;
 
 public class ExplainSelectedCodeAction extends AnAction {
 
@@ -28,6 +29,10 @@ public class ExplainSelectedCodeAction extends AnAction {
 			return;
 		}
 
+		VirtualFile virtualFile = e.getData(com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE);
+		String fileName = virtualFile == null ? null : virtualFile.getName();
+		String projectName = e.getProject() == null ? null : e.getProject().getName();
+
 		SelectionModel selectionModel = editor.getSelectionModel();
 		String selectedText = selectionModel.getSelectedText();
 
@@ -36,11 +41,20 @@ public class ExplainSelectedCodeAction extends AnAction {
 			return;
 		}
 
+		int lineStart = editor.getDocument().getLineNumber(selectionModel.getSelectionStart()) + 1;
+		int lineEnd = editor.getDocument().getLineNumber(selectionModel.getSelectionEnd()) + 1;
+
 		new Task.Backgroundable(e.getProject(), "J-Aide: Explaining selected code", false) {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
-					JaideExplanation explanation = backendClient.explain(selectedText);
+					JaideExplanation explanation = backendClient.explain(
+							selectedText,
+							fileName,
+							lineStart,
+							lineEnd,
+							projectName
+					);
 
 					JaideToolWindowFactory.updateExplanation(explanation);
 					openJaideToolWindow(e);

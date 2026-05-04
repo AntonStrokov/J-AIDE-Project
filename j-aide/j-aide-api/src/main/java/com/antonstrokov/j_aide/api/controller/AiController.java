@@ -137,10 +137,12 @@ public class AiController {
 
 	private void logExplainContext(ExplainRequest request) {
 		log.info(
-				"Explain context: language={}, mode={}, fileName={}, projectName={}, moduleName={}",
+				"Explain context: language={}, mode={}, fileName={}, lineStart={}, lineEnd={}, projectName={}, moduleName={}",
 				request.getLanguage(),
 				request.getMode(),
 				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
 				request.getProjectName(),
 				request.getModuleName()
 		);
