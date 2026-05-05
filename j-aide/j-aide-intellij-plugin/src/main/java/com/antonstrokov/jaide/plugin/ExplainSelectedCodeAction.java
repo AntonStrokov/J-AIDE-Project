@@ -14,6 +14,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
+import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 
 
 public class ExplainSelectedCodeAction extends AnAction {
@@ -35,7 +36,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
-					JaideExplanation explanation = backendClient.explain(
+					JaideExplainRequest request = new JaideExplainRequest(
 							context.selectedCode(),
 							context.fileName(),
 							context.lineStart(),
@@ -44,6 +45,8 @@ public class ExplainSelectedCodeAction extends AnAction {
 							context.moduleName(),
 							context.ideVersion()
 					);
+
+					JaideExplanation explanation = backendClient.explain(request);
 
 					JaideToolWindowFactory.updateExplanation(explanation);
 					openJaideToolWindow(e);
