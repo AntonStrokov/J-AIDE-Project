@@ -15,12 +15,14 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
+import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 
 
 public class ExplainSelectedCodeAction extends AnAction {
 
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
+	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 
 
 	@Override
@@ -54,7 +56,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 				} catch (Exception ex) {
 					showNotification(
 							e,
-							buildErrorMessage(ex),
+							errorMessageBuilder.build(ex),
 							NotificationType.ERROR
 					);
 				}
@@ -69,25 +71,6 @@ public class ExplainSelectedCodeAction extends AnAction {
 				.notify(e.getProject());
 	}
 
-	private String buildErrorMessage(Exception ex) {
-		String message = ex.getMessage();
-		Throwable cause = ex.getCause();
-		String causeMessage = cause == null ? null : cause.getMessage();
-
-		if (containsConnectionRefused(message) || containsConnectionRefused(causeMessage)) {
-			return "J-Aide backend is not available. Please start the backend on http://localhost:8080.";
-		}
-
-		if (message == null || message.isBlank()) {
-			return "J-Aide backend error. Please check that the backend is running.";
-		}
-
-		return "J-Aide backend error: " + message;
-	}
-
-	private boolean containsConnectionRefused(String value) {
-		return value != null && value.contains("Connection refused");
-	}
 
 	private void openJaideToolWindow(AnActionEvent e) {
 		if (e.getProject() == null) {
