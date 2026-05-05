@@ -32,56 +32,26 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	}
 
 	private static String formatExplanation(JaideExplanation explanation) {
-		return """
+		StringBuilder result = new StringBuilder();
+
+		result.append("""
             J-Aide Explanation
             ==================
+            
+            """);
 
-            Summary
-            -------
-            %s
+		appendSection(result, "Summary", explanation.summary());
+		appendSection(result, "Details", explanation.details());
+		appendSection(result, "Complexity", explanation.complexity());
+		appendSection(result, "Suggestion", explanation.suggestion());
+		appendSection(result, "Best Practice", explanation.bestPractice());
+		appendSection(result, "Risk Hint", explanation.riskHint());
+		appendSection(result, "Confidence", explanation.confidence());
+		appendSection(result, "Code Smell", explanation.codeSmell());
 
-            Details
-            -------
-            %s
-
-            Complexity
-            ----------
-            %s
-
-            Suggestion
-            ----------
-            %s
-
-            Best Practice
-            -------------
-            %s
-
-            Risk Hint
-            ---------
-            %s
-
-            Confidence
-            ----------
-            %s
-
-            Code Smell
-            ----------
-            %s
-            """.formatted(
-				safeText(explanation.summary()),
-				safeText(explanation.details()),
-				safeText(explanation.complexity()),
-				safeText(explanation.suggestion()),
-				safeText(explanation.bestPractice()),
-				safeText(explanation.riskHint()),
-				safeText(explanation.confidence()),
-				safeText(explanation.codeSmell())
-		);
+		return result.toString();
 	}
 
-	private static String safeText(String value) {
-		return value == null || value.isBlank() ? "Not provided" : value;
-	}
 
 	@Override
 	public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
@@ -98,5 +68,19 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);
 		toolWindow.getContentManager().addContent(content);
+	}
+
+	private static void appendSection(StringBuilder result, String title, String value) {
+		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
+			return;
+		}
+
+		result.append(title)
+				.append(System.lineSeparator())
+				.append("-".repeat(title.length()))
+				.append(System.lineSeparator())
+				.append(value)
+				.append(System.lineSeparator())
+				.append(System.lineSeparator());
 	}
 }
