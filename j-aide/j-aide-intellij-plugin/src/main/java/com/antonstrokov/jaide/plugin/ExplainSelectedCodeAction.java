@@ -7,13 +7,11 @@ import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -22,6 +20,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 	private final JaideNotificationService notificationService = new JaideNotificationService();
+	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -49,7 +48,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 					JaideExplanation explanation = backendClient.explain(request);
 
 					JaideToolWindowFactory.updateExplanation(explanation);
-					openJaideToolWindow(e);
+					toolWindowService.open(e.getProject());
 
 				} catch (Exception ex) {
 					notificationService.showError(
@@ -59,21 +58,5 @@ public class ExplainSelectedCodeAction extends AnAction {
 				}
 			}
 		}.queue();
-	}
-
-	private void openJaideToolWindow(AnActionEvent e) {
-		if (e.getProject() == null) {
-			return;
-		}
-
-		ApplicationManager.getApplication().invokeLater(() -> {
-			ToolWindow toolWindow = ToolWindowManager
-					.getInstance(e.getProject())
-					.getToolWindow("J-Aide");
-
-			if (toolWindow != null) {
-				toolWindow.activate(null);
-			}
-		});
 	}
 }
