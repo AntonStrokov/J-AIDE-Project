@@ -18,12 +18,10 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class ExplainSelectedCodeAction extends AnAction {
-
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 	private final JaideNotificationService notificationService = new JaideNotificationService();
-
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -62,7 +60,6 @@ public class ExplainSelectedCodeAction extends AnAction {
 			}
 		}.queue();
 	}
-
 
 	private void openJaideToolWindow(AnActionEvent e) {
 		if (e.getProject() == null) {
