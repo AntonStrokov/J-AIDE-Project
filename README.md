@@ -171,16 +171,32 @@ Current status:
 - Backend capability handshake is available via `/backend-info`.
 - The project is being prepared for future IDE plugin integration.
 
-## Next Step: IntelliJ Plugin MVP
+## IntelliJ Plugin MVP
 
-The next planned step is to prepare a minimal IntelliJ IDEA plugin that can communicate with the J-Aide backend.
+The project includes an IntelliJ IDEA plugin prototype.
 
-Planned MVP features:
+Current plugin capabilities:
 
-- Send selected code from IntelliJ IDEA to `POST /ai/explain`.
-- Display structured explanation results inside the IDE.
-- Use `GET /backend-info` to check backend capabilities.
-- Start with local backend communication via `http://localhost:8080`.
+- Reads selected code from the editor.
+- Sends selected code and editor context to the backend.
+- Detects language from file extension.
+- Displays structured AI explanation in the J-Aide Tool Window.
+- Opens the Tool Window automatically after receiving a response.
+- Shows friendly error notifications when the backend is unavailable.
+
+Current request context sent by the plugin:
+
+- `code`
+- `mode`
+- `language`
+- `fileName`
+- `lineStart`
+- `lineEnd`
+- `projectName`
+- `moduleName`
+- `pluginVersion`
+- `ideVersion`
+
 ## Environment Configuration
 
 The project includes an `.env.example` file with example environment variables.
@@ -194,3 +210,5 @@ Available variables:
 - `J_AIDE_CODE_MAX_LENGTH` — maximum allowed code length for explain requests.
 
 If these variables are not provided, default values from `application.yaml` are used.
+
+
