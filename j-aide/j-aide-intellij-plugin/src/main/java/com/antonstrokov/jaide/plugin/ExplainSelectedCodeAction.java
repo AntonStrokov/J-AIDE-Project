@@ -2,10 +2,11 @@ package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
+import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
+import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
+import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -14,8 +15,6 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
-import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
-import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 
 
 public class ExplainSelectedCodeAction extends AnAction {
@@ -23,6 +22,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
+	private final JaideNotificationService notificationService = new JaideNotificationService();
 
 
 	@Override
@@ -30,7 +30,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 		JaideEditorContext context = contextExtractor.extract(e);
 
 		if (context == null) {
-			showNotification(e, "Please select code first", NotificationType.WARNING);
+			notificationService.showWarning(e.getProject(), "Please select code first");
 			return;
 		}
 
@@ -54,21 +54,13 @@ public class ExplainSelectedCodeAction extends AnAction {
 					openJaideToolWindow(e);
 
 				} catch (Exception ex) {
-					showNotification(
-							e,
-							errorMessageBuilder.build(ex),
-							NotificationType.ERROR
+					notificationService.showError(
+							e.getProject(),
+							errorMessageBuilder.build(ex)
 					);
 				}
 			}
 		}.queue();
-	}
-
-	private void showNotification(AnActionEvent e, String message, NotificationType type) {
-		NotificationGroupManager.getInstance()
-				.getNotificationGroup("J-Aide Notifications")
-				.createNotification(message, type)
-				.notify(e.getProject());
 	}
 
 
