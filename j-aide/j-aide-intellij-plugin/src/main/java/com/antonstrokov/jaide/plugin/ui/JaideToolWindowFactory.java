@@ -7,15 +7,16 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBScrollPane;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import java.awt.BorderLayout;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
-
 	private static JTextArea resultTextArea;
 
 	public static void updateExplanation(JaideExplanation explanation) {
@@ -35,10 +36,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		StringBuilder result = new StringBuilder();
 
 		result.append("""
-            J-Aide Explanation
-            ==================
-            
-            """);
+				J-Aide Explanation
+				==================
+				
+				""");
 
 		appendSection(result, "Summary", explanation.summary());
 		appendSection(result, "Details", explanation.details());
@@ -52,6 +53,19 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		return result.toString();
 	}
 
+	private static void appendSection(StringBuilder result, String title, String value) {
+		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
+			return;
+		}
+
+		result.append(title)
+				.append(System.lineSeparator())
+				.append("-".repeat(title.length()))
+				.append(System.lineSeparator())
+				.append(value)
+				.append(System.lineSeparator())
+				.append(System.lineSeparator());
+	}
 
 	@Override
 	public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
@@ -68,19 +82,5 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);
 		toolWindow.getContentManager().addContent(content);
-	}
-
-	private static void appendSection(StringBuilder result, String title, String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
-			return;
-		}
-
-		result.append(title)
-				.append(System.lineSeparator())
-				.append("-".repeat(title.length()))
-				.append(System.lineSeparator())
-				.append(value)
-				.append(System.lineSeparator())
-				.append(System.lineSeparator());
 	}
 }
