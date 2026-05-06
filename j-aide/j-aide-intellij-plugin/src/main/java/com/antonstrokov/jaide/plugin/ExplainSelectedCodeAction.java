@@ -5,6 +5,7 @@ import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
+import com.antonstrokov.jaide.plugin.factory.JaideExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
@@ -13,7 +14,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
-import com.antonstrokov.jaide.plugin.model.JaideExplainMode;
 
 
 public class ExplainSelectedCodeAction extends AnAction {
@@ -22,6 +22,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
+	private final JaideExplainRequestFactory requestFactory = new JaideExplainRequestFactory();
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -36,16 +37,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
-					JaideExplainRequest request = new JaideExplainRequest(
-							context.selectedCode(),
-							JaideExplainMode.SMART,
-							context.fileName(),
-							context.lineStart(),
-							context.lineEnd(),
-							context.projectName(),
-							context.moduleName(),
-							context.ideVersion()
-					);
+					JaideExplainRequest request = requestFactory.create(context);
 
 					JaideExplanation explanation = backendClient.explain(request);
 
