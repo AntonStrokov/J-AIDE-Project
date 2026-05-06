@@ -2,7 +2,8 @@
 
 J-Aide is a backend service for an AI-powered programming assistant.
 
-The project provides REST API endpoints that can explain source code, return structured AI responses, and expose backend capabilities for future IDE plugin integration.
+The project provides REST API endpoints that can explain source code, return structured AI responses, and expose backend
+capabilities for future IDE plugin integration.
 
 ## Tech Stack
 
@@ -13,6 +14,7 @@ The project provides REST API endpoints that can explain source code, return str
 - LangChain4j
 - Ollama
 - Qwen2.5-Coder 7B
+
 ## Running the Application
 
 Make sure Ollama is running locally and the required model is available.
@@ -41,7 +43,6 @@ By default, the application starts on:
 http://localhost:8080
 ```
 
-
 ## API Endpoints
 
 ### GET /backend-info
@@ -52,6 +53,7 @@ Example curl request:
 ```bash
 curl http://localhost:8080/backend-info
 ```
+
 Example response:
 
 ```json
@@ -91,6 +93,7 @@ Example request:
   "ideVersion": "26.2"
 }
 ```
+
 Example response:
 
 ```json
@@ -115,6 +118,7 @@ Example response:
   }
 }
 ```
+
 ## Explain Modes
 
 J-Aide supports three explanation modes:
@@ -122,6 +126,7 @@ J-Aide supports three explanation modes:
 - `FAST` — short and quick explanation.
 - `SMART` — balanced explanation, used by default.
 - `DEEP` — more detailed explanation.
+
 ## Supported Languages
 
 Currently supported languages:
@@ -144,6 +149,7 @@ The `/ai/explain` response is organized into several blocks:
 - `effectiveContext` — normalized backend values used for processing.
 - `fileContext` — source file and project context.
 - `requestContext` — original values received from the client.
+
 ## Observability
 
 Each `/ai/explain` response contains technical metadata:
@@ -151,6 +157,7 @@ Each `/ai/explain` response contains technical metadata:
 - `traceId` — request trace identifier used in logs.
 - `responseTimeMs` — total backend response time in milliseconds.
 - `retried` — indicates whether the backend had to retry parsing the AI response.
+
 ## Validation
 
 The backend validates incoming `/ai/explain` requests.
@@ -162,6 +169,7 @@ Examples of validation rules:
 - `lineStart` and `lineEnd` must be greater than or equal to `1`.
 - `lineStart` must be less than or equal to `lineEnd`.
 - Optional text fields must not be blank when provided.
+
 ## Project Status
 
 Current status:
@@ -169,7 +177,8 @@ Current status:
 - Backend core is implemented.
 - Structured AI responses are supported.
 - Backend capability handshake is available via `/backend-info`.
-- The project is being prepared for future IDE plugin integration.
+- IntelliJ Plugin MVP is implemented and connected to the backend.
+- The project is ready for future plugin features such as Improve Code, Diff View, RAG context, and project chat.
 
 ## IntelliJ Plugin MVP
 
@@ -197,21 +206,22 @@ Current request context sent by the plugin:
 - `moduleName`
 - `pluginVersion`
 - `ideVersion`
+
 ## IntelliJ Plugin Architecture
 
 The IntelliJ plugin is organized by responsibility.
 
-| Package | Responsibility |
-|---|---|
-| `config` | Plugin configuration and constants |
-| `context` | Extracting selected code and full editor context |
-| `dto` | Backend request and response DTOs |
-| `error` | Plugin-specific exceptions and error handling |
-| `factory` | Request creation and object construction |
-| `language` | Programming language detection by file extension |
-| `model` | Internal plugin models |
-| `notification` | User notifications inside IntelliJ IDEA |
-| `ui` | J-Aide Tool Window and UI rendering |
+| Package        | Responsibility                                   |
+|----------------|--------------------------------------------------|
+| `config`       | Plugin configuration and constants               |
+| `context`      | Extracting selected code and full editor context |
+| `dto`          | Backend request and response DTOs                |
+| `error`        | Plugin-specific exceptions and error handling    |
+| `factory`      | Request creation and object construction         |
+| `language`     | Programming language detection by file extension |
+| `model`        | Internal plugin models                           |
+| `notification` | User notifications inside IntelliJ IDEA          |
+| `ui`           | J-Aide Tool Window and UI rendering              |
 
 ### Explain Code Flow
 
@@ -225,6 +235,86 @@ The IntelliJ plugin is organized by responsibility.
 8. The plugin parses the response using Jackson.
 9. The explanation is displayed in the J-Aide Tool Window.
 10. If an error occurs, the plugin shows a friendly notification.
+
+## Project Structure
+
+```text
+j-aide/
+├── README.md
+├── .env.example
+├── .gitignore
+└── j-aide/
+    ├── pom.xml
+    ├── j-aide-api/
+    ├── j-aide-app/
+    ├── j-aide-core/
+    └── j-aide-intellij-plugin/
+```
+
+The repository contains the backend Maven multi-module project and the IntelliJ IDEA plugin module.
+
+Module responsibilities:
+
+| Module | Responsibility |
+|---|---|
+| `j-aide-api` | REST controllers, API DTOs, and global API error handling |
+| `j-aide-app` | Spring Boot application entry point, backend configuration, and tracing filter |
+| `j-aide-core` | AI service logic, prompt templates, backend properties, supported modes and languages |
+| `j-aide-intellij-plugin` | IntelliJ IDEA plugin implementation |
+
+
+## Capabilities Status
+
+| Capability                        | Status  | Notes                                                    |
+|-----------------------------------|---------|----------------------------------------------------------|
+| Explain selected code             | Done    | MVP implementation is working                            |
+| Read selected code from editor    | Done    | Uses active IntelliJ editor selection                    |
+| Send editor context to backend    | Done    | Includes file, project, module, IDE, and plugin metadata |
+| Detect language by file extension | Done    | Falls back to plain text when language is unknown        |
+| JSON request serialization        | Done    | Implemented with Jackson                                 |
+| JSON response parsing             | Done    | Implemented with Jackson                                 |
+| Display result in Tool Window     | Done    | Shows structured explanation in J-Aide Tool Window       |
+| Friendly error notifications      | Done    | Backend and plugin errors are handled separately         |
+| Backend capability handshake      | Done    | Available through `/backend-info`                        |
+| Improve Code                      | Planned | Future feature, not implemented yet                      |
+| Refactor Code                     | Planned | Future feature from project roadmap                      |
+| Diff View                         | Planned | Future IDE feature for before/after code comparison      |
+| RAG project context               | Planned | Future backend feature using vector search               |
+| Chat with project code            | Planned | Future plugin feature                                    |
+
+## Future Features
+
+### Improve Code
+
+Improve Code is a planned feature for future versions of J-Aide.
+
+The goal of this feature is to help developers improve selected code without manually rewriting it from scratch.
+
+Planned behavior:
+
+- read selected code from the active editor;
+- send selected code and editor context to the backend;
+- ask the AI model to suggest an improved version of the code;
+- return explanation of what was changed and why;
+- display the suggested improvement in the J-Aide Tool Window.
+
+Possible improvement types:
+
+- simplify code;
+- improve readability;
+- suggest better naming;
+- reduce duplication;
+- suggest safer implementation;
+- point out possible code smells.
+
+Current status:
+
+- Improve Code is not implemented yet.
+- No IDE action is registered for this feature yet.
+- No backend endpoint is implemented for this feature yet.
+- Diff View is planned separately and will be needed before applying changes directly to files.
+
+This feature will be implemented after the Explain Code MVP is stable.
 
 ## Environment Configuration
 
