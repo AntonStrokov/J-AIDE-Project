@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin;
 
+import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
@@ -33,7 +34,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 			return;
 		}
 
-		new Task.Backgroundable(e.getProject(), "J-Aide: Explaining selected code", false) {
+		new Task.Backgroundable(e.getProject(), JaideConstants.EXPLAIN_TASK_TITLE, false) {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
