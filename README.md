@@ -197,6 +197,34 @@ Current request context sent by the plugin:
 - `moduleName`
 - `pluginVersion`
 - `ideVersion`
+## IntelliJ Plugin Architecture
+
+The IntelliJ plugin is organized by responsibility.
+
+| Package | Responsibility |
+|---|---|
+| `config` | Plugin configuration and constants |
+| `context` | Extracting selected code and full editor context |
+| `dto` | Backend request and response DTOs |
+| `error` | Plugin-specific exceptions and error handling |
+| `factory` | Request creation and object construction |
+| `language` | Programming language detection by file extension |
+| `model` | Internal plugin models |
+| `notification` | User notifications inside IntelliJ IDEA |
+| `ui` | J-Aide Tool Window and UI rendering |
+
+### Explain Code Flow
+
+1. The user selects code in IntelliJ IDEA.
+2. The user runs the Explain Code action.
+3. The plugin extracts the selected code and editor context.
+4. The plugin detects the programming language from the file extension.
+5. The plugin builds a backend request JSON using Jackson.
+6. The plugin sends the request to the J-Aide backend.
+7. The backend returns a structured JSON response.
+8. The plugin parses the response using Jackson.
+9. The explanation is displayed in the J-Aide Tool Window.
+10. If an error occurs, the plugin shows a friendly notification.
 
 ## Environment Configuration
 
