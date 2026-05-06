@@ -1,6 +1,7 @@
 package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
+import com.antonstrokov.jaide.plugin.language.JaideLanguageResolver;
 import com.antonstrokov.jaide.plugin.dto.JaideBackendExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
@@ -16,6 +17,7 @@ import java.net.http.HttpResponse;
 public class JaideBackendClient {
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final JaideLanguageResolver languageResolver = new JaideLanguageResolver();
 
 	public JaideExplanation explain(JaideExplainRequest request) throws IOException, InterruptedException {
 		String requestBody = buildExplainRequestBody(request);
@@ -28,7 +30,7 @@ public class JaideBackendClient {
 	}
 
 	private String buildExplainRequestBody(JaideExplainRequest request) throws IOException {
-		String language = resolveLanguage(request.fileName());
+		String language = languageResolver.resolve(request.fileName());
 
 		JaideBackendExplainRequest backendRequest = new JaideBackendExplainRequest(
 				request.code(),
@@ -84,32 +86,5 @@ public class JaideBackendClient {
 		}
 
 		return explainResponse.explanation();
-	}
-
-	private String resolveLanguage(String fileName) {
-		String extension = resolveExtension(fileName);
-
-		return switch (extension) {
-			case "java" -> "java";
-			case "kt" -> "kotlin";
-			case "sql" -> "sql";
-			case "xml" -> "xml";
-			case "js" -> "javascript";
-			default -> "plain_text";
-		};
-	}
-
-	private String resolveExtension(String fileName) {
-		if (fileName == null || fileName.isBlank()) {
-			return "";
-		}
-
-		int dotIndex = fileName.lastIndexOf('.');
-
-		if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
-			return "";
-		}
-
-		return fileName.substring(dotIndex + 1).toLowerCase();
 	}
 }
