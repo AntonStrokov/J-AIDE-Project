@@ -183,6 +183,7 @@ Current plugin capabilities:
 - Displays structured AI explanation in the J-Aide Tool Window.
 - Opens the Tool Window automatically after receiving a response.
 - Shows friendly error notifications when the backend is unavailable.
+- Uses Jackson for safe backend request serialization and response parsing.
 
 Current request context sent by the plugin:
 
