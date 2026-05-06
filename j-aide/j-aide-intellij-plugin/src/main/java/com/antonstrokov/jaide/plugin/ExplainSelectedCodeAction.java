@@ -13,6 +13,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
+import com.antonstrokov.jaide.plugin.model.JaideExplainMode;
 
 
 public class ExplainSelectedCodeAction extends AnAction {
@@ -37,6 +38,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 				try {
 					JaideExplainRequest request = new JaideExplainRequest(
 							context.selectedCode(),
+							JaideExplainMode.SMART,
 							context.fileName(),
 							context.lineStart(),
 							context.lineEnd(),

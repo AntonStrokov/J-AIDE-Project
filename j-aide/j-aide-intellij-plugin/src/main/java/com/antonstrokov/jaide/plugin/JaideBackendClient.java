@@ -32,7 +32,7 @@ public class JaideBackendClient {
 		return """
 				{
 				  "code": "%s",
-				  "mode": "SMART",
+				  "mode": "%s",
 				  "language": "%s",
 				  "fileName": "%s",
 				  "lineStart": %d,
@@ -44,6 +44,7 @@ public class JaideBackendClient {
 				}
 				""".formatted(
 				escapeJson(request.code()),
+				escapeJson(request.mode().name()),
 				escapeJson(language),
 				escapeJson(request.fileName()),
 				request.lineStart(),

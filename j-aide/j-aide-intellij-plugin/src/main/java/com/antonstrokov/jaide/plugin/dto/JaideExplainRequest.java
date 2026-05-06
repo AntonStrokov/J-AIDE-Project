@@ -1,7 +1,9 @@
 package com.antonstrokov.jaide.plugin.dto;
+import com.antonstrokov.jaide.plugin.model.JaideExplainMode;
 
 public record JaideExplainRequest(
 		String code,
+		JaideExplainMode mode,
 		String fileName,
 		int lineStart,
 		int lineEnd,
