@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.antonstrokov.jaide.plugin.config.JaideConstants;
 
 public class JaideToolWindowService {
 
@@ -15,7 +16,7 @@ public class JaideToolWindowService {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			ToolWindow toolWindow = ToolWindowManager
 					.getInstance(project)
-					.getToolWindow("J-Aide");
+					.getToolWindow(JaideConstants.TOOL_WINDOW_ID);
 
 			if (toolWindow != null) {
 				toolWindow.activate(null);

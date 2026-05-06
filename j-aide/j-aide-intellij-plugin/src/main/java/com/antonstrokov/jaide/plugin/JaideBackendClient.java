@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin;
 
+import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
@@ -12,10 +13,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class JaideBackendClient {
-
-	private static final String EXPLAIN_URL = "http://localhost:8080/ai/explain";
-	private static final String PLUGIN_VERSION = "0.1.0";
-
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,14 +50,14 @@ public class JaideBackendClient {
 				request.lineEnd(),
 				escapeJson(request.projectName()),
 				escapeJson(request.moduleName()),
-				escapeJson(PLUGIN_VERSION),
+				escapeJson(JaideConstants.PLUGIN_VERSION),
 				escapeJson(request.ideVersion())
 		);
 	}
 
 	private HttpRequest buildExplainHttpRequest(String requestBody) {
 		return HttpRequest.newBuilder()
-				.uri(URI.create(EXPLAIN_URL))
+				.uri(URI.create(JaideConstants.EXPLAIN_URL))
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
