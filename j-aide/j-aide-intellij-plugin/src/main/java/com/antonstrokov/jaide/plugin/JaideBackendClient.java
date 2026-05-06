@@ -1,11 +1,11 @@
 package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
+import com.antonstrokov.jaide.plugin.dto.JaideBackendExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.antonstrokov.jaide.plugin.dto.JaideBackendExplainRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -111,18 +111,5 @@ public class JaideBackendClient {
 		}
 
 		return fileName.substring(dotIndex + 1).toLowerCase();
-	}
-
-	private String escapeJson(String value) {
-		if (value == null) {
-			return "";
-		}
-
-		return value
-				.replace("\\", "\\\\")
-				.replace("\"", "\\\"")
-				.replace("\n", "\\n")
-				.replace("\r", "\\r")
-				.replace("\t", "\\t");
 	}
 }
