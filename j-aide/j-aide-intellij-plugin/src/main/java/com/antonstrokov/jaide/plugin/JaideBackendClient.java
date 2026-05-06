@@ -5,6 +5,7 @@ import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.antonstrokov.jaide.plugin.dto.JaideBackendExplainRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,34 +27,23 @@ public class JaideBackendClient {
 		return parseExplanation(responseBody);
 	}
 
-	private String buildExplainRequestBody(JaideExplainRequest request) {
+	private String buildExplainRequestBody(JaideExplainRequest request) throws IOException {
 		String language = resolveLanguage(request.fileName());
 
-		return """
-				{
-				  "code": "%s",
-				  "mode": "%s",
-				  "language": "%s",
-				  "fileName": "%s",
-				  "lineStart": %d,
-				  "lineEnd": %d,
-				  "projectName": "%s",
-				  "moduleName": "%s",
-				  "pluginVersion": "%s",
-				  "ideVersion": "%s"
-				}
-				""".formatted(
-				escapeJson(request.code()),
-				escapeJson(request.mode().name()),
-				escapeJson(language),
-				escapeJson(request.fileName()),
+		JaideBackendExplainRequest backendRequest = new JaideBackendExplainRequest(
+				request.code(),
+				request.mode().name(),
+				language,
+				request.fileName(),
 				request.lineStart(),
 				request.lineEnd(),
-				escapeJson(request.projectName()),
-				escapeJson(request.moduleName()),
-				escapeJson(JaideConstants.PLUGIN_VERSION),
-				escapeJson(request.ideVersion())
+				request.projectName(),
+				request.moduleName(),
+				JaideConstants.PLUGIN_VERSION,
+				request.ideVersion()
 		);
+
+		return objectMapper.writeValueAsString(backendRequest);
 	}
 
 	private HttpRequest buildExplainHttpRequest(String requestBody) {
