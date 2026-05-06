@@ -16,7 +16,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
-
 public class ExplainSelectedCodeAction extends AnAction {
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
