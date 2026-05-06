@@ -1,11 +1,11 @@
 package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
-import com.antonstrokov.jaide.plugin.language.JaideLanguageResolver;
 import com.antonstrokov.jaide.plugin.dto.JaideBackendExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
+import com.antonstrokov.jaide.plugin.factory.JaideBackendExplainRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.net.http.HttpResponse;
 public class JaideBackendClient {
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final JaideLanguageResolver languageResolver = new JaideLanguageResolver();
+	private final JaideBackendExplainRequestFactory backendRequestFactory = new JaideBackendExplainRequestFactory();
 
 	public JaideExplanation explain(JaideExplainRequest request) throws IOException, InterruptedException {
 		String requestBody = buildExplainRequestBody(request);
@@ -30,20 +30,7 @@ public class JaideBackendClient {
 	}
 
 	private String buildExplainRequestBody(JaideExplainRequest request) throws IOException {
-		String language = languageResolver.resolve(request.fileName());
-
-		JaideBackendExplainRequest backendRequest = new JaideBackendExplainRequest(
-				request.code(),
-				request.mode().name(),
-				language,
-				request.fileName(),
-				request.lineStart(),
-				request.lineEnd(),
-				request.projectName(),
-				request.moduleName(),
-				JaideConstants.PLUGIN_VERSION,
-				request.ideVersion()
-		);
+		JaideBackendExplainRequest backendRequest = backendRequestFactory.create(request);
 
 		return objectMapper.writeValueAsString(backendRequest);
 	}
