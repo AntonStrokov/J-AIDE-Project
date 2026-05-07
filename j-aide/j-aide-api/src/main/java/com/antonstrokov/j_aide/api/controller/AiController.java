@@ -7,6 +7,7 @@ import com.antonstrokov.j_aide.api.dto.improve.ImproveResponse;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveResult;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.AiExplainResult;
+import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.service.AiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,6 @@ import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 public class AiController {
@@ -82,23 +81,36 @@ public class AiController {
 
 		log.info("Received improve request, code length={}", request.getCode().length());
 
+		AiImproveResult result = aiService.improve(
+				request.getCode(),
+				request.getMode(),
+				request.getLanguage(),
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
+		);
+
 		ImproveResult improvement = new ImproveResult();
-		improvement.setSummary("Improve Code is not implemented yet");
-		improvement.setImprovedCode(request.getCode());
-		improvement.setChanges(List.of("Stub response. Real AI improvement will be implemented later."));
-		improvement.setRiskHint("No code changes are applied by this stub endpoint.");
-		improvement.setConfidence("low");
+		improvement.setSummary(result.getImprovement().getSummary());
+		improvement.setImprovedCode(result.getImprovement().getImprovedCode());
+		improvement.setChanges(result.getImprovement().getChanges());
+		improvement.setRiskHint(result.getImprovement().getRiskHint());
+		improvement.setConfidence(result.getImprovement().getConfidence());
 
 		ImproveMetadata metadata = new ImproveMetadata();
 		metadata.setTraceId(getTraceId());
 		metadata.setBackendVersion(getBackendVersion());
 		metadata.setResponseTimeMs(calculateResponseTimeMs(startTime));
-		metadata.setRetried(false);
+		metadata.setRetried(result.getRetried());
 
 		ImproveResponse response = new ImproveResponse();
 		response.setImprovement(improvement);
-		response.setRawJson(null);
-		response.setSuccess(false);
+		response.setRawJson(result.getRawJson());
+		response.setSuccess(result.getRawJson() == null);
 		response.setMetadata(metadata);
 
 		return response;
@@ -171,7 +183,8 @@ public class AiController {
 
 	private void logExplainContext(ExplainRequest request) {
 		log.info(
-				"Explain context: language={}, mode={}, fileName={}, lineStart={}, lineEnd={}, projectName={}, moduleName={}, pluginVersion={}, ideVersion={}",
+				"Explain context: language={}, mode={}, fileName={}, lineStart={}, lineEnd={}, projectName={}, " +
+						"moduleName={}, pluginVersion={}, ideVersion={}",
 				request.getLanguage(),
 				request.getMode(),
 				request.getFileName(),
