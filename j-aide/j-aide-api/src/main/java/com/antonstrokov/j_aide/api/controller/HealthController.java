@@ -90,6 +90,7 @@ public class HealthController {
 	private BackendEndpoints buildBackendEndpoints() {
 		BackendEndpoints endpoints = new BackendEndpoints();
 		endpoints.setExplainEndpoint("/ai/explain");
+		endpoints.setImproveEndpoint("/ai/improve");
 
 		return endpoints;
 	}

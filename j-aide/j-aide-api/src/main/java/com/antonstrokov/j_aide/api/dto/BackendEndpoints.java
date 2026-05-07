@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BackendEndpoints {
 	private String explainEndpoint;
+	private String improveEndpoint;
 }
