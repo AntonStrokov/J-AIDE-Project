@@ -1,6 +1,10 @@
 package com.antonstrokov.j_aide.api.controller;
 
 import com.antonstrokov.j_aide.api.dto.*;
+import com.antonstrokov.j_aide.api.dto.improve.ImproveMetadata;
+import com.antonstrokov.j_aide.api.dto.improve.ImproveRequest;
+import com.antonstrokov.j_aide.api.dto.improve.ImproveResponse;
+import com.antonstrokov.j_aide.api.dto.improve.ImproveResult;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.AiExplainResult;
 import com.antonstrokov.j_aide.core.service.AiService;
@@ -10,6 +14,8 @@ import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class AiController {
@@ -68,6 +74,34 @@ public class AiController {
 				lineRange,
 				responseTimeMs
 		);
+	}
+
+	@PostMapping("/ai/improve")
+	public ImproveResponse improve(@RequestBody ImproveRequest request) {
+		long startTime = System.currentTimeMillis();
+
+		log.info("Received improve request, code length={}", request.getCode().length());
+
+		ImproveResult improvement = new ImproveResult();
+		improvement.setSummary("Improve Code is not implemented yet");
+		improvement.setImprovedCode(request.getCode());
+		improvement.setChanges(List.of("Stub response. Real AI improvement will be implemented later."));
+		improvement.setRiskHint("No code changes are applied by this stub endpoint.");
+		improvement.setConfidence("low");
+
+		ImproveMetadata metadata = new ImproveMetadata();
+		metadata.setTraceId(getTraceId());
+		metadata.setBackendVersion(getBackendVersion());
+		metadata.setResponseTimeMs(calculateResponseTimeMs(startTime));
+		metadata.setRetried(false);
+
+		ImproveResponse response = new ImproveResponse();
+		response.setImprovement(improvement);
+		response.setRawJson(null);
+		response.setSuccess(false);
+		response.setMetadata(metadata);
+
+		return response;
 	}
 
 	private ExplainResponse buildExplainResponse(
