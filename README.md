@@ -288,6 +288,14 @@ Module responsibilities:
 
 Improve Code is a planned feature for future versions of J-Aide.
 
+Planned backend endpoint:
+
+```text
+POST /ai/improve
+```
+
+This endpoint will be separate from `/ai/explain` because code explanation and code improvement are different AI actions with different prompts, response structures, and future UI behavior.
+
 The goal of this feature is to help developers improve selected code without manually rewriting it from scratch.
 
 Planned behavior:
@@ -313,6 +321,50 @@ Current status:
 - No IDE action is registered for this feature yet.
 - No backend endpoint is implemented for this feature yet.
 - Diff View is planned separately and will be needed before applying changes directly to files.
+
+Planned request contract:
+
+```json
+{
+  "code": "Selected source code",
+  "mode": "SMART",
+  "language": "java",
+  "fileName": "Example.java",
+  "lineStart": 1,
+  "lineEnd": 10,
+  "projectName": "example-project",
+  "moduleName": "app",
+  "pluginVersion": "0.1.0",
+  "ideVersion": "2025.1"
+}
+```
+
+The first version of Improve Code will reuse the same editor context fields as Explain Code.
+Later versions may add `improvementType`, for example `READABILITY`, `SAFETY`, or `PERFORMANCE`.
+
+Planned response contract:
+
+```json
+{
+  "success": true,
+  "improvement": {
+    "summary": "Short summary of improvements",
+    "improvedCode": "Improved source code",
+    "changes": [
+      "Description of change 1",
+      "Description of change 2"
+    ],
+    "riskHint": "Possible risk after applying the improvement",
+    "confidence": "medium"
+  },
+  "metadata": {
+    "traceId": "generated-trace-id",
+    "backendVersion": "0.1.0",
+    "responseTimeMs": 1234,
+    "retried": false
+  }
+}
+```
 
 This feature will be implemented after the Explain Code MVP is stable.
 
