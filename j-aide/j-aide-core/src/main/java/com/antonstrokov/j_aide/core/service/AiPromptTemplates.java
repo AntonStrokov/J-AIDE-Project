@@ -95,6 +95,37 @@ public final class AiPromptTemplates {
 					"Код:\n{{code}}"
 	);
 
+	public static final PromptTemplate IMPROVE_TEMPLATE = PromptTemplate.from(
+			"Ты опытный {{language}}-разработчик.\n" +
+					"Улучши данный код на русском языке.\n" +
+					"Не меняй поведение кода без необходимости.\n" +
+					"Сохрани исходный стиль, если он не является проблемой.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"ВАЖНО:\n" +
+					"- Поле improvedCode должно содержать только улучшенный код.\n" +
+					"- Поле changes должно быть массивом строк.\n" +
+					"- Если код уже нормальный, верни его без изменений и объясни почему.\n" +
+					"- Не добавляй пояснения вне JSON.\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"краткое описание улучшения\",\n" +
+					"  \"improvedCode\": \"улучшенный код\",\n" +
+					"  \"changes\": [\"изменение 1\", \"изменение 2\"],\n" +
+					"  \"riskHint\": \"возможный риск после изменения или 'нет явных рисков'\",\n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
+					"}\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
+					"Имя файла: {{fileName}}\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
+					"Код:\n{{code}}"
+	);
+
+	public static PromptTemplate resolveImproveTemplate() {
+		return IMPROVE_TEMPLATE;
+	}
+
 	public static PromptTemplate resolveTemplate(String effectiveMode) {
 		switch (effectiveMode) {
 			case "FAST":
