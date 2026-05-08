@@ -136,7 +136,7 @@ public class AiService {
 			String pluginVersion,
 			String ideVersion) {
 
-		validateExplainInput(
+		validateAiRequestInput(
 				code,
 				fileName,
 				lineStart,
@@ -188,7 +188,7 @@ public class AiService {
 			String pluginVersion,
 			String ideVersion
 	) {
-		validateExplainInput(
+		validateAiRequestInput(
 				code,
 				fileName,
 				lineStart,
@@ -283,7 +283,7 @@ public class AiService {
 		}
 	}
 
-	private void validateExplainInput(
+	private void validateAiRequestInput(
 			String code,
 			String fileName,
 			Integer lineStart,
