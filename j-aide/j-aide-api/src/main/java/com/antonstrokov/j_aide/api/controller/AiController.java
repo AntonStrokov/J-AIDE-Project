@@ -6,7 +6,7 @@ import com.antonstrokov.j_aide.api.dto.improve.ImproveRequest;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveResponse;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveResult;
 import com.antonstrokov.j_aide.core.config.AppProperties;
-import com.antonstrokov.j_aide.core.dto.AiExplainResult;
+import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.service.AiService;
 import org.slf4j.Logger;

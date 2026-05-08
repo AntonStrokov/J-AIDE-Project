@@ -1,4 +1,4 @@
-package com.antonstrokov.j_aide.core.dto;
+package com.antonstrokov.j_aide.core.dto.explain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
