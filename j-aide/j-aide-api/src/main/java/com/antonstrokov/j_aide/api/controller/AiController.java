@@ -80,6 +80,7 @@ public class AiController {
 		long startTime = System.currentTimeMillis();
 
 		log.info("Received improve request, code length={}", request.getCode().length());
+		logImproveContext(request);
 
 		AiImproveResult result = aiService.improve(
 				request.getCode(),
@@ -94,6 +95,12 @@ public class AiController {
 				request.getIdeVersion()
 		);
 
+		long responseTimeMs = calculateResponseTimeMs(startTime);
+
+		boolean success = result.getRawJson() == null;
+
+		logImproveResult(result, success, responseTimeMs);
+
 		ImproveResult improvement = new ImproveResult();
 		improvement.setSummary(result.getImprovement().getSummary());
 		improvement.setImprovedCode(result.getImprovement().getImprovedCode());
@@ -104,13 +111,13 @@ public class AiController {
 		ImproveMetadata metadata = new ImproveMetadata();
 		metadata.setTraceId(getTraceId());
 		metadata.setBackendVersion(getBackendVersion());
-		metadata.setResponseTimeMs(calculateResponseTimeMs(startTime));
+		metadata.setResponseTimeMs(responseTimeMs);
 		metadata.setRetried(result.getRetried());
 
 		ImproveResponse response = new ImproveResponse();
 		response.setImprovement(improvement);
 		response.setRawJson(result.getRawJson());
-		response.setSuccess(result.getRawJson() == null);
+		response.setSuccess(success);
 		response.setMetadata(metadata);
 
 		return response;
@@ -197,11 +204,35 @@ public class AiController {
 		);
 	}
 
+	private void logImproveContext(ImproveRequest request) {
+		log.info(
+				"Improve context: language={}, mode={}, fileName={}, lineStart={}, lineEnd={}, projectName={}, moduleName={}, pluginVersion={}, ideVersion={}",
+				request.getLanguage(),
+				request.getMode(),
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
+		);
+	}
+
 	private void logExplainResult(AiExplainResult result, boolean success, long responseTimeMs) {
 		log.info(
 				"Explain result: complexity={}, confidence={}, success={}, responseTimeMs={}",
 				result.getExplanation().getComplexity(),
 				result.getExplanation().getConfidence(),
+				success,
+				responseTimeMs
+		);
+	}
+
+	private void logImproveResult(AiImproveResult result, boolean success, long responseTimeMs) {
+		log.info(
+				"Improve result: confidence={}, success={}, responseTimeMs={}",
+				result.getImprovement().getConfidence(),
 				success,
 				responseTimeMs
 		);
