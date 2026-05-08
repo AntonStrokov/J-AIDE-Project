@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.dto;
+package com.antonstrokov.jaide.plugin.dto.backend;
 
 public record JaideBackendExplainRequest(
 		String code,

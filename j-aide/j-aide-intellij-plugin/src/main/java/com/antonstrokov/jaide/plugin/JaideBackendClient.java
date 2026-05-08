@@ -1,7 +1,7 @@
 package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
-import com.antonstrokov.jaide.plugin.dto.JaideBackendExplainRequest;
+import com.antonstrokov.jaide.plugin.dto.backend.JaideBackendExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
