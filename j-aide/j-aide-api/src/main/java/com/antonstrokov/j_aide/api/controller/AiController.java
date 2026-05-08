@@ -1,6 +1,6 @@
 package com.antonstrokov.j_aide.api.controller;
 
-import com.antonstrokov.j_aide.api.dto.*;
+import com.antonstrokov.j_aide.api.dto.explain.*;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveMetadata;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveRequest;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveResponse;

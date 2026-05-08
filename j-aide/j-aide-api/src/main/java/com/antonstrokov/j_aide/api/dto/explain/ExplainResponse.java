@@ -1,4 +1,4 @@
-package com.antonstrokov.j_aide.api.dto;
+package com.antonstrokov.j_aide.api.dto.explain;
 
 import com.antonstrokov.j_aide.core.dto.StructuredExplainResponse;
 import lombok.Data;

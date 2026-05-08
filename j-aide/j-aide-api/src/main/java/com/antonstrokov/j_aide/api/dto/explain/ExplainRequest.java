@@ -1,4 +1,4 @@
-package com.antonstrokov.j_aide.api.dto;
+package com.antonstrokov.j_aide.api.dto.explain;
 
 import lombok.Data;
 
