@@ -1,6 +1,6 @@
 package com.antonstrokov.jaide.plugin.ui;
 
-import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.state.JaideResultState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;

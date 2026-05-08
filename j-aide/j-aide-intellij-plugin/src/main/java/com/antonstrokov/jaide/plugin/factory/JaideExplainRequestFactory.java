@@ -1,7 +1,7 @@
 package com.antonstrokov.jaide.plugin.factory;
 
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
-import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.model.JaideExplainMode;
 
 public class JaideExplainRequestFactory {

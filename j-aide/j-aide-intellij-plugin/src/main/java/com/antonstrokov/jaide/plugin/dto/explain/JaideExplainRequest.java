@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.dto;
+package com.antonstrokov.jaide.plugin.dto.explain;
 import com.antonstrokov.jaide.plugin.model.JaideExplainMode;
 
 public record JaideExplainRequest(

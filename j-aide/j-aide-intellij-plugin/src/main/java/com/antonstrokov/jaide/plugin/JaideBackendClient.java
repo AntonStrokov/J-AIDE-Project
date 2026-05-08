@@ -2,9 +2,9 @@ package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.backend.JaideBackendExplainRequest;
-import com.antonstrokov.jaide.plugin.dto.JaideExplainRequest;
-import com.antonstrokov.jaide.plugin.dto.JaideExplainResponse;
-import com.antonstrokov.jaide.plugin.dto.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainResponse;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.factory.JaideBackendExplainRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
