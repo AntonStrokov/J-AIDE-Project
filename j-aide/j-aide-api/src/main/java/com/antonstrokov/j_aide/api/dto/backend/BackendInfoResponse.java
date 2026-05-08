@@ -1,4 +1,4 @@
-package com.antonstrokov.j_aide.api.dto;
+package com.antonstrokov.j_aide.api.dto.backend;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

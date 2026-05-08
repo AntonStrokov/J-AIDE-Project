@@ -1,11 +1,11 @@
 package com.antonstrokov.j_aide.api.controller;
 
-import com.antonstrokov.j_aide.api.dto.BackendCapabilities;
-import com.antonstrokov.j_aide.api.dto.BackendDefaults;
-import com.antonstrokov.j_aide.api.dto.BackendEndpoints;
-import com.antonstrokov.j_aide.api.dto.BackendInfoResponse;
-import com.antonstrokov.j_aide.api.dto.BackendLlmInfo;
-import com.antonstrokov.j_aide.api.dto.BackendMetadata;
+import com.antonstrokov.j_aide.api.dto.backend.BackendCapabilities;
+import com.antonstrokov.j_aide.api.dto.backend.BackendDefaults;
+import com.antonstrokov.j_aide.api.dto.backend.BackendEndpoints;
+import com.antonstrokov.j_aide.api.dto.backend.BackendInfoResponse;
+import com.antonstrokov.j_aide.api.dto.backend.BackendLlmInfo;
+import com.antonstrokov.j_aide.api.dto.backend.BackendMetadata;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.ExplainMode;
