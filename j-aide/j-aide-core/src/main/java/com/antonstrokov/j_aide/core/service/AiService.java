@@ -1,9 +1,9 @@
 package com.antonstrokov.j_aide.core.service;
 
 import com.antonstrokov.j_aide.core.config.AiProperties;
+import com.antonstrokov.j_aide.core.dto.common.SupportedLanguage;
 import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.explain.StructuredExplainResponse;
-import com.antonstrokov.j_aide.core.dto.common.SupportedLanguage;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.dto.improve.StructuredImproveResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,11 +38,31 @@ public class AiService {
 		validateRequiredAiField(structured.getInputType(), "inputType");
 	}
 
+	private void validateStructuredImproveResponse(StructuredImproveResponse structured) {
+		validateRequiredAiField(structured.getSummary(), "summary");
+		validateRequiredAiField(structured.getImprovedCode(), "improvedCode");
+		validateRequiredAiField(structured.getRiskHint(), "riskHint");
+		validateRequiredAiField(structured.getConfidence(), "confidence");
+
+		if (structured.getChanges() == null) {
+			throw new RuntimeException("Invalid AI JSON structure: changes is missing");
+		}
+	}
+
 	private StructuredExplainResponse parseStructuredResponse(String response) throws Exception {
 		StructuredExplainResponse structured =
 				objectMapper.readValue(response, StructuredExplainResponse.class);
 
 		validateStructuredResponse(structured);
+
+		return structured;
+	}
+
+	private StructuredImproveResponse parseStructuredImproveResponse(String response) throws Exception {
+		StructuredImproveResponse structured =
+				objectMapper.readValue(response, StructuredImproveResponse.class);
+
+		validateStructuredImproveResponse(structured);
 
 		return structured;
 	}
@@ -80,10 +100,28 @@ public class AiService {
 		return new AiExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
 	}
 
+	private AiImproveResult buildImproveFallbackResult(String rawResponse, String effectiveMode,
+	                                                   String effectiveLanguage) {
+		StructuredImproveResponse fallback = new StructuredImproveResponse();
+		fallback.setSummary("Не удалось структурировать ответ AI");
+		fallback.setImprovedCode("");
+		fallback.setChanges(List.of("Проверь сырой ответ модели в rawJson"));
+		fallback.setRiskHint("Улучшенный код не был применён, потому что ответ AI не удалось распарсить");
+		fallback.setConfidence("low");
+
+		return new AiImproveResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
+	}
+
 	private AiExplainResult tryParseResponse(String response, String effectiveMode, String effectiveLanguage)
 			throws Exception {
 		StructuredExplainResponse structured = parseStructuredResponse(response);
 		return new AiExplainResult(structured, null, effectiveMode, effectiveLanguage, false);
+	}
+
+	private AiImproveResult tryParseImproveResponse(String response, String effectiveMode, String effectiveLanguage)
+			throws Exception {
+		StructuredImproveResponse structured = parseStructuredImproveResponse(response);
+		return new AiImproveResult(structured, null, effectiveMode, effectiveLanguage, false);
 	}
 
 	public AiExplainResult explain(
@@ -166,19 +204,26 @@ public class AiService {
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
 		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
 
-		StructuredImproveResponse improvement = new StructuredImproveResponse();
-		improvement.setSummary("Improve Code is not implemented yet");
-		improvement.setImprovedCode(code);
-		improvement.setChanges(List.of("Stub response. Real AI improvement will be implemented later."));
-		improvement.setRiskHint("No code changes are applied by this stub service method.");
-		improvement.setConfidence("low");
-
-		return new AiImproveResult(
-				improvement,
-				null,
-				effectiveMode,
+		String prompt = buildImprovePrompt(
+				code,
 				effectiveLanguage,
-				false
+				fileName,
+				lineStart,
+				lineEnd,
+				projectName,
+				moduleName
+		);
+
+		String response = askModel(prompt);
+
+		boolean shouldRetry = "SMART".equals(effectiveMode);
+
+		return parseImproveWithRetry(
+				response,
+				prompt,
+				shouldRetry,
+				effectiveMode,
+				effectiveLanguage
 		);
 	}
 
@@ -291,6 +336,28 @@ public class AiService {
 		)).text();
 	}
 
+	private String buildImprovePrompt(
+			String code,
+			String effectiveLanguage,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName
+	) {
+		PromptTemplate template = AiPromptTemplates.resolveImproveTemplate();
+
+		return template.apply(Map.of(
+				"code", code,
+				"language", effectiveLanguage,
+				"fileName", safeText(fileName),
+				"lineStart", safeNumber(lineStart),
+				"lineEnd", safeNumber(lineEnd),
+				"projectName", safeText(projectName),
+				"moduleName", safeText(moduleName)
+		)).text();
+	}
+
 	private String safeText(String value) {
 		return value == null ? "not provided" : value;
 	}
@@ -336,6 +403,55 @@ public class AiService {
 				log.warn("Retry also failed, returning fallback", retryException);
 
 				return buildFallbackResult(
+						retryResponse != null ? retryResponse : response,
+						effectiveMode,
+						effectiveLanguage
+				);
+			}
+		}
+	}
+
+	private AiImproveResult parseImproveWithRetry(
+			String response,
+			String prompt,
+			boolean shouldRetry,
+			String effectiveMode,
+			String effectiveLanguage
+	) {
+		try {
+			return tryParseImproveResponse(response, effectiveMode, effectiveLanguage);
+
+		} catch (Exception e) {
+			if (!shouldRetry) {
+				log.warn("AI improve response parsing failed, returning fallback without retry", e);
+
+				return buildImproveFallbackResult(response, effectiveMode, effectiveLanguage);
+			}
+
+			log.warn("First AI improve response parsing failed, retrying once", e);
+
+			String retryResponse = null;
+
+			try {
+				String retryPrompt = buildRetryPrompt(prompt);
+
+				retryResponse = askModel(retryPrompt);
+
+				AiImproveResult retryResult = tryParseImproveResponse(
+						retryResponse,
+						effectiveMode,
+						effectiveLanguage
+				);
+				retryResult.setRetried(true);
+
+				log.info("Retry succeeded and returned valid structured improve response");
+
+				return retryResult;
+
+			} catch (Exception retryException) {
+				log.warn("Improve retry also failed, returning fallback", retryException);
+
+				return buildImproveFallbackResult(
 						retryResponse != null ? retryResponse : response,
 						effectiveMode,
 						effectiveLanguage
