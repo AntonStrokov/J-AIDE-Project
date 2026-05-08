@@ -1,6 +1,6 @@
 package com.antonstrokov.j_aide.api.handler;
 
-import com.antonstrokov.j_aide.api.dto.ErrorResponse;
+import com.antonstrokov.j_aide.api.dto.common.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
