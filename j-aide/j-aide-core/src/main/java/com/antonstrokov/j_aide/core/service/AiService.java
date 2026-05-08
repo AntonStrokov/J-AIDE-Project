@@ -3,7 +3,7 @@ package com.antonstrokov.j_aide.core.service;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.explain.StructuredExplainResponse;
-import com.antonstrokov.j_aide.core.dto.SupportedLanguage;
+import com.antonstrokov.j_aide.core.dto.common.SupportedLanguage;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.dto.improve.StructuredImproveResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package com.antonstrokov.j_aide.core.dto;
+package com.antonstrokov.j_aide.core.dto.common;
 
 public enum SupportedLanguage {
 	JAVA,
