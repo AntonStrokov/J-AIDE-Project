@@ -190,6 +190,8 @@ Current plugin capabilities:
 - Sends selected code and editor context to the backend.
 - Detects language from file extension.
 - Displays structured AI explanation in the J-Aide Tool Window.
+- Sends selected code to the backend for code improvement.
+- Displays suggested improved code in the J-Aide Tool Window.
 - Opens the Tool Window automatically after receiving a response.
 - Shows friendly error notifications when the backend is unavailable.
 - Uses Jackson for safe backend request serialization and response parsing.
@@ -276,17 +278,21 @@ Module responsibilities:
 | Display result in Tool Window     | Done    | Shows structured explanation in J-Aide Tool Window       |
 | Friendly error notifications      | Done    | Backend and plugin errors are handled separately         |
 | Backend capability handshake      | Done    | Available through `/backend-info`                        |
-| Improve Code                      | Planned | Future feature, not implemented yet                      |
+| Improve Code                      | Done    | MVP implementation is working: backend AI flow and IntelliJ plugin action are available |
 | Refactor Code                     | Planned | Future feature from project roadmap                      |
 | Diff View                         | Planned | Future IDE feature for before/after code comparison      |
 | RAG project context               | Planned | Future backend feature using vector search               |
 | Chat with project code            | Planned | Future plugin feature                                    |
 
-## Future Features
+## Implemented and Planned Features
 
 ### Improve Code
 
-Improve Code is a planned feature for future versions of J-Aide.
+Improve Code is implemented as an MVP feature.
+
+The current implementation can send selected code to the backend, ask the AI model to suggest an improved version, and display the result in the J-Aide Tool Window.
+
+Applying changes directly to files is not implemented yet. Diff View is planned separately and will be needed before safe code replacement.
 
 Planned backend endpoint:
 
@@ -317,9 +323,11 @@ Possible improvement types:
 
 Current status:
 
-- Improve Code is not implemented yet.
-- No IDE action is registered for this feature yet.
-- No backend endpoint is implemented for this feature yet.
+- Improve Code backend AI flow is implemented.
+- `POST /ai/improve` is available.
+- IntelliJ plugin action `J-Aide: Improve Selected Code` is registered.
+- Suggested improved code is displayed in the J-Aide Tool Window.
+- Applying changes directly to files is not implemented yet.
 - Diff View is planned separately and will be needed before applying changes directly to files.
 
 Planned request contract:
@@ -366,7 +374,7 @@ Planned response contract:
 }
 ```
 
-This feature will be implemented after the Explain Code MVP is stable.
+The next step for this feature is Diff View and safe user-confirmed code replacement.
 
 ## Environment Configuration
 
