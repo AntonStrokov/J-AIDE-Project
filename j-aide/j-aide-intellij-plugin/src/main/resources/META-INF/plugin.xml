@@ -28,6 +28,13 @@
                 description="Explain selected code using J-Aide backend">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
+        <action
+                id="J-Aide.ImproveSelectedCode"
+                class="com.antonstrokov.jaide.plugin.ImproveSelectedCodeAction"
+                text="J-Aide: Improve Selected Code"
+                description="Improve selected code using J-Aide backend">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
     </actions>
 
 </idea-plugin>

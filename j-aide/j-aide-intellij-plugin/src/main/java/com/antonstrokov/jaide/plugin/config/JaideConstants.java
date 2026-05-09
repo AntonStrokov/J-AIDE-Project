@@ -8,6 +8,7 @@ public final class JaideConstants {
 	public static final String TOOL_WINDOW_ID = "J-Aide";
 	public static final String NOTIFICATION_GROUP = "J-Aide Notifications";
 	public static final String EXPLAIN_TASK_TITLE = "J-Aide: Explaining selected code";
+	public static final String IMPROVE_TASK_TITLE = "J-Aide: Improving selected code";
 
 	private JaideConstants() {
 	}
