@@ -165,7 +165,7 @@ public class AiService {
 
 		String response = askModel(prompt);
 
-		boolean shouldRetry = "SMART".equals(effectiveMode);
+		boolean shouldRetry = shouldRetry(effectiveMode);
 
 		return parseWithRetry(
 				response,
@@ -216,7 +216,7 @@ public class AiService {
 
 		String response = askModel(prompt);
 
-		boolean shouldRetry = "SMART".equals(effectiveMode);
+		boolean shouldRetry = shouldRetry(effectiveMode);
 
 		return parseImproveWithRetry(
 				response,
@@ -462,5 +462,9 @@ public class AiService {
 
 	private String resolveMode(String mode) {
 		return (mode == null || mode.isBlank()) ? "SMART" : mode.toUpperCase();
+	}
+
+	private boolean shouldRetry(String effectiveMode) {
+		return "SMART".equals(effectiveMode);
 	}
 }
