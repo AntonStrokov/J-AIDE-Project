@@ -1,6 +1,7 @@
 package com.antonstrokov.jaide.plugin.ui;
 
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.state.JaideResultState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -21,6 +22,19 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		String formattedResult = formatExplanation(explanation);
+
+		JaideResultState.setLatestSummary(formattedResult);
+
+		ApplicationManager.getApplication().invokeLater(() -> {
+			if (resultTextArea != null) {
+				resultTextArea.setText(formattedResult);
+				resultTextArea.setCaretPosition(0);
+			}
+		});
+	}
+
+	public static void updateImprovement(JaideImprovement improvement) {
+		String formattedResult = formatImprovement(improvement);
 
 		JaideResultState.setLatestSummary(formattedResult);
 
@@ -53,6 +67,24 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		return result.toString();
 	}
 
+	private static String formatImprovement(JaideImprovement improvement) {
+		StringBuilder result = new StringBuilder();
+
+		result.append("""
+            J-Aide Improvement
+            ==================
+            
+            """);
+
+		appendSection(result, "Summary", improvement.summary());
+		appendSection(result, "Improved Code", improvement.improvedCode());
+		appendChanges(result, improvement.changes());
+		appendSection(result, "Risk Hint", improvement.riskHint());
+		appendSection(result, "Confidence", improvement.confidence());
+
+		return result.toString();
+	}
+
 	private static void appendSection(StringBuilder result, String title, String value) {
 		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
 			return;
@@ -65,6 +97,27 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				.append(value)
 				.append(System.lineSeparator())
 				.append(System.lineSeparator());
+	}
+
+	private static void appendChanges(StringBuilder result, java.util.List<String> changes) {
+		if (changes == null || changes.isEmpty()) {
+			return;
+		}
+
+		result.append("Changes")
+				.append(System.lineSeparator())
+				.append("-------")
+				.append(System.lineSeparator());
+
+		for (String change : changes) {
+			if (change != null && !change.isBlank()) {
+				result.append("- ")
+						.append(change)
+						.append(System.lineSeparator());
+			}
+		}
+
+		result.append(System.lineSeparator());
 	}
 
 	@Override
