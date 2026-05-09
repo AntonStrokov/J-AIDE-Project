@@ -6,6 +6,11 @@ import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestFactory;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideBackendImproveRequest;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveResponse;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.factory.improve.JaideBackendImproveRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -18,6 +23,7 @@ public class JaideBackendClient {
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final JaideBackendExplainRequestFactory backendRequestFactory = new JaideBackendExplainRequestFactory();
+	private final JaideBackendImproveRequestFactory improveRequestFactory = new JaideBackendImproveRequestFactory();
 
 	public JaideExplanation explain(JaideExplainRequest request) throws IOException, InterruptedException {
 		String requestBody = buildExplainRequestBody(request);
@@ -29,8 +35,24 @@ public class JaideBackendClient {
 		return parseExplanation(responseBody);
 	}
 
+	public JaideImprovement improve(JaideImproveRequest request) throws IOException, InterruptedException {
+		String requestBody = buildImproveRequestBody(request);
+
+		HttpRequest httpRequest = buildImproveHttpRequest(requestBody);
+
+		String responseBody = send(httpRequest);
+
+		return parseImprovement(responseBody);
+	}
+
 	private String buildExplainRequestBody(JaideExplainRequest request) throws IOException {
 		JaideBackendExplainRequest backendRequest = backendRequestFactory.create(request);
+
+		return objectMapper.writeValueAsString(backendRequest);
+	}
+
+	private String buildImproveRequestBody(JaideImproveRequest request) throws IOException {
+		JaideBackendImproveRequest backendRequest = improveRequestFactory.create(request);
 
 		return objectMapper.writeValueAsString(backendRequest);
 	}
@@ -38,6 +60,14 @@ public class JaideBackendClient {
 	private HttpRequest buildExplainHttpRequest(String requestBody) {
 		return HttpRequest.newBuilder()
 				.uri(URI.create(JaideConstants.EXPLAIN_URL))
+				.header("Content-Type", "application/json")
+				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
+				.build();
+	}
+
+	private HttpRequest buildImproveHttpRequest(String requestBody) {
+		return HttpRequest.newBuilder()
+				.uri(URI.create(JaideConstants.IMPROVE_URL))
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
@@ -73,5 +103,24 @@ public class JaideBackendClient {
 		}
 
 		return explainResponse.explanation();
+	}
+
+	private JaideImprovement parseImprovement(String responseBody) throws IOException {
+		JaideImproveResponse improveResponse = objectMapper.readValue(
+				responseBody,
+				JaideImproveResponse.class
+		);
+
+		if (improveResponse.improvement() == null) {
+			return new JaideImprovement(
+					"Improvement not found",
+					null,
+					null,
+					null,
+					null
+			);
+		}
+
+		return improveResponse.improvement();
 	}
 }
