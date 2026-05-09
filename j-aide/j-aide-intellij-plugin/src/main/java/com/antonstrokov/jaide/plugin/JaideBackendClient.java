@@ -5,7 +5,7 @@ import com.antonstrokov.jaide.plugin.dto.backend.JaideBackendExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
-import com.antonstrokov.jaide.plugin.factory.JaideBackendExplainRequestFactory;
+import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

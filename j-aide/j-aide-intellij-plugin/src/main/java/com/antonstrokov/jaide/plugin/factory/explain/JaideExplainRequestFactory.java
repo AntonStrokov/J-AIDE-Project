@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.factory;
+package com.antonstrokov.jaide.plugin.factory.explain;
 
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;

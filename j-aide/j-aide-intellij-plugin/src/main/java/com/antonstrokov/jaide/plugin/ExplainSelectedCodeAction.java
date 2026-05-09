@@ -6,7 +6,7 @@ import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
-import com.antonstrokov.jaide.plugin.factory.JaideExplainRequestFactory;
+import com.antonstrokov.jaide.plugin.factory.explain.JaideExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
