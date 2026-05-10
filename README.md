@@ -280,7 +280,7 @@ Module responsibilities:
 | Backend capability handshake      | Done    | Available through `/backend-info`                        |
 | Improve Code                      | Done    | MVP implementation is working: backend AI flow and IntelliJ plugin action are available |
 | Refactor Code                     | Planned | Future feature from project roadmap                      |
-| Diff View                         | Planned | Future IDE feature for before/after code comparison      |
+| Diff View                         | Done    | MVP is working: Tool Window preview and IntelliJ side-by-side diff viewer are available |
 | RAG project context               | Planned | Future backend feature using vector search               |
 | Chat with project code            | Planned | Future plugin feature                                    |
 
@@ -375,6 +375,28 @@ Planned response contract:
 ```
 
 The next step for this feature is Diff View and safe user-confirmed code replacement.
+
+
+### Diff View
+
+Diff View is implemented as an MVP feature for Improve Code.
+
+The current implementation shows the original selected code and the AI-improved code in two ways:
+
+- a safe preview inside the J-Aide Tool Window;
+- a built-in IntelliJ side-by-side Diff Viewer.
+
+Current status:
+
+- Original Code is displayed in the J-Aide Tool Window.
+- Improved Code is displayed in the J-Aide Tool Window.
+- Changes are displayed as a structured list.
+- IntelliJ Diff Viewer opens with `Original` and `Improved` contents.
+- No files are changed automatically.
+- Applying changes directly to files is not implemented yet.
+
+The next step for this feature is safe user-confirmed code replacement.
+
 
 ## Environment Configuration
 
