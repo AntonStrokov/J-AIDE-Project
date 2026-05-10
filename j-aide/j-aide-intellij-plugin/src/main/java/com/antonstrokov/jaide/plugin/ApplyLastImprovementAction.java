@@ -31,18 +31,34 @@ public class ApplyLastImprovementAction extends AnAction {
 
 		JaideLastImprovement improvement = JaideImprovementState.getLatestImprovement();
 
-		WriteCommandAction.runWriteCommandAction(e.getProject(), () -> {
-			Document document = editor.getDocument();
+		Document document = editor.getDocument();
 
-			document.replaceString(
-					improvement.selectionStart(),
-					improvement.selectionEnd(),
-					improvement.improvedCode()
+		if (!isValidSelectionRange(document, improvement)) {
+			notificationService.showWarning(
+					e.getProject(),
+					"Cannot apply improvement: original selection range is no longer valid"
 			);
-		});
+			return;
+		}
+
+		WriteCommandAction.runWriteCommandAction(e.getProject(), () -> document.replaceString(
+				improvement.selectionStart(),
+				improvement.selectionEnd(),
+				improvement.improvedCode()
+		));
 
 		JaideImprovementState.clear();
 
 		notificationService.showInfo(e.getProject(), "Improvement applied. Use Ctrl+Z to undo.");
+	}
+
+	private boolean isValidSelectionRange(Document document, JaideLastImprovement improvement) {
+		int selectionStart = improvement.selectionStart();
+		int selectionEnd = improvement.selectionEnd();
+		int documentLength = document.getTextLength();
+
+		return selectionStart >= 0
+				&& selectionEnd >= selectionStart
+				&& selectionEnd <= documentLength;
 	}
 }
