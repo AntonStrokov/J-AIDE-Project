@@ -5,6 +5,8 @@ public record JaideEditorContext(
 		String fileName,
 		int lineStart,
 		int lineEnd,
+		int selectionStart,
+		int selectionEnd,
 		String projectName,
 		String moduleName,
 		String ideVersion
