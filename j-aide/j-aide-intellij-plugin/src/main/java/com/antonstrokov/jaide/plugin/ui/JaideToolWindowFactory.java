@@ -71,10 +71,12 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		StringBuilder result = new StringBuilder();
 
 		result.append("""
-            J-Aide Improvement
-            ==================
-            
-            """);
+        J-Aide Improve Preview
+        ======================
+        
+        This is a preview only. No files were changed.
+        
+        """);
 
 		appendSection(result, "Summary", improvement.summary());
 		appendSection(result, "Original Code", originalCode);
