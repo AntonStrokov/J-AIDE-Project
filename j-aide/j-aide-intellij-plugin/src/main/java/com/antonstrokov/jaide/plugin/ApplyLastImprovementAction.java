@@ -41,6 +41,14 @@ public class ApplyLastImprovementAction extends AnAction {
 			return;
 		}
 
+		if (!isOriginalCodeStillPresent(document, improvement)) {
+			notificationService.showWarning(
+					e.getProject(),
+					"Cannot apply improvement: selected code has changed since improvement was generated"
+			);
+			return;
+		}
+
 		WriteCommandAction.runWriteCommandAction(e.getProject(), () -> document.replaceString(
 				improvement.selectionStart(),
 				improvement.selectionEnd(),
@@ -60,5 +68,14 @@ public class ApplyLastImprovementAction extends AnAction {
 		return selectionStart >= 0
 				&& selectionEnd >= selectionStart
 				&& selectionEnd <= documentLength;
+	}
+
+	private boolean isOriginalCodeStillPresent(Document document, JaideLastImprovement improvement) {
+		String currentText = document.getText().substring(
+				improvement.selectionStart(),
+				improvement.selectionEnd()
+		);
+
+		return currentText.equals(improvement.originalCode());
 	}
 }
