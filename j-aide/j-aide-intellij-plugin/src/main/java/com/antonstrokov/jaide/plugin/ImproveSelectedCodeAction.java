@@ -45,16 +45,18 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 					JaideImprovement improvement = backendClient.improve(request);
 
-					new JaideLastImprovement(
-							context.selectedCode(),
-							improvement.improvedCode(),
-							context.fileName(),
-							context.projectName(),
-							context.moduleName(),
-							context.lineStart(),
-							context.lineEnd(),
-							context.selectionStart(),
-							context.selectionEnd()
+					JaideImprovementState.setLatestImprovement(
+							new JaideLastImprovement(
+									context.selectedCode(),
+									improvement.improvedCode(),
+									context.fileName(),
+									context.projectName(),
+									context.moduleName(),
+									context.lineStart(),
+									context.lineEnd(),
+									context.selectionStart(),
+									context.selectionEnd()
+							)
 					);
 
 					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
