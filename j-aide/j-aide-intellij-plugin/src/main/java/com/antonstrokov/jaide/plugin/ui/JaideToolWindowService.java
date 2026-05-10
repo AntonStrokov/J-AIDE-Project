@@ -23,4 +23,20 @@ public class JaideToolWindowService {
 			}
 		});
 	}
+
+	public void hide(Project project) {
+		if (project == null) {
+			return;
+		}
+
+		ApplicationManager.getApplication().invokeLater(() -> {
+			ToolWindow toolWindow = ToolWindowManager
+					.getInstance(project)
+					.getToolWindow(JaideConstants.TOOL_WINDOW_ID);
+
+			if (toolWindow != null) {
+				toolWindow.hide(null);
+			}
+		});
+	}
 }

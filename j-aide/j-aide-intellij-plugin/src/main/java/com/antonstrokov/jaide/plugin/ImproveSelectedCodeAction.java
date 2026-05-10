@@ -60,7 +60,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 					);
 
 					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
-					toolWindowService.open(e.getProject());
+					toolWindowService.hide(e.getProject());
 
 					diffViewerService.showImproveDiff(
 							e.getProject(),

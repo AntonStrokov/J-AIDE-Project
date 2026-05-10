@@ -57,7 +57,10 @@ public class ApplyLastImprovementAction extends AnAction {
 
 		JaideImprovementState.clear();
 
-		notificationService.showInfo(e.getProject(), "Improvement applied. Use Ctrl+Z to undo.");
+		notificationService.showInfo(
+				e.getProject(),
+				"Improvement applied. Use IDE Undo/Redo to revert or reapply."
+		);
 	}
 
 	private boolean isValidSelectionRange(Document document, JaideLastImprovement improvement) {
