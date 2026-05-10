@@ -79,8 +79,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
         """);
 
 		appendSection(result, "Summary", improvement.summary());
-		appendSection(result, "Original Code", originalCode);
-		appendSection(result, "Improved Code", improvement.improvedCode());
+		appendCodeBlock(result, "Original Code", originalCode);
+		appendCodeBlock(result, "Improved Code", improvement.improvedCode());
 		appendChanges(result, improvement.changes());
 		appendSection(result, "Risk Hint", improvement.riskHint());
 		appendSection(result, "Confidence", improvement.confidence());
@@ -96,6 +96,21 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		result.append(title)
 				.append(System.lineSeparator())
 				.append("-".repeat(title.length()))
+				.append(System.lineSeparator())
+				.append(value)
+				.append(System.lineSeparator())
+				.append(System.lineSeparator());
+	}
+
+	private static void appendCodeBlock(StringBuilder result, String title, String value) {
+		if (value == null || value.isBlank()) {
+			return;
+		}
+
+		result.append(title)
+				.append(System.lineSeparator())
+				.append("=".repeat(title.length()))
+				.append(System.lineSeparator())
 				.append(System.lineSeparator())
 				.append(value)
 				.append(System.lineSeparator())
