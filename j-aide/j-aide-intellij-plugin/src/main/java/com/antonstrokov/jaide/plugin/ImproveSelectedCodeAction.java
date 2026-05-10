@@ -10,6 +10,7 @@ import com.antonstrokov.jaide.plugin.factory.improve.JaideImproveRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
+import com.antonstrokov.jaide.plugin.ui.JaideDiffViewerService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -23,6 +24,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideImproveRequestFactory requestFactory = new JaideImproveRequestFactory();
+	private final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -43,6 +45,13 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
 					toolWindowService.open(e.getProject());
+
+					diffViewerService.showImproveDiff(
+							e.getProject(),
+							context.selectedCode(),
+							improvement.improvedCode(),
+							context.fileName()
+					);
 
 				} catch (Exception ex) {
 					notificationService.showError(
