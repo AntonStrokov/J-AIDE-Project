@@ -11,6 +11,8 @@ import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.antonstrokov.jaide.plugin.ui.JaideDiffViewerService;
+import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
+import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -42,6 +44,18 @@ public class ImproveSelectedCodeAction extends AnAction {
 					JaideImproveRequest request = requestFactory.create(context);
 
 					JaideImprovement improvement = backendClient.improve(request);
+
+					JaideImprovementState.setLatestImprovement(
+							new JaideLastImprovement(
+									context.selectedCode(),
+									improvement.improvedCode(),
+									context.fileName(),
+									context.projectName(),
+									context.moduleName(),
+									context.lineStart(),
+									context.lineEnd()
+							)
+					);
 
 					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
 					toolWindowService.open(e.getProject());
