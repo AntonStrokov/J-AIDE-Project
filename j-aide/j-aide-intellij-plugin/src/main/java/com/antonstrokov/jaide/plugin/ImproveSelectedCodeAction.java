@@ -41,7 +41,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 					JaideImprovement improvement = backendClient.improve(request);
 
-					JaideToolWindowFactory.updateImprovement(improvement);
+					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
 					toolWindowService.open(e.getProject());
 
 				} catch (Exception ex) {

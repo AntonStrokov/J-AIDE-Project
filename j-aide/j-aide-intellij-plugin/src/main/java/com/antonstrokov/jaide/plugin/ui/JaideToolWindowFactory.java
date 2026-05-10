@@ -33,8 +33,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 	}
 
-	public static void updateImprovement(JaideImprovement improvement) {
-		String formattedResult = formatImprovement(improvement);
+	public static void updateImprovement(JaideImprovement improvement, String originalCode) {
+		String formattedResult = formatImprovement(improvement, originalCode);
 
 		JaideResultState.setLatestSummary(formattedResult);
 
@@ -67,7 +67,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		return result.toString();
 	}
 
-	private static String formatImprovement(JaideImprovement improvement) {
+	private static String formatImprovement(JaideImprovement improvement, String originalCode) {
 		StringBuilder result = new StringBuilder();
 
 		result.append("""
@@ -77,6 +77,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
             """);
 
 		appendSection(result, "Summary", improvement.summary());
+		appendSection(result, "Original Code", originalCode);
 		appendSection(result, "Improved Code", improvement.improvedCode());
 		appendChanges(result, improvement.changes());
 		appendSection(result, "Risk Hint", improvement.riskHint());
