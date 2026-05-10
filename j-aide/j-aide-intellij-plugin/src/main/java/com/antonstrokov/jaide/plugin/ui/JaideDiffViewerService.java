@@ -5,6 +5,7 @@ import com.intellij.diff.contents.DiffContent;
 import com.intellij.diff.DiffContentFactory;
 import com.intellij.diff.requests.SimpleDiffRequest;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.application.ApplicationManager;
 
 public class JaideDiffViewerService {
 
@@ -18,20 +19,22 @@ public class JaideDiffViewerService {
 			return;
 		}
 
-		DiffContentFactory contentFactory = DiffContentFactory.getInstance();
+		ApplicationManager.getApplication().invokeLater(() -> {
+			DiffContentFactory contentFactory = DiffContentFactory.getInstance();
 
-		DiffContent originalContent = contentFactory.create(project, originalCode);
-		DiffContent improvedContent = contentFactory.create(project, improvedCode);
+			DiffContent originalContent = contentFactory.create(project, originalCode);
+			DiffContent improvedContent = contentFactory.create(project, improvedCode);
 
-		SimpleDiffRequest request = new SimpleDiffRequest(
-				buildTitle(fileName),
-				originalContent,
-				improvedContent,
-				"Original",
-				"Improved"
-		);
+			SimpleDiffRequest request = new SimpleDiffRequest(
+					buildTitle(fileName),
+					originalContent,
+					improvedContent,
+					"Original",
+					"Improved"
+			);
 
-		DiffManager.getInstance().showDiff(project, request);
+			DiffManager.getInstance().showDiff(project, request);
+		});
 	}
 
 	private String buildTitle(String fileName) {
