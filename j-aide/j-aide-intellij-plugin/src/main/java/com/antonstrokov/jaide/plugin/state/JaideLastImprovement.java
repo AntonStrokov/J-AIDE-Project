@@ -7,6 +7,8 @@ public record JaideLastImprovement(
 		String projectName,
 		String moduleName,
 		int lineStart,
-		int lineEnd
+		int lineEnd,
+		int selectionStart,
+		int selectionEnd
 ) {
 }
