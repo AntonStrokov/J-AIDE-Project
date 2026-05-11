@@ -7,18 +7,14 @@ import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.state.JaideResultState;
+import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import com.intellij.openapi.editor.colors.EditorFontType;
-import com.intellij.ui.JBColor;
-import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +23,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 	private static final JaideNotificationService notificationService = new JaideNotificationService();
-	private static JTextArea resultTextArea;
+	private static JaideImprovePreviewPanel previewPanel;
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		String formattedResult = formatExplanation(explanation);
@@ -35,9 +31,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JaideResultState.setLatestSummary(formattedResult);
 
 		ApplicationManager.getApplication().invokeLater(() -> {
-			if (resultTextArea != null) {
-				resultTextArea.setText(formattedResult);
-				resultTextArea.setCaretPosition(0);
+			if (previewPanel != null) {
+				previewPanel.updateText(formattedResult);
 			}
 		});
 	}
@@ -48,9 +43,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JaideResultState.setLatestSummary(formattedResult);
 
 		ApplicationManager.getApplication().invokeLater(() -> {
-			if (resultTextArea != null) {
-				resultTextArea.setText(formattedResult);
-				resultTextArea.setCaretPosition(0);
+			if (previewPanel != null) {
+				previewPanel.updateText(formattedResult);
 			}
 		});
 	}
@@ -189,22 +183,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel.add(applyButton);
 		panel.add(actionsPanel, BorderLayout.NORTH);
 
-		resultTextArea = new JTextArea(JaideResultState.getLatestSummary());
-		resultTextArea.setEditable(false);
-		resultTextArea.setLineWrap(true);
-		resultTextArea.setWrapStyleWord(true);
-		resultTextArea.setFont(
-				EditorColorsManager.getInstance()
-						.getGlobalScheme()
-						.getFont(EditorFontType.PLAIN)
-		);
-		resultTextArea.setBackground(JBColor.PanelBackground);
-		resultTextArea.setForeground(JBColor.foreground());
-		resultTextArea.setBorder(JBUI.Borders.empty(12));
-		resultTextArea.setTabSize(4);
-
-		JBScrollPane scrollPane = new JBScrollPane(resultTextArea);
-		panel.add(scrollPane, BorderLayout.CENTER);
+		previewPanel = new JaideImprovePreviewPanel(JaideResultState.getLatestSummary());
+		panel.add(previewPanel, BorderLayout.CENTER);
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);
 		toolWindow.getContentManager().addContent(content);
