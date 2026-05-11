@@ -6,6 +6,9 @@ import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.vfs.VirtualFile;
 
 public class JaideApplyImprovementService {
 
@@ -52,6 +55,8 @@ public class JaideApplyImprovementService {
 				improvement.improvedCode()
 		));
 
+		openOriginalFile(project, document);
+
 		JaideImprovementState.clear();
 
 		notificationService.showInfo(
@@ -77,5 +82,19 @@ public class JaideApplyImprovementService {
 		);
 
 		return currentText.equals(improvement.originalCode());
+	}
+
+	private void openOriginalFile(Project project, Document document) {
+		VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+
+		if (virtualFile == null) {
+			return;
+		}
+
+		FileEditorManager.getInstance(project).openFile(
+				virtualFile,
+				true,
+				true
+		);
 	}
 }
