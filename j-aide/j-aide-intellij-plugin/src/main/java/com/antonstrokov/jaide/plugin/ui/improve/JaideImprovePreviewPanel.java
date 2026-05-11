@@ -4,14 +4,12 @@ import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class JaideImprovePreviewPanel extends JPanel {
 
@@ -40,7 +38,19 @@ public class JaideImprovePreviewPanel extends JPanel {
 	}
 
 	public void updateImprovement(JaideImprovement improvement, String originalCode) {
-		updateText(formatImprovement(improvement, originalCode));
+		contentPanel.removeAll();
+
+		addTitle("J-Aide Improve Preview");
+		addTextSection("Status", "This is a preview only. No files were changed.");
+		addTextSection("Summary", improvement.summary());
+		addTextSection("Original Code", originalCode);
+		addTextSection("Improved Code", improvement.improvedCode());
+		addChangesSection(improvement.changes());
+		addTextSection("Risk Hint", improvement.riskHint());
+		addTextSection("Confidence", improvement.confidence());
+
+		revalidate();
+		repaint();
 	}
 
 	private JTextArea createTextArea(String text) {
@@ -60,6 +70,52 @@ public class JaideImprovePreviewPanel extends JPanel {
 		textArea.setAlignmentX(LEFT_ALIGNMENT);
 
 		return textArea;
+	}
+
+	private void addTitle(String title) {
+		JBLabel label = new JBLabel(title);
+		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 2f));
+		label.setForeground(JBColor.foreground());
+		label.setAlignmentX(LEFT_ALIGNMENT);
+		label.setBorder(JBUI.Borders.emptyBottom(8));
+
+		contentPanel.add(label);
+	}
+
+	private void addTextSection(String title, String value) {
+		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
+			return;
+		}
+
+		JBLabel titleLabel = new JBLabel(title);
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+		titleLabel.setForeground(JBColor.foreground());
+		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+		titleLabel.setBorder(JBUI.Borders.emptyTop(10));
+
+		JTextArea valueArea = createTextArea(value);
+		valueArea.setBorder(JBUI.Borders.emptyTop(4));
+
+		contentPanel.add(titleLabel);
+		contentPanel.add(valueArea);
+	}
+
+	private void addChangesSection(java.util.List<String> changes) {
+		if (changes == null || changes.isEmpty()) {
+			return;
+		}
+
+		StringBuilder result = new StringBuilder();
+
+		for (String change : changes) {
+			if (change != null && !change.isBlank()) {
+				result.append("• ")
+						.append(change)
+						.append(System.lineSeparator());
+			}
+		}
+
+		addTextSection("Changes", result.toString());
 	}
 
 	private String formatImprovement(JaideImprovement improvement, String originalCode) {
