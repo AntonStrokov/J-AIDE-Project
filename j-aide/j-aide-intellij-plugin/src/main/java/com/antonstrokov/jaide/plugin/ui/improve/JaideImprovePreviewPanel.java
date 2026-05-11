@@ -7,16 +7,23 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.ui.EditorTextField;
+import com.intellij.openapi.editor.EditorFactory;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class JaideImprovePreviewPanel extends JPanel {
-
+	private final Project project;
 	private final JPanel contentPanel;
 
-	public JaideImprovePreviewPanel(String initialText) {
+	public JaideImprovePreviewPanel(Project project, String initialText) {
 		super(new BorderLayout());
+
+		this.project = project;
 
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
@@ -111,9 +118,9 @@ public class JaideImprovePreviewPanel extends JPanel {
 		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
 		titleLabel.setBorder(JBUI.Borders.emptyTop(12));
 
-		JTextArea codeArea = createCodeArea(code);
+		EditorTextField codeField = createCodeField(code);
 
-		JBScrollPane codeScrollPane = new JBScrollPane(codeArea);
+		JBScrollPane codeScrollPane = new JBScrollPane(codeField);
 		codeScrollPane.setAlignmentX(LEFT_ALIGNMENT);
 		codeScrollPane.setBorder(JBUI.Borders.compound(
 				JBUI.Borders.customLine(JBColor.border(), 1),
@@ -125,22 +132,42 @@ public class JaideImprovePreviewPanel extends JPanel {
 		contentPanel.add(codeScrollPane);
 	}
 
-	private JTextArea createCodeArea(String code) {
-		JTextArea codeArea = new JTextArea(code);
-		codeArea.setEditable(false);
-		codeArea.setLineWrap(false);
-		codeArea.setWrapStyleWord(false);
-		codeArea.setFont(
-				EditorColorsManager.getInstance()
-						.getGlobalScheme()
-						.getFont(EditorFontType.PLAIN)
-		);
-		codeArea.setBackground(JBColor.PanelBackground);
-		codeArea.setForeground(JBColor.foreground());
-		codeArea.setBorder(JBUI.Borders.empty(0));
-		codeArea.setTabSize(4);
+	private EditorTextField createCodeField(String code) {
+		FileType javaFileType = FileTypeManager.getInstance().getFileTypeByExtension("java");
 
-		return codeArea;
+		EditorTextField codeField = new EditorTextField(
+				EditorFactory.getInstance().createDocument(code),
+				project,
+				javaFileType,
+				true,
+				false
+		);
+
+		codeField.setOneLineMode(false);
+		codeField.setViewer(true);
+		codeField.setFontInheritedFromLAF(false);
+		codeField.setAlignmentX(LEFT_ALIGNMENT);
+		codeField.setPreferredSize(new Dimension(
+				10,
+				calculateCodeBlockHeight(code)
+		));
+
+		return codeField;
+	}
+
+	private int calculateCodeBlockHeight(String code) {
+		int lineCount = code == null || code.isBlank()
+				? 1
+				: code.split("\\R", -1).length;
+
+		int lineHeight = EditorColorsManager.getInstance()
+				.getGlobalScheme()
+				.getEditorFontSize() + 8;
+
+		int minHeight = 80;
+		int maxHeight = 260;
+
+		return Math.max(minHeight, Math.min(maxHeight, lineCount * lineHeight + 24));
 	}
 
 	private void addChangesSection(java.util.List<String> changes) {

@@ -183,7 +183,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel.add(applyButton);
 		panel.add(actionsPanel, BorderLayout.NORTH);
 
-		previewPanel = new JaideImprovePreviewPanel(JaideResultState.getLatestSummary());
+		previewPanel = new JaideImprovePreviewPanel(project, JaideResultState.getLatestSummary());
 		panel.add(previewPanel, BorderLayout.CENTER);
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);
