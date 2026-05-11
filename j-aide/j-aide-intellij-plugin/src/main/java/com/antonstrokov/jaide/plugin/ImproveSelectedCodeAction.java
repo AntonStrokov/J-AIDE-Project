@@ -8,10 +8,10 @@ import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideImproveRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
-import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
-import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -58,8 +58,8 @@ public class ImproveSelectedCodeAction extends AnAction {
 							)
 					);
 
-					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
 					toolWindowService.open(e.getProject());
+					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
 
 				} catch (Exception ex) {
 					notificationService.showError(

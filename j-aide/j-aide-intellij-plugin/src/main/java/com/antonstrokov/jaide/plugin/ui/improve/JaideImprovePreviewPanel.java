@@ -43,8 +43,8 @@ public class JaideImprovePreviewPanel extends JPanel {
 		addTitle("J-Aide Improve Preview");
 		addTextSection("Status", "This is a preview only. No files were changed.");
 		addTextSection("Summary", improvement.summary());
-		addTextSection("Original Code", originalCode);
-		addTextSection("Improved Code", improvement.improvedCode());
+		addCodeSection("Original Code", originalCode);
+		addCodeSection("Improved Code", improvement.improvedCode());
 		addChangesSection(improvement.changes());
 		addTextSection("Risk Hint", improvement.riskHint());
 		addTextSection("Confidence", improvement.confidence());
@@ -100,6 +100,49 @@ public class JaideImprovePreviewPanel extends JPanel {
 		contentPanel.add(valueArea);
 	}
 
+	private void addCodeSection(String title, String code) {
+		if (code == null || code.isBlank()) {
+			return;
+		}
+
+		JBLabel titleLabel = new JBLabel(title);
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+		titleLabel.setForeground(JBColor.foreground());
+		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+		titleLabel.setBorder(JBUI.Borders.emptyTop(12));
+
+		JTextArea codeArea = createCodeArea(code);
+
+		JBScrollPane codeScrollPane = new JBScrollPane(codeArea);
+		codeScrollPane.setAlignmentX(LEFT_ALIGNMENT);
+		codeScrollPane.setBorder(JBUI.Borders.compound(
+				JBUI.Borders.customLine(JBColor.border(), 1),
+				JBUI.Borders.empty(8)
+		));
+
+		contentPanel.add(titleLabel);
+		contentPanel.add(Box.createVerticalStrut(4));
+		contentPanel.add(codeScrollPane);
+	}
+
+	private JTextArea createCodeArea(String code) {
+		JTextArea codeArea = new JTextArea(code);
+		codeArea.setEditable(false);
+		codeArea.setLineWrap(false);
+		codeArea.setWrapStyleWord(false);
+		codeArea.setFont(
+				EditorColorsManager.getInstance()
+						.getGlobalScheme()
+						.getFont(EditorFontType.PLAIN)
+		);
+		codeArea.setBackground(JBColor.PanelBackground);
+		codeArea.setForeground(JBColor.foreground());
+		codeArea.setBorder(JBUI.Borders.empty(0));
+		codeArea.setTabSize(4);
+
+		return codeArea;
+	}
+
 	private void addChangesSection(java.util.List<String> changes) {
 		if (changes == null || changes.isEmpty()) {
 			return;
@@ -116,76 +159,5 @@ public class JaideImprovePreviewPanel extends JPanel {
 		}
 
 		addTextSection("Changes", result.toString());
-	}
-
-	private String formatImprovement(JaideImprovement improvement, String originalCode) {
-		StringBuilder result = new StringBuilder();
-
-		result.append("""
-				J-Aide Improve Preview
-				======================
-				
-				This is a preview only. No files were changed.
-				
-				""");
-
-		appendSection(result, "Summary", improvement.summary());
-		appendCodeBlock(result, "Original Code", originalCode);
-		appendCodeBlock(result, "Improved Code", improvement.improvedCode());
-		appendChanges(result, improvement.changes());
-		appendSection(result, "Risk Hint", improvement.riskHint());
-		appendSection(result, "Confidence", improvement.confidence());
-
-		return result.toString();
-	}
-
-	private void appendSection(StringBuilder result, String title, String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
-			return;
-		}
-
-		result.append(title)
-				.append(System.lineSeparator())
-				.append("-".repeat(title.length()))
-				.append(System.lineSeparator())
-				.append(value)
-				.append(System.lineSeparator())
-				.append(System.lineSeparator());
-	}
-
-	private void appendCodeBlock(StringBuilder result, String title, String value) {
-		if (value == null || value.isBlank()) {
-			return;
-		}
-
-		result.append(title)
-				.append(System.lineSeparator())
-				.append("=".repeat(title.length()))
-				.append(System.lineSeparator())
-				.append(System.lineSeparator())
-				.append(value)
-				.append(System.lineSeparator())
-				.append(System.lineSeparator());
-	}
-
-	private void appendChanges(StringBuilder result, java.util.List<String> changes) {
-		if (changes == null || changes.isEmpty()) {
-			return;
-		}
-
-		result.append("Changes")
-				.append(System.lineSeparator())
-				.append("-------")
-				.append(System.lineSeparator());
-
-		for (String change : changes) {
-			if (change != null && !change.isBlank()) {
-				result.append("- ")
-						.append(change)
-						.append(System.lineSeparator());
-			}
-		}
-
-		result.append(System.lineSeparator());
 	}
 }
