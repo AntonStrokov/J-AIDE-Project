@@ -1,5 +1,9 @@
 package com.antonstrokov.jaide.plugin.ui;
 
+import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
+import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
+import javax.swing.JButton;
+import java.awt.FlowLayout;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.state.JaideResultState;
@@ -19,6 +23,7 @@ import java.awt.BorderLayout;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JTextArea resultTextArea;
+	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		String formattedResult = formatExplanation(explanation);
@@ -142,6 +147,29 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+
+		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+
+		JButton showDiffButton = new JButton("Show Diff");
+		showDiffButton.addActionListener(event -> {
+			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
+
+			if (latestImprovement == null) {
+				return;
+			}
+
+			new JaideToolWindowService().hide(project);
+
+			diffViewerService.showImproveDiff(
+					project,
+					latestImprovement.originalCode(),
+					latestImprovement.improvedCode(),
+					latestImprovement.fileName()
+			);
+		});
+
+		actionsPanel.add(showDiffButton);
+		panel.add(actionsPanel, BorderLayout.NORTH);
 
 		resultTextArea = new JTextArea(JaideResultState.getLatestSummary());
 		resultTextArea.setEditable(false);
