@@ -15,6 +15,10 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.editor.colors.EditorFontType;
+import com.intellij.ui.JBColor;
+import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -189,6 +193,15 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		resultTextArea.setEditable(false);
 		resultTextArea.setLineWrap(true);
 		resultTextArea.setWrapStyleWord(true);
+		resultTextArea.setFont(
+				EditorColorsManager.getInstance()
+						.getGlobalScheme()
+						.getFont(EditorFontType.PLAIN)
+		);
+		resultTextArea.setBackground(JBColor.PanelBackground);
+		resultTextArea.setForeground(JBColor.foreground());
+		resultTextArea.setBorder(JBUI.Borders.empty(12));
+		resultTextArea.setTabSize(4);
 
 		JBScrollPane scrollPane = new JBScrollPane(resultTextArea);
 		panel.add(scrollPane, BorderLayout.CENTER);
