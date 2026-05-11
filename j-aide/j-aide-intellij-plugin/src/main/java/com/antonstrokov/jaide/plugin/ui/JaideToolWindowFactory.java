@@ -44,7 +44,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		ApplicationManager.getApplication().invokeLater(() -> {
 			if (previewPanel != null) {
-				previewPanel.updateText(formattedResult);
+				previewPanel.updateImprovement(improvement, originalCode);
 			}
 		});
 	}
