@@ -1,11 +1,11 @@
 package com.antonstrokov.jaide.plugin.ui;
 
-import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
-import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
-import javax.swing.JButton;
-import java.awt.FlowLayout;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
+import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
+import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.state.JaideResultState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -16,14 +16,14 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
-	private static JTextArea resultTextArea;
 	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
+	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
+	private static final JaideNotificationService notificationService = new JaideNotificationService();
+	private static JTextArea resultTextArea;
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		String formattedResult = formatExplanation(explanation);
@@ -76,12 +76,12 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		StringBuilder result = new StringBuilder();
 
 		result.append("""
-        J-Aide Improve Preview
-        ======================
-        
-        This is a preview only. No files were changed.
-        
-        """);
+				J-Aide Improve Preview
+				======================
+				
+				This is a preview only. No files were changed.
+				
+				""");
 
 		appendSection(result, "Summary", improvement.summary());
 		appendCodeBlock(result, "Original Code", originalCode);
@@ -155,6 +155,12 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
 
 			if (latestImprovement == null) {
+				notificationService.showWarning(project, "No improvement to show in diff yet");
+				return;
+			}
+
+			if (latestImprovement.originalCode() == null || latestImprovement.improvedCode() == null) {
+				notificationService.showWarning(project, "Cannot show diff: improvement data is incomplete");
 				return;
 			}
 
@@ -168,7 +174,15 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			);
 		});
 
+		JButton applyButton = new JButton("Apply");
+		applyButton.addActionListener(event -> {
+			applyImprovementService.applyLatestImprovement(project);
+
+			new JaideToolWindowService().hide(project);
+		});
+
 		actionsPanel.add(showDiffButton);
+		actionsPanel.add(applyButton);
 		panel.add(actionsPanel, BorderLayout.NORTH);
 
 		resultTextArea = new JTextArea(JaideResultState.getLatestSummary());

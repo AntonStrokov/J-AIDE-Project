@@ -55,7 +55,8 @@ public class JaideEditorContextExtractor {
 				selectionEnd,
 				projectName,
 				moduleName,
-				ideVersion
+				ideVersion,
+				editor.getDocument()
 		);
 	}
 }

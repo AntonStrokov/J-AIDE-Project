@@ -1,5 +1,7 @@
 package com.antonstrokov.jaide.plugin.state;
 
+import com.intellij.openapi.editor.Document;
+
 public record JaideLastImprovement(
 		String originalCode,
 		String improvedCode,
@@ -9,6 +11,7 @@ public record JaideLastImprovement(
 		int lineStart,
 		int lineEnd,
 		int selectionStart,
-		int selectionEnd
+		int selectionEnd,
+		Document document
 ) {
 }

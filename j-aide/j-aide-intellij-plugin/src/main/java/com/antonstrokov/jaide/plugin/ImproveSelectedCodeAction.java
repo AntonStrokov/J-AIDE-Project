@@ -53,7 +53,8 @@ public class ImproveSelectedCodeAction extends AnAction {
 									context.lineStart(),
 									context.lineEnd(),
 									context.selectionStart(),
-									context.selectionEnd()
+									context.selectionEnd(),
+									context.document()
 							)
 					);
 

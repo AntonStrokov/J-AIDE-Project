@@ -1,5 +1,7 @@
 package com.antonstrokov.jaide.plugin.context;
 
+import com.intellij.openapi.editor.Document;
+
 public record JaideEditorContext(
 		String selectedCode,
 		String fileName,
@@ -9,6 +11,7 @@ public record JaideEditorContext(
 		int selectionEnd,
 		String projectName,
 		String moduleName,
-		String ideVersion
+		String ideVersion,
+		Document document
 ) {
 }

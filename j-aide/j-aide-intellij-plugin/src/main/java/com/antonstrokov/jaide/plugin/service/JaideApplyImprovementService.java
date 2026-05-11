@@ -5,27 +5,30 @@ import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 
 public class JaideApplyImprovementService {
 
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 
-	public void applyLatestImprovement(Project project, Editor editor) {
+	public void applyLatestImprovement(Project project) {
 		if (!JaideImprovementState.hasLatestImprovement()) {
 			notificationService.showWarning(project, "No improvement to apply yet");
 			return;
 		}
 
-		if (editor == null || project == null) {
-			notificationService.showWarning(project, "No active editor found");
+		if (project == null) {
+			notificationService.showWarning(null, "No active project found");
 			return;
 		}
 
 		JaideLastImprovement improvement = JaideImprovementState.getLatestImprovement();
+		Document document = improvement.document();
 
-		Document document = editor.getDocument();
+		if (document == null) {
+			notificationService.showWarning(project, "Cannot apply improvement: original document is no longer available");
+			return;
+		}
 
 		if (!isValidSelectionRange(document, improvement)) {
 			notificationService.showWarning(
