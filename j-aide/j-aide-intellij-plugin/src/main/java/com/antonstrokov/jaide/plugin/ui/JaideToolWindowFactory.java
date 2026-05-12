@@ -7,6 +7,7 @@ import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.state.JaideResultState;
+import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -23,7 +24,9 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 	private static final JaideNotificationService notificationService = new JaideNotificationService();
-	private static JaideImprovePreviewPanel previewPanel;
+	private static JPanel previewContainer;
+	private static JaideImprovePreviewPanel improvePreviewPanel;
+	private static JaideExplanationPreviewPanel explanationPreviewPanel;
 	private static JPanel actionsPanel;
 
 	public static void updateExplanation(JaideExplanation explanation) {
@@ -32,8 +35,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JaideResultState.setLatestSummary(formattedResult);
 
 		ApplicationManager.getApplication().invokeLater(() -> {
-			if (previewPanel != null) {
-				previewPanel.updateText(formattedResult);
+
+			if (previewContainer != null && explanationPreviewPanel != null) {
+				previewContainer.removeAll();
+				explanationPreviewPanel.updateExplanation(explanation);
+				previewContainer.add(explanationPreviewPanel, BorderLayout.CENTER);
+				previewContainer.revalidate();
+				previewContainer.repaint();
 			}
 
 			if (actionsPanel != null) {
@@ -48,8 +56,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JaideResultState.setLatestSummary(formattedResult);
 
 		ApplicationManager.getApplication().invokeLater(() -> {
-			if (previewPanel != null) {
-				previewPanel.updateImprovement(improvement, originalCode);
+
+			if (previewContainer != null && improvePreviewPanel != null) {
+				previewContainer.removeAll();
+				improvePreviewPanel.updateImprovement(improvement, originalCode);
+				previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
+				previewContainer.revalidate();
+				previewContainer.repaint();
 			}
 
 			if (actionsPanel != null) {
@@ -192,8 +205,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel.add(applyButton);
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 
-		previewPanel = new JaideImprovePreviewPanel(project, JaideResultState.getLatestSummary());
-		panel.add(previewPanel, BorderLayout.CENTER);
+		previewContainer = new JPanel(new BorderLayout());
+
+		improvePreviewPanel = new JaideImprovePreviewPanel(project, JaideResultState.getLatestSummary());
+		explanationPreviewPanel = new JaideExplanationPreviewPanel(JaideResultState.getLatestSummary());
+
+		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
+		panel.add(previewContainer, BorderLayout.CENTER);
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);
 		toolWindow.getContentManager().addContent(content);
