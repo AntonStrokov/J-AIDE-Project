@@ -181,7 +181,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		actionsPanel.add(showDiffButton);
 		actionsPanel.add(applyButton);
-		panel.add(actionsPanel, BorderLayout.NORTH);
+		panel.add(actionsPanel, BorderLayout.SOUTH);
 
 		previewPanel = new JaideImprovePreviewPanel(project, JaideResultState.getLatestSummary());
 		panel.add(previewPanel, BorderLayout.CENTER);
