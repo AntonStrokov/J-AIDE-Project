@@ -41,8 +41,8 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 					JaideExplanation explanation = backendClient.explain(request);
 
-					JaideToolWindowFactory.updateExplanation(explanation);
 					toolWindowService.open(e.getProject());
+					JaideToolWindowFactory.updateExplanation(explanation);
 
 				} catch (Exception ex) {
 					notificationService.showError(

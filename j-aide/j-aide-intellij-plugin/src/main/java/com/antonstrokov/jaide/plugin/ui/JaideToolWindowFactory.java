@@ -24,6 +24,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 	private static final JaideNotificationService notificationService = new JaideNotificationService();
 	private static JaideImprovePreviewPanel previewPanel;
+	private static JPanel actionsPanel;
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		String formattedResult = formatExplanation(explanation);
@@ -33,6 +34,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			if (previewPanel != null) {
 				previewPanel.updateText(formattedResult);
+			}
+
+			if (actionsPanel != null) {
+				actionsPanel.setVisible(false);
 			}
 		});
 	}
@@ -45,6 +50,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			if (previewPanel != null) {
 				previewPanel.updateImprovement(improvement, originalCode);
+			}
+
+			if (actionsPanel != null) {
+				actionsPanel.setVisible(true);
 			}
 		});
 	}
@@ -146,7 +155,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 
 		JButton showDiffButton = new JButton("Show Diff");
 		showDiffButton.addActionListener(event -> {
