@@ -1,17 +1,17 @@
 package com.antonstrokov.jaide.plugin.ui.improve;
 
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
-import com.intellij.util.ui.JBUI;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.EditorTextField;
-import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
