@@ -80,13 +80,29 @@ public class JaideImprovePreviewPanel extends JPanel {
 	}
 
 	private void addTitle(String title) {
-		JBLabel label = new JBLabel(title);
-		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 2f));
-		label.setForeground(JBColor.foreground());
+		JBLabel label = new JBLabel(title.toUpperCase());
+		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 4f));
+		label.setForeground(new JBColor(
+				new Color(0x1F2937),
+				new Color(0xE6EDF3)
+		));
 		label.setAlignmentX(LEFT_ALIGNMENT);
-		label.setBorder(JBUI.Borders.emptyBottom(8));
+		label.setBorder(JBUI.Borders.empty(4, 0, 22, 0));
 
 		contentPanel.add(label);
+	}
+
+	private JBLabel createSectionTitleLabel(String title) {
+		JBLabel titleLabel = new JBLabel(title.toUpperCase());
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize() + 1.5f));
+		titleLabel.setForeground(new JBColor(
+				new Color(0x0B6EBD),
+				new Color(0x7AB7FF)
+		));
+		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+		titleLabel.setBorder(JBUI.Borders.empty(18, 0, 8, 0));
+
+		return titleLabel;
 	}
 
 	private void addTextSection(String title, String value) {
@@ -94,16 +110,13 @@ public class JaideImprovePreviewPanel extends JPanel {
 			return;
 		}
 
-		JBLabel titleLabel = new JBLabel(title);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-		titleLabel.setForeground(JBColor.foreground());
-		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
-		titleLabel.setBorder(JBUI.Borders.emptyTop(10));
+		JBLabel titleLabel = createSectionTitleLabel(title);
 
 		JTextArea valueArea = createTextArea(value);
 		valueArea.setBorder(JBUI.Borders.emptyTop(4));
 
 		contentPanel.add(titleLabel);
+		contentPanel.add(Box.createVerticalStrut(4));
 		contentPanel.add(valueArea);
 	}
 
@@ -112,11 +125,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 			return;
 		}
 
-		JBLabel titleLabel = new JBLabel(title);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-		titleLabel.setForeground(JBColor.foreground());
-		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
-		titleLabel.setBorder(JBUI.Borders.emptyTop(12));
+		JBLabel titleLabel = createSectionTitleLabel(title);
 
 		EditorTextField codeField = createCodeField(code);
 
