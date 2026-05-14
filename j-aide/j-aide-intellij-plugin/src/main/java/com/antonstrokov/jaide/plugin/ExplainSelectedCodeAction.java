@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin;
 
+import com.antonstrokov.jaide.plugin.client.JaideBackendClient;
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;

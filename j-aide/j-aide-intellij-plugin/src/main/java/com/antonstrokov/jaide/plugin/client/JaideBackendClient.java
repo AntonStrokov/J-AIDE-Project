@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin;
+package com.antonstrokov.jaide.plugin.client;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.backend.JaideBackendExplainRequest;
@@ -78,6 +78,12 @@ public class JaideBackendClient {
 				request,
 				HttpResponse.BodyHandlers.ofString()
 		);
+
+		int statusCode = response.statusCode();
+
+		if (statusCode < 200 || statusCode >= 300) {
+			throw new JaideBackendException(statusCode, response.body());
+		}
 
 		return response.body();
 	}
