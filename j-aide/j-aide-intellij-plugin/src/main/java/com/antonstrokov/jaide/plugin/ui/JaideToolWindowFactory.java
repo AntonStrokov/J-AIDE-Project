@@ -30,10 +30,6 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JPanel actionsPanel;
 
 	public static void updateExplanation(JaideExplanation explanation) {
-		String formattedResult = formatExplanation(explanation);
-
-		JaideResultState.setLatestSummary(formattedResult);
-
 		ApplicationManager.getApplication().invokeLater(() -> {
 
 			if (previewContainer != null && explanationPreviewPanel != null) {
@@ -51,10 +47,6 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	}
 
 	public static void updateImprovement(JaideImprovement improvement, String originalCode) {
-		String formattedResult = formatImprovement(improvement, originalCode);
-
-		JaideResultState.setLatestSummary(formattedResult);
-
 		ApplicationManager.getApplication().invokeLater(() -> {
 
 			if (previewContainer != null && improvePreviewPanel != null) {
@@ -69,98 +61,6 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				actionsPanel.setVisible(true);
 			}
 		});
-	}
-
-	private static String formatExplanation(JaideExplanation explanation) {
-		StringBuilder result = new StringBuilder();
-
-		result.append("""
-				J-Aide Explanation
-				==================
-				
-				""");
-
-		appendSection(result, "Summary", explanation.summary());
-		appendSection(result, "Details", explanation.details());
-		appendSection(result, "Complexity", explanation.complexity());
-		appendSection(result, "Suggestion", explanation.suggestion());
-		appendSection(result, "Best Practice", explanation.bestPractice());
-		appendSection(result, "Risk Hint", explanation.riskHint());
-		appendSection(result, "Confidence", explanation.confidence());
-		appendSection(result, "Code Smell", explanation.codeSmell());
-
-		return result.toString();
-	}
-
-	private static String formatImprovement(JaideImprovement improvement, String originalCode) {
-		StringBuilder result = new StringBuilder();
-
-		result.append("""
-				J-Aide Improve Preview
-				======================
-				
-				This is a preview only. No files were changed.
-				
-				""");
-
-		appendSection(result, "Summary", improvement.summary());
-		appendCodeBlock(result, "Original Code", originalCode);
-		appendCodeBlock(result, "Improved Code", improvement.improvedCode());
-		appendChanges(result, improvement.changes());
-		appendSection(result, "Risk Hint", improvement.riskHint());
-		appendSection(result, "Confidence", improvement.confidence());
-
-		return result.toString();
-	}
-
-	private static void appendSection(StringBuilder result, String title, String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
-			return;
-		}
-
-		result.append(title)
-				.append(System.lineSeparator())
-				.append("-".repeat(title.length()))
-				.append(System.lineSeparator())
-				.append(value)
-				.append(System.lineSeparator())
-				.append(System.lineSeparator());
-	}
-
-	private static void appendCodeBlock(StringBuilder result, String title, String value) {
-		if (value == null || value.isBlank()) {
-			return;
-		}
-
-		result.append(title)
-				.append(System.lineSeparator())
-				.append("=".repeat(title.length()))
-				.append(System.lineSeparator())
-				.append(System.lineSeparator())
-				.append(value)
-				.append(System.lineSeparator())
-				.append(System.lineSeparator());
-	}
-
-	private static void appendChanges(StringBuilder result, java.util.List<String> changes) {
-		if (changes == null || changes.isEmpty()) {
-			return;
-		}
-
-		result.append("Changes")
-				.append(System.lineSeparator())
-				.append("-------")
-				.append(System.lineSeparator());
-
-		for (String change : changes) {
-			if (change != null && !change.isBlank()) {
-				result.append("- ")
-						.append(change)
-						.append(System.lineSeparator());
-			}
-		}
-
-		result.append(System.lineSeparator());
 	}
 
 	@Override
@@ -208,8 +108,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		previewContainer = new JPanel(new BorderLayout());
 
-		improvePreviewPanel = new JaideImprovePreviewPanel(project, JaideResultState.getLatestSummary());
-		explanationPreviewPanel = new JaideExplanationPreviewPanel(JaideResultState.getLatestSummary());
+		improvePreviewPanel = new JaideImprovePreviewPanel(project, "");
+		explanationPreviewPanel = new JaideExplanationPreviewPanel("");
 
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
 		panel.add(previewContainer, BorderLayout.CENTER);
