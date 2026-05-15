@@ -87,13 +87,9 @@ public class JaideExplanationPreviewPanel extends JPanel {
 	}
 
 	private void addTextSection(String title, String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
-			return;
-		}
-
 		JBLabel titleLabel = createSectionTitleLabel(title);
 
-		JTextArea valueArea = createTextArea(value);
+		JTextArea valueArea = createTextArea(normalizeSectionValue(value));
 		valueArea.setBorder(JBUI.Borders.emptyTop(4));
 
 		contentPanel.add(titleLabel);
@@ -112,5 +108,13 @@ public class JaideExplanationPreviewPanel extends JPanel {
 		titleLabel.setBorder(JBUI.Borders.empty(18, 0, 8, 0));
 
 		return titleLabel;
+	}
+
+	private String normalizeSectionValue(String value) {
+		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
+			return "Not provided by model.";
+		}
+
+		return value;
 	}
 }

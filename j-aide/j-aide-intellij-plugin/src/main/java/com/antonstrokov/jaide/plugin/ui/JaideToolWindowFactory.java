@@ -169,6 +169,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
 		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		actionsPanel.setVisible(false);
 
 		JButton showDiffButton = new JButton("Show Diff");
 		showDiffButton.addActionListener(event -> {
