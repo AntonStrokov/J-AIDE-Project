@@ -15,9 +15,12 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 public class ExplainSelectedCodeAction extends AnAction {
+	private static final Logger log = Logger.getInstance(ExplainSelectedCodeAction.class);
+
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
@@ -27,25 +30,43 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
+		log.info("Explain selected code action started");
+
 		JaideEditorContext context = contextExtractor.extract(e);
 
 		if (context == null) {
+			log.warn("Explain action stopped: no selected code");
 			notificationService.showWarning(e.getProject(), "Please select code first");
 			return;
 		}
+
+		log.info("Explain context extracted, fileName=" + context.fileName()
+				+ ", selectedCodeLength=" + context.selectedCode().length()
+				+ ", lineStart=" + context.lineStart()
+				+ ", lineEnd=" + context.lineEnd());
 
 		new Task.Backgroundable(e.getProject(), JaideConstants.EXPLAIN_TASK_TITLE, false) {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
+					log.info("Creating explain request");
+
 					JaideExplainRequest request = requestFactory.create(context);
 
+					log.info("Sending explain request");
+
 					JaideExplanation explanation = backendClient.explain(request);
+
+					log.info("Explain response processed, updating tool window");
 
 					toolWindowService.open(e.getProject());
 					JaideToolWindowFactory.updateExplanation(explanation);
 
+					log.info("Explain tool window updated");
+
 				} catch (Exception ex) {
+					log.warn("Explain action failed: " + ex.getMessage(), ex);
+
 					notificationService.showError(
 							e.getProject(),
 							errorMessageBuilder.build(ex)
