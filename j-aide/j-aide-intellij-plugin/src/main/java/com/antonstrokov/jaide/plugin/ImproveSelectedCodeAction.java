@@ -17,9 +17,12 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 public class ImproveSelectedCodeAction extends AnAction {
+	private static final Logger log = Logger.getInstance(ImproveSelectedCodeAction.class);
+
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
@@ -29,20 +32,37 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
+		log.info("Improve selected code action started");
+
 		JaideEditorContext context = contextExtractor.extract(e);
 
 		if (context == null) {
+			log.warn("Improve action stopped: no selected code");
 			notificationService.showWarning(e.getProject(), "Please select code first");
 			return;
 		}
+
+		log.info("Improve context extracted, fileName=" + context.fileName()
+				+ ", selectedCodeLength=" + context.selectedCode().length()
+				+ ", lineStart=" + context.lineStart()
+				+ ", lineEnd=" + context.lineEnd());
 
 		new Task.Backgroundable(e.getProject(), JaideConstants.IMPROVE_TASK_TITLE, false) {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
+					log.info("Creating improve request");
+
 					JaideImproveRequest request = requestFactory.create(context);
 
+					log.info("Sending improve request");
+
 					JaideImprovement improvement = backendClient.improve(request);
+
+					log.info("Improve response processed, improvedCodeLength="
+							+ getLength(improvement.improvedCode()));
+
+					log.info("Storing latest improvement");
 
 					JaideImprovementState.setLatestImprovement(
 							new JaideLastImprovement(
@@ -59,10 +79,16 @@ public class ImproveSelectedCodeAction extends AnAction {
 							)
 					);
 
+					log.info("Latest improvement stored, updating tool window");
+
 					toolWindowService.open(e.getProject());
 					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
 
+					log.info("Improve tool window updated");
+
 				} catch (Exception ex) {
+					log.warn("Improve action failed: " + ex.getMessage(), ex);
+
 					notificationService.showError(
 							e.getProject(),
 							errorMessageBuilder.build(ex)
@@ -70,5 +96,9 @@ public class ImproveSelectedCodeAction extends AnAction {
 				}
 			}
 		}.queue();
+	}
+
+	private int getLength(String value) {
+		return value == null ? 0 : value.length();
 	}
 }
