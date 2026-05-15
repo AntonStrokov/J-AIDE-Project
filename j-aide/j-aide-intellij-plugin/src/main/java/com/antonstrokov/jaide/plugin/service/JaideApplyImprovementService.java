@@ -9,18 +9,24 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class JaideApplyImprovementService {
+	private static final Logger log = Logger.getInstance(JaideApplyImprovementService.class);
 
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 
 	public void applyLatestImprovement(Project project) {
+		log.info("Apply latest improvement started");
+
 		if (!JaideImprovementState.hasLatestImprovement()) {
+			log.warn("Apply stopped: no latest improvement found");
 			notificationService.showWarning(project, "No improvement to apply yet");
 			return;
 		}
 
 		if (project == null) {
+			log.warn("Apply stopped: project is null");
 			notificationService.showWarning(null, "No active project found");
 			return;
 		}
@@ -28,12 +34,25 @@ public class JaideApplyImprovementService {
 		JaideLastImprovement improvement = JaideImprovementState.getLatestImprovement();
 		Document document = improvement.document();
 
+		log.info("Latest improvement loaded, fileName=" + improvement.fileName()
+				+ ", projectName=" + improvement.projectName()
+				+ ", moduleName=" + improvement.moduleName()
+				+ ", originalCodeLength=" + getLength(improvement.originalCode())
+				+ ", improvedCodeLength=" + getLength(improvement.improvedCode())
+				+ ", selectionStart=" + improvement.selectionStart()
+				+ ", selectionEnd=" + improvement.selectionEnd());
+
 		if (document == null) {
+			log.warn("Apply stopped: original document is null");
 			notificationService.showWarning(project, "Cannot apply improvement: original document is no longer available");
 			return;
 		}
 
 		if (!isValidSelectionRange(document, improvement)) {
+			log.warn("Apply stopped: invalid selection range, documentLength=" + document.getTextLength()
+					+ ", selectionStart=" + improvement.selectionStart()
+					+ ", selectionEnd=" + improvement.selectionEnd());
+
 			notificationService.showWarning(
 					project,
 					"Cannot apply improvement: original selection range is no longer valid"
@@ -42,6 +61,8 @@ public class JaideApplyImprovementService {
 		}
 
 		if (!isOriginalCodeStillPresent(document, improvement)) {
+			log.warn("Apply stopped: original selected code has changed since improvement was generated");
+
 			notificationService.showWarning(
 					project,
 					"Cannot apply improvement: selected code has changed since improvement was generated"
@@ -49,20 +70,28 @@ public class JaideApplyImprovementService {
 			return;
 		}
 
+		log.info("Apply safety checks passed, replacing document text");
+
 		WriteCommandAction.runWriteCommandAction(project, () -> document.replaceString(
 				improvement.selectionStart(),
 				improvement.selectionEnd(),
 				improvement.improvedCode()
 		));
 
+		log.info("Document text replaced, opening original file");
+
 		openOriginalFile(project, document);
 
 		JaideImprovementState.clear();
+
+		log.info("Latest improvement state cleared");
 
 		notificationService.showInfo(
 				project,
 				"Improvement applied. Use IDE Undo/Redo to revert or reapply."
 		);
+
+		log.info("Apply latest improvement finished successfully");
 	}
 
 	private boolean isValidSelectionRange(Document document, JaideLastImprovement improvement) {
@@ -96,5 +125,9 @@ public class JaideApplyImprovementService {
 				true,
 				true
 		);
+	}
+
+	private int getLength(String value) {
+		return value == null ? 0 : value.length();
 	}
 }
