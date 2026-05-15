@@ -18,6 +18,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.diagnostic.Logger;
+import com.antonstrokov.jaide.plugin.service.JaideImprovementValidationService;
 import org.jetbrains.annotations.NotNull;
 
 public class ImproveSelectedCodeAction extends AnAction {
@@ -29,6 +30,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideImproveRequestFactory requestFactory = new JaideImproveRequestFactory();
+	private final JaideImprovementValidationService validationService = new JaideImprovementValidationService();
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -61,6 +63,19 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 					log.info("Improve response processed, improvedCodeLength="
 							+ getLength(improvement.improvedCode()));
+
+					if (validationService.isNoOpImprovement(context.selectedCode(), improvement.improvedCode())) {
+						log.warn("Improve action stopped: no-op improvement detected, selectedCodeLength="
+								+ context.selectedCode().length()
+								+ ", improvedCodeLength=" + getLength(improvement.improvedCode()));
+
+						notificationService.showWarning(
+								e.getProject(),
+								"J-Aide did not find meaningful code changes. Please try again or select a different code fragment."
+						);
+
+						return;
+					}
 
 					log.info("Storing latest improvement");
 
