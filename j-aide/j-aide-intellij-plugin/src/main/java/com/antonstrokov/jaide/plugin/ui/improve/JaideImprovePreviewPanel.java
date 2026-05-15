@@ -131,6 +131,16 @@ public class JaideImprovePreviewPanel extends JPanel {
 
 		JBScrollPane codeScrollPane = new JBScrollPane(codeField);
 		codeScrollPane.setAlignmentX(LEFT_ALIGNMENT);
+		codeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		codeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		codeScrollPane.setPreferredSize(new Dimension(
+				10,
+				calculateCodeBlockViewportHeight(code)
+		));
+		codeScrollPane.setMaximumSize(new Dimension(
+				Integer.MAX_VALUE,
+				calculateCodeBlockViewportHeight(code)
+		));
 		codeScrollPane.setBorder(JBUI.Borders.compound(
 				JBUI.Borders.customLine(JBColor.border(), 1),
 				JBUI.Borders.empty(8)
@@ -157,14 +167,33 @@ public class JaideImprovePreviewPanel extends JPanel {
 		codeField.setFontInheritedFromLAF(false);
 		codeField.setAlignmentX(LEFT_ALIGNMENT);
 		codeField.setPreferredSize(new Dimension(
-				10,
-				calculateCodeBlockHeight(code)
+				calculateCodeContentWidth(code),
+				calculateCodeContentHeight(code)
 		));
 
 		return codeField;
 	}
 
-	private int calculateCodeBlockHeight(String code) {
+	private int calculateCodeBlockViewportHeight(String code) {
+		int minHeight = 80;
+		int maxHeight = 260;
+
+		return Math.max(minHeight, Math.min(maxHeight, calculateCodeContentHeight(code)));
+	}
+
+	private int calculateCodeContentWidth(String code) {
+		int maxLineLength = getMaxLineLength(code);
+		int editorFontSize = EditorColorsManager.getInstance()
+				.getGlobalScheme()
+				.getEditorFontSize();
+
+		int minWidth = 600;
+		int maxWidth = 2400;
+
+		return Math.max(minWidth, Math.min(maxWidth, maxLineLength * editorFontSize));
+	}
+
+	private int calculateCodeContentHeight(String code) {
 		int lineCount = code == null || code.isBlank()
 				? 1
 				: code.split("\\R", -1).length;
@@ -173,10 +202,21 @@ public class JaideImprovePreviewPanel extends JPanel {
 				.getGlobalScheme()
 				.getEditorFontSize() + 8;
 
-		int minHeight = 80;
-		int maxHeight = 260;
+		return lineCount * lineHeight + 24;
+	}
 
-		return Math.max(minHeight, Math.min(maxHeight, lineCount * lineHeight + 24));
+	private int getMaxLineLength(String code) {
+		if (code == null || code.isBlank()) {
+			return 1;
+		}
+
+		int maxLineLength = 1;
+
+		for (String line : code.split("\\R", -1)) {
+			maxLineLength = Math.max(maxLineLength, line.length());
+		}
+
+		return maxLineLength;
 	}
 
 	private void addChangesSection(java.util.List<String> changes) {
