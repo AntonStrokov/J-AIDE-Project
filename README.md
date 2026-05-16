@@ -290,27 +290,39 @@ Module responsibilities:
 
 Improve Code is implemented as an MVP feature.
 
-The current implementation can send selected code to the backend, ask the AI model to suggest an improved version, and display the result in the J-Aide Tool Window.
+The current implementation sends selected code to the backend, asks the AI model to suggest an improved version, and displays the result in the J-Aide Tool Window.
 
-Applying changes directly to files is not implemented yet. Diff View is planned separately and will be needed before safe code replacement.
+Current behavior:
 
-Planned backend endpoint:
+- reads selected code from the active editor;
+- sends selected code and editor context to the backend;
+- calls the backend endpoint `POST /ai/improve`;
+- asks the AI model to suggest an improved version of the selected code;
+- returns a structured improvement result;
+- displays the improvement in the J-Aide Tool Window;
+- shows Original Code and Improved Code in scrollable editor-like blocks;
+- allows the user to open the IntelliJ side-by-side Diff Viewer manually;
+- allows the user to apply the latest improvement explicitly.
 
-```text
-POST /ai/improve
-```
+Current status:
 
-This endpoint will be separate from `/ai/explain` because code explanation and code improvement are different AI actions with different prompts, response structures, and future UI behavior.
+- Improve Code backend AI flow is implemented.
+- `POST /ai/improve` is available.
+- IntelliJ plugin action `J-Aide: Improve Selected Code` is registered.
+- Suggested improved code is displayed in the J-Aide Tool Window.
+- Tool Window preview is structured and uses dedicated UI panels.
+- Long-code backend errors are displayed as user-friendly plugin errors.
+- Plugin-side no-op validation prevents saving meaningless improvements when improved code equals original code after normalization.
+- Applying changes is implemented as an MVP through `JaideApplyImprovementService`.
+- Apply uses safety checks before modifying the document.
+- Undo is supported through IntelliJ `WriteCommandAction`.
 
-The goal of this feature is to help developers improve selected code without manually rewriting it from scratch.
+Important safety rules:
 
-Planned behavior:
-
-- read selected code from the active editor;
-- send selected code and editor context to the backend;
-- ask the AI model to suggest an improved version of the code;
-- return explanation of what was changed and why;
-- display the suggested improvement in the J-Aide Tool Window.
+- J-Aide does not change user files automatically.
+- The user must explicitly click Apply before any file is modified.
+- Before applying, the plugin checks that the original selected code still matches the current document text.
+- If the document was changed after the AI response, Apply is stopped with a warning.
 
 Possible improvement types:
 
@@ -321,61 +333,12 @@ Possible improvement types:
 - suggest safer implementation;
 - point out possible code smells.
 
-Current status:
+Future polish:
 
-- Improve Code backend AI flow is implemented.
-- `POST /ai/improve` is available.
-- IntelliJ plugin action `J-Aide: Improve Selected Code` is registered.
-- Suggested improved code is displayed in the J-Aide Tool Window.
-- Applying changes directly to files is not implemented yet.
-- Diff View is planned separately and will be needed before applying changes directly to files.
-
-Planned request contract:
-
-```json
-{
-  "code": "Selected source code",
-  "mode": "SMART",
-  "language": "java",
-  "fileName": "Example.java",
-  "lineStart": 1,
-  "lineEnd": 10,
-  "projectName": "example-project",
-  "moduleName": "app",
-  "pluginVersion": "0.1.0",
-  "ideVersion": "2025.1"
-}
-```
-
-The first version of Improve Code will reuse the same editor context fields as Explain Code.
-Later versions may add `improvementType`, for example `READABILITY`, `SAFETY`, or `PERFORMANCE`.
-
-Planned response contract:
-
-```json
-{
-  "success": true,
-  "improvement": {
-    "summary": "Short summary of improvements",
-    "improvedCode": "Improved source code",
-    "changes": [
-      "Description of change 1",
-      "Description of change 2"
-    ],
-    "riskHint": "Possible risk after applying the improvement",
-    "confidence": "medium"
-  },
-  "metadata": {
-    "traceId": "generated-trace-id",
-    "backendVersion": "0.1.0",
-    "responseTimeMs": 1234,
-    "retried": false
-  }
-}
-```
-
-The next step for this feature is Diff View and safe user-confirmed code replacement.
-
+- improve semantic validation of AI suggestions;
+- detect suspicious improvements;
+- add richer highlighting for changed lines;
+- improve confidence and risk visual indicators.
 
 ### Diff View
 
@@ -390,13 +353,28 @@ Current status:
 
 - Original Code is displayed in the J-Aide Tool Window.
 - Improved Code is displayed in the J-Aide Tool Window.
+- Code blocks support vertical and horizontal scrolling.
 - Changes are displayed as a structured list.
 - IntelliJ Diff Viewer opens with `Original` and `Improved` contents.
+- The Tool Window is hidden before opening the Diff Viewer to prevent UI overlap.
 - No files are changed automatically.
-- Applying changes directly to files is not implemented yet.
+- Apply is available as an explicit user action from the J-Aide Tool Window.
+- Apply uses `JaideApplyImprovementService`.
+- Apply checks that the original selected code still matches the current document before modifying it.
+- Undo is supported through IntelliJ `WriteCommandAction`.
 
-The next step for this feature is safe user-confirmed code replacement.
+Known issue:
 
+- Opening the Diff Viewer from the Tool Window may cause a visual flicker.
+- The Tool Window hide step is required because otherwise the Tool Window overlaps the Diff Viewer.
+- Do not remove Tool Window hiding as a quick fix.
+- Future fix should introduce a coordinated Diff opening flow or a custom J-Aide controlled diff screen.
+
+Future polish:
+
+- add a clearer Apply control inside a custom Diff screen;
+- improve visual highlighting for changed lines;
+- improve the Diff opening UX without breaking Tool Window behavior.
 
 ## Environment Configuration
 
