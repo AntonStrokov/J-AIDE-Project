@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.ui;
+package com.antonstrokov.jaide.plugin.service;
 
 import com.intellij.diff.DiffManager;
 import com.intellij.diff.contents.DiffContent;
