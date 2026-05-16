@@ -267,22 +267,25 @@ Module responsibilities:
 
 ## Capabilities Status
 
-| Capability                        | Status  | Notes                                                    |
-|-----------------------------------|---------|----------------------------------------------------------|
-| Explain selected code             | Done    | MVP implementation is working                            |
-| Read selected code from editor    | Done    | Uses active IntelliJ editor selection                    |
-| Send editor context to backend    | Done    | Includes file, project, module, IDE, and plugin metadata |
-| Detect language by file extension | Done    | Falls back to plain text when language is unknown        |
-| JSON request serialization        | Done    | Implemented with Jackson                                 |
-| JSON response parsing             | Done    | Implemented with Jackson                                 |
-| Display result in Tool Window     | Done    | Shows structured explanation in J-Aide Tool Window       |
-| Friendly error notifications      | Done    | Backend and plugin errors are handled separately         |
-| Backend capability handshake      | Done    | Available through `/backend-info`                        |
-| Improve Code                      | Done    | MVP implementation is working: backend AI flow and IntelliJ plugin action are available |
-| Refactor Code                     | Planned | Future feature from project roadmap                      |
-| Diff View                         | Done    | MVP is working: Tool Window preview and IntelliJ side-by-side diff viewer are available |
-| RAG project context               | Planned | Future backend feature using vector search               |
-| Chat with project code            | Planned | Future plugin feature                                    |
+| Capability                        | Status      | Notes                                                    |
+|-----------------------------------|-------------|----------------------------------------------------------|
+| Explain selected code             | Done        | MVP implementation is working                            |
+| Read selected code from editor    | Done        | Uses active IntelliJ editor selection                    |
+| Send editor context to backend    | Done        | Includes file, project, module, IDE, and plugin metadata |
+| Detect language by file extension | Done        | Falls back to plain text when language is unknown        |
+| JSON request serialization        | Done        | Implemented with Jackson                                 |
+| JSON response parsing             | Done        | Implemented with Jackson                                 |
+| Display result in Tool Window     | Done        | Shows structured Explain and Improve previews            |
+| Friendly error notifications      | Done        | Backend and plugin errors are handled separately         |
+| Backend capability handshake      | Done        | Available through `/backend-info`                        |
+| Improve Code                      | Done        | Backend AI flow, IntelliJ action, preview, validation    |
+| Improve no-op validation          | Done        | Stops meaningless improvements when improved code equals original code |
+| Diff View                         | Done        | Tool Window preview and IntelliJ side-by-side Diff Viewer |
+| Apply Last Improvement            | Done        | Explicit user action with safety checks and Undo support |
+| Diff Viewer flicker               | Known Issue | Tool Window hiding is required before opening Diff Viewer |
+| Refactor Code                     | Planned     | Future feature from project roadmap                      |
+| RAG project context               | Planned     | Future backend feature using vector search               |
+| Chat with project code            | Planned     | Future plugin feature                                    |
 
 ## Implemented and Planned Features
 
