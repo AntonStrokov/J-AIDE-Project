@@ -28,6 +28,9 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JaideImprovePreviewPanel improvePreviewPanel;
 	private static JaideExplanationPreviewPanel explanationPreviewPanel;
 	private static JPanel actionsPanel;
+	private static JButton showDiffButton;
+	private static JButton applyButton;
+	private static JButton backToCodeButton;
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		ApplicationManager.getApplication().invokeLater(() -> {
@@ -41,7 +44,19 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			}
 
 			if (actionsPanel != null) {
-				actionsPanel.setVisible(false);
+				actionsPanel.setVisible(true);
+			}
+
+			if (showDiffButton != null) {
+				showDiffButton.setVisible(false);
+			}
+
+			if (applyButton != null) {
+				applyButton.setVisible(false);
+			}
+
+			if (backToCodeButton != null) {
+				backToCodeButton.setVisible(true);
 			}
 		});
 	}
@@ -60,6 +75,18 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			if (actionsPanel != null) {
 				actionsPanel.setVisible(true);
 			}
+
+			if (showDiffButton != null) {
+				showDiffButton.setVisible(true);
+			}
+
+			if (applyButton != null) {
+				applyButton.setVisible(true);
+			}
+
+			if (backToCodeButton != null) {
+				backToCodeButton.setVisible(true);
+			}
 		});
 	}
 
@@ -71,7 +98,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		actionsPanel.setVisible(false);
 
-		JButton showDiffButton = new JButton("Show Diff");
+		showDiffButton = new JButton("Show Diff");
 		showDiffButton.addActionListener(event -> {
 			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
 
@@ -95,14 +122,14 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			);
 		});
 
-		JButton applyButton = new JButton("Apply");
+		applyButton = new JButton("Apply");
 		applyButton.addActionListener(event -> {
 			applyImprovementService.applyLatestImprovement(project);
 
 			new JaideToolWindowService().hide(project);
 		});
 
-		JButton backToCodeButton = new JButton("Back to Code");
+		backToCodeButton = new JButton("Back to Code");
 		backToCodeButton.addActionListener(event -> new JaideToolWindowService().hide(project));
 
 		actionsPanel.add(showDiffButton);
