@@ -102,8 +102,12 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			new JaideToolWindowService().hide(project);
 		});
 
+		JButton backToCodeButton = new JButton("Back to Code");
+		backToCodeButton.addActionListener(event -> new JaideToolWindowService().hide(project));
+
 		actionsPanel.add(showDiffButton);
 		actionsPanel.add(applyButton);
+		actionsPanel.add(backToCodeButton);
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 
 		previewContainer = new JPanel(new BorderLayout());
