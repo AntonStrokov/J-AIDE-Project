@@ -276,12 +276,13 @@ Module responsibilities:
 | JSON request serialization        | Done        | Implemented with Jackson                                 |
 | JSON response parsing             | Done        | Implemented with Jackson                                 |
 | Display result in Tool Window     | Done        | Shows structured Explain and Improve previews            |
+| Back to Code button               | Done        | Available in Explain and Improve previews to hide Tool Window and return to editor |
 | Friendly error notifications      | Done        | Backend and plugin errors are handled separately         |
 | Backend capability handshake      | Done        | Available through `/backend-info`                        |
 | Improve Code                      | Done        | Backend AI flow, IntelliJ action, preview, validation    |
 | Improve no-op validation          | Done        | Stops meaningless improvements when improved code equals original code |
-| Diff View                         | Done        | Tool Window preview and IntelliJ side-by-side Diff Viewer |
-| Apply Last Improvement            | Done        | Explicit user action with safety checks and Undo support |
+| Diff View                         | Done        | Custom J-Aide diff dialog with IntelliJ side-by-side Diff Viewer |
+| Apply Last Improvement            | Done        | Available from Tool Window and Diff dialog with safety checks and Undo support |
 | Diff Viewer flicker               | Known Issue | Tool Window hiding is required before opening Diff Viewer |
 | Refactor Code                     | Planned     | Future feature from project roadmap                      |
 | RAG project context               | Planned     | Future backend feature using vector search               |
