@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.antonstrokov.jaide.plugin.ui.diff.JaideDiffDialog;
 import com.intellij.diff.DiffManager;
 import com.intellij.diff.contents.DiffContent;
 import com.intellij.diff.DiffContentFactory;
@@ -10,6 +11,8 @@ import com.intellij.openapi.diagnostic.Logger;
 
 public class JaideDiffViewerService {
 	private static final Logger log = Logger.getInstance(JaideDiffViewerService.class);
+
+	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 
 	public void showImproveDiff(
 			Project project,
@@ -52,11 +55,17 @@ public class JaideDiffViewerService {
 					"Improved"
 			);
 
-			log.info("Opening improve diff viewer, title=" + buildTitle(fileName));
+			log.info("Opening improve diff dialog, title=" + buildTitle(fileName));
 
-			DiffManager.getInstance().showDiff(project, request);
+			JaideDiffDialog dialog = new JaideDiffDialog(
+					project,
+					request,
+					applyImprovementService
+			);
 
-			log.info("Improve diff viewer opened");
+			dialog.show();
+
+			log.info("Improve diff dialog opened");
 		});
 	}
 
