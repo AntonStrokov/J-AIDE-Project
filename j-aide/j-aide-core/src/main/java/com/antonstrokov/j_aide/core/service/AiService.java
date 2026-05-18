@@ -269,6 +269,54 @@ public class AiService {
 		);
 	}
 
+	public AiErrorExplainResult explainError(
+			String errorText,
+			String mode,
+			String language,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName,
+			String pluginVersion,
+			String ideVersion
+	) {
+		validateErrorText(errorText);
+		validateLineRange(lineStart, lineEnd);
+		validateOptionalTextField(fileName, "fileName");
+		validateOptionalTextField(projectName, "projectName");
+		validateOptionalTextField(moduleName, "moduleName");
+		validateOptionalTextField(pluginVersion, "pluginVersion");
+		validateOptionalTextField(ideVersion, "ideVersion");
+
+		String effectiveMode = resolveMode(mode);
+
+		SupportedLanguage resolvedLanguage = resolveLanguage(language);
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
+
+		String prompt = buildErrorExplainPrompt(
+				errorText,
+				effectiveLanguage,
+				fileName,
+				lineStart,
+				lineEnd,
+				projectName,
+				moduleName
+		);
+
+		String response = askModel(prompt);
+
+		boolean shouldRetry = shouldRetry(effectiveMode);
+
+		return parseErrorExplainWithRetry(
+				response,
+				prompt,
+				shouldRetry,
+				effectiveMode,
+				effectiveLanguage
+		);
+	}
+
 	private SupportedLanguage resolveLanguage(String language) {
 		if (language == null || language.isBlank()) {
 			return SupportedLanguage.JAVA;
@@ -322,6 +370,20 @@ public class AiService {
 
 		if (code.length() > maxCodeLength) {
 			throw new IllegalArgumentException("Code is too long");
+		}
+	}
+
+	private void validateErrorText(String errorText) {
+		if (errorText == null || errorText.isBlank()) {
+			throw new IllegalArgumentException("Error text is empty");
+		}
+
+		int maxCodeLength = aiProperties.limits().codeMaxLength();
+
+		log.info("Configured maxErrorTextLength={}", maxCodeLength);
+
+		if (errorText.length() > maxCodeLength) {
+			throw new IllegalArgumentException("Error text is too long");
 		}
 	}
 
@@ -391,6 +453,28 @@ public class AiService {
 
 		return template.apply(Map.of(
 				"code", code,
+				"language", effectiveLanguage,
+				"fileName", safeText(fileName),
+				"lineStart", safeNumber(lineStart),
+				"lineEnd", safeNumber(lineEnd),
+				"projectName", safeText(projectName),
+				"moduleName", safeText(moduleName)
+		)).text();
+	}
+
+	private String buildErrorExplainPrompt(
+			String errorText,
+			String effectiveLanguage,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName
+	) {
+		PromptTemplate template = AiPromptTemplates.resolveErrorExplainTemplate();
+
+		return template.apply(Map.of(
+				"errorText", errorText,
 				"language", effectiveLanguage,
 				"fileName", safeText(fileName),
 				"lineStart", safeNumber(lineStart),
@@ -494,6 +578,55 @@ public class AiService {
 				log.warn("Improve retry also failed, returning fallback", retryException);
 
 				return buildImproveFallbackResult(
+						retryResponse != null ? retryResponse : response,
+						effectiveMode,
+						effectiveLanguage
+				);
+			}
+		}
+	}
+
+	private AiErrorExplainResult parseErrorExplainWithRetry(
+			String response,
+			String prompt,
+			boolean shouldRetry,
+			String effectiveMode,
+			String effectiveLanguage
+	) {
+		try {
+			return tryParseErrorExplanationResponse(response, effectiveMode, effectiveLanguage);
+
+		} catch (Exception e) {
+			if (!shouldRetry) {
+				log.warn("AI error explanation response parsing failed, returning fallback without retry", e);
+
+				return buildErrorExplainFallbackResult(response, effectiveMode, effectiveLanguage);
+			}
+
+			log.warn("First AI error explanation response parsing failed, retrying once", e);
+
+			String retryResponse = null;
+
+			try {
+				String retryPrompt = buildRetryPrompt(prompt);
+
+				retryResponse = askModel(retryPrompt);
+
+				AiErrorExplainResult retryResult = tryParseErrorExplanationResponse(
+						retryResponse,
+						effectiveMode,
+						effectiveLanguage
+				);
+				retryResult.setRetried(true);
+
+				log.info("Retry succeeded and returned valid structured error explanation response");
+
+				return retryResult;
+
+			} catch (Exception retryException) {
+				log.warn("Error explanation retry also failed, returning fallback", retryException);
+
+				return buildErrorExplainFallbackResult(
 						retryResponse != null ? retryResponse : response,
 						effectiveMode,
 						effectiveLanguage
