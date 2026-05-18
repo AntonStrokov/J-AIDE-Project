@@ -132,8 +132,43 @@ public final class AiPromptTemplates {
 					"Код:\n{{code}}"
 	);
 
+	public static final PromptTemplate ERROR_EXPLAIN_TEMPLATE = PromptTemplate.from(
+			"Ты опытный {{language}}-разработчик и Java/Spring mentor.\n" +
+					"Проанализируй runtime error, stack trace или лог ошибки на русском языке.\n" +
+					"Главная цель: объяснить причину ошибки простыми словами и дать практические шаги исправления.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"ВАЖНО:\n" +
+					"- Поле summary должно кратко описывать, что произошло.\n" +
+					"- Поле likelyCause должно объяснять наиболее вероятную корневую причину ошибки.\n" +
+					"- Поле whereToLook должно подсказать, где искать проблему: класс, метод, конфиг, dependency, порт, БД, Docker, Spring bean и т.п.\n" +
+					"- Поле suggestedFixes должно быть массивом конкретных шагов исправления.\n" +
+					"- Поле riskHint должно предупредить о возможных рисках или побочных эффектах исправления.\n" +
+					"- Поле confidence должно быть одним из значений: high, medium, low.\n" +
+					"- Если информации недостаточно, честно укажи это в confidence и suggestedFixes.\n" +
+					"- Не добавляй пояснения вне JSON.\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"краткое описание ошибки\",\n" +
+					"  \"likelyCause\": \"наиболее вероятная причина\",\n" +
+					"  \"whereToLook\": \"где искать проблему\",\n" +
+					"  \"suggestedFixes\": [\"шаг 1\", \"шаг 2\"],\n" +
+					"  \"riskHint\": \"на что обратить внимание\",\n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
+					"}\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
+					"Имя файла: {{fileName}}\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
+					"Текст ошибки:\n{{errorText}}"
+	);
+
 	public static PromptTemplate resolveImproveTemplate() {
 		return IMPROVE_TEMPLATE;
+	}
+
+	public static PromptTemplate resolveErrorExplainTemplate() {
+		return ERROR_EXPLAIN_TEMPLATE;
 	}
 
 	public static PromptTemplate resolveTemplate(String effectiveMode) {
