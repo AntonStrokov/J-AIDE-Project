@@ -119,6 +119,62 @@ Example response:
 }
 ```
 
+### POST /ai/explain-error
+
+Explains a runtime error, exception stack trace, or application log and returns a structured AI response.
+
+This endpoint is intended for analyzing errors such as Java exceptions, Spring Boot startup failures, Maven errors, Docker errors, database connection errors, and similar runtime diagnostics.
+
+Example request:
+
+```json
+{
+  "errorText": "java.lang.NullPointerException: Cannot invoke \"String.length()\" because \"name\" is null\n    at com.example.UserService.getNameLength(UserService.java:12)\n    at com.example.UserController.getUser(UserController.java:25)",
+  "mode": "SMART",
+  "language": "java",
+  "fileName": "UserService.java",
+  "lineStart": 12,
+  "lineEnd": 12,
+  "projectName": "j-aide-test",
+  "moduleName": "app",
+  "pluginVersion": "0.1.0",
+  "ideVersion": "2025.1"
+}
+```
+
+Example response:
+
+```json
+{
+  "success": true,
+  "errorExplanation": {
+    "summary": "Short explanation of what happened",
+    "likelyCause": "Most probable root cause",
+    "whereToLook": "Class, method, configuration, dependency, port, database, Docker, or Spring bean to inspect",
+    "suggestedFixes": [
+      "Suggested fix step 1",
+      "Suggested fix step 2"
+    ],
+    "riskHint": "Possible risk or side effect to consider",
+    "confidence": "high"
+  },
+  "metadata": {
+    "traceId": "generated-trace-id",
+    "backendVersion": "0.1.0",
+    "responseTimeMs": 1234,
+    "retried": false
+  }
+}
+```
+
+Current status:
+
+- Backend endpoint `POST /ai/explain-error` is implemented.
+- Runtime error explanation prompt is implemented.
+- The endpoint was tested manually through Postman.
+- The endpoint returns structured error explanation with summary, likely cause, where to look, suggested fixes, risk hint, confidence, and metadata.
+- Full error text is not logged; backend logs request length, context metadata, success status, confidence, and response time.
+
 ## Explain Modes
 
 J-Aide supports three explanation modes:
@@ -270,6 +326,7 @@ Module responsibilities:
 | Capability                        | Status      | Notes                                                    |
 |-----------------------------------|-------------|----------------------------------------------------------|
 | Explain selected code             | Done        | MVP implementation is working                            |
+| Explain Runtime Error             | Done MVP    | Backend endpoint explains stack traces and runtime error logs |
 | Read selected code from editor    | Done        | Uses active IntelliJ editor selection                    |
 | Send editor context to backend    | Done        | Includes file, project, module, IDE, and plugin metadata |
 | Detect language by file extension | Done        | Falls back to plain text when language is unknown        |
