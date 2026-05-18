@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ErrorExplainRequest {
 	private String errorText;
+	private String mode;
 	private String language;
 	private String fileName;
 	private Integer lineStart;

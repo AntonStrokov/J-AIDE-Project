@@ -9,6 +9,11 @@ import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.service.AiService;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplainMetadata;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplainRequest;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplainResponse;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplanation;
+import com.antonstrokov.j_aide.core.dto.error.AiErrorExplainResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -123,6 +128,56 @@ public class AiController {
 		return response;
 	}
 
+	@PostMapping("/ai/explain-error")
+	public ErrorExplainResponse explainError(@RequestBody ErrorExplainRequest request) {
+		long startTime = System.currentTimeMillis();
+
+		log.info("Received error explanation request, errorText length={}", request.getErrorText().length());
+
+		logErrorExplainContext(request);
+
+		AiErrorExplainResult result = aiService.explainError(
+				request.getErrorText(),
+				request.getMode(),
+				request.getLanguage(),
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
+		);
+
+		long responseTimeMs = calculateResponseTimeMs(startTime);
+
+		boolean success = result.getRawJson() == null;
+
+		logErrorExplainResult(result, success, responseTimeMs);
+
+		ErrorExplanation errorExplanation = new ErrorExplanation();
+		errorExplanation.setSummary(result.getErrorExplanation().getSummary());
+		errorExplanation.setLikelyCause(result.getErrorExplanation().getLikelyCause());
+		errorExplanation.setWhereToLook(result.getErrorExplanation().getWhereToLook());
+		errorExplanation.setSuggestedFixes(result.getErrorExplanation().getSuggestedFixes());
+		errorExplanation.setRiskHint(result.getErrorExplanation().getRiskHint());
+		errorExplanation.setConfidence(result.getErrorExplanation().getConfidence());
+
+		ErrorExplainMetadata metadata = new ErrorExplainMetadata();
+		metadata.setTraceId(getTraceId());
+		metadata.setBackendVersion(getBackendVersion());
+		metadata.setResponseTimeMs(responseTimeMs);
+		metadata.setRetried(result.getRetried());
+
+		ErrorExplainResponse response = new ErrorExplainResponse();
+		response.setErrorExplanation(errorExplanation);
+		response.setRawJson(result.getRawJson());
+		response.setSuccess(success);
+		response.setMetadata(metadata);
+
+		return response;
+	}
+
 	private ExplainResponse buildExplainResponse(
 			ExplainRequest request,
 			AiExplainResult result,
@@ -219,6 +274,21 @@ public class AiController {
 		);
 	}
 
+	private void logErrorExplainContext(ErrorExplainRequest request) {
+		log.info(
+				"Error explanation context: language={}, mode={}, fileName={}, lineStart={}, lineEnd={}, projectName={}, moduleName={}, pluginVersion={}, ideVersion={}",
+				request.getLanguage(),
+				request.getMode(),
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
+		);
+	}
+
 	private void logExplainResult(AiExplainResult result, boolean success, long responseTimeMs) {
 		log.info(
 				"Explain result: complexity={}, confidence={}, success={}, responseTimeMs={}",
@@ -233,6 +303,15 @@ public class AiController {
 		log.info(
 				"Improve result: confidence={}, success={}, responseTimeMs={}",
 				result.getImprovement().getConfidence(),
+				success,
+				responseTimeMs
+		);
+	}
+
+	private void logErrorExplainResult(AiErrorExplainResult result, boolean success, long responseTimeMs) {
+		log.info(
+				"Error explanation result: confidence={}, success={}, responseTimeMs={}",
+				result.getErrorExplanation().getConfidence(),
 				success,
 				responseTimeMs
 		);
