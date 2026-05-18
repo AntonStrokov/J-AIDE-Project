@@ -77,6 +77,18 @@ public class ImproveSelectedCodeAction extends AnAction {
 						return;
 					}
 
+					if (validationService.hasMarkdownCodeFence(improvement.improvedCode())) {
+						log.warn("Improve action stopped: markdown code fence detected in improved code, improvedCodeLength="
+								+ getLength(improvement.improvedCode()));
+
+						notificationService.showWarning(
+								e.getProject(),
+								"J-Aide received an invalid improvement format. Please try again."
+						);
+
+						return;
+					}
+
 					log.info("Storing latest improvement");
 
 					JaideImprovementState.setLatestImprovement(

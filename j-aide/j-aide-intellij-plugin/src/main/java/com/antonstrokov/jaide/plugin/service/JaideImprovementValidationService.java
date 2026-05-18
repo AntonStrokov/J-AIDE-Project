@@ -10,6 +10,14 @@ public class JaideImprovementValidationService {
 				&& normalizedOriginalCode.equals(normalizedImprovedCode);
 	}
 
+	public boolean hasMarkdownCodeFence(String improvedCode) {
+		if (improvedCode == null) {
+			return false;
+		}
+
+		return improvedCode.contains("```");
+	}
+
 	private String normalizeCode(String code) {
 		if (code == null) {
 			return "";
