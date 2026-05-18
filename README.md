@@ -280,7 +280,7 @@ Module responsibilities:
 | Friendly error notifications      | Done        | Backend and plugin errors are handled separately         |
 | Backend capability handshake      | Done        | Available through `/backend-info`                        |
 | Improve Code                      | Done        | Backend AI flow, IntelliJ action, preview, validation    |
-| Improve no-op validation          | Done        | Stops meaningless improvements when improved code equals original code |
+| Improve response validation       | Done MVP    | Rejects no-op, blank, markdown-fenced improvements and missing change descriptions |
 | Diff View                         | Done        | Custom J-Aide diff dialog with IntelliJ side-by-side Diff Viewer |
 | Apply Last Improvement            | Done        | Available from Tool Window and Diff dialog with safety checks and Undo support |
 | Diff Viewer flicker               | Known Issue | Tool Window hiding is required before opening Diff Viewer |
@@ -316,10 +316,16 @@ Current status:
 - Suggested improved code is displayed in the J-Aide Tool Window.
 - Tool Window preview is structured and uses dedicated UI panels.
 - Long-code backend errors are displayed as user-friendly plugin errors.
-- Plugin-side no-op validation prevents saving meaningless improvements when improved code equals original code after normalization.
 - Applying changes is implemented as an MVP through `JaideApplyImprovementService`.
+- Apply is available from the J-Aide Tool Window and from the J-Aide Diff Dialog.
 - Apply uses safety checks before modifying the document.
 - Undo is supported through IntelliJ `WriteCommandAction`.
+- Plugin-side improvement validation prevents saving unsafe or meaningless improvements.
+- No-op improvements are rejected when improved code equals original code after normalization.
+- Blank improved code is rejected.
+- Markdown-fenced improved code is rejected.
+- Improvements without change descriptions are rejected.
+- Improve prompt rules were strengthened to require clean source code and real change descriptions.
 
 Important safety rules:
 
