@@ -11,6 +11,8 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.antonstrokov.j_aide.core.dto.error.AiErrorExplainResult;
+import com.antonstrokov.j_aide.core.dto.error.StructuredErrorExplanationResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +51,18 @@ public class AiService {
 		}
 	}
 
+	private void validateStructuredErrorExplanationResponse(StructuredErrorExplanationResponse structured) {
+		validateRequiredAiField(structured.getSummary(), "summary");
+		validateRequiredAiField(structured.getLikelyCause(), "likelyCause");
+		validateRequiredAiField(structured.getWhereToLook(), "whereToLook");
+		validateRequiredAiField(structured.getRiskHint(), "riskHint");
+		validateRequiredAiField(structured.getConfidence(), "confidence");
+
+		if (structured.getSuggestedFixes() == null) {
+			throw new RuntimeException("Invalid AI JSON structure: suggestedFixes is missing");
+		}
+	}
+
 	private StructuredExplainResponse parseStructuredResponse(String response) throws Exception {
 		StructuredExplainResponse structured =
 				objectMapper.readValue(response, StructuredExplainResponse.class);
@@ -63,6 +77,15 @@ public class AiService {
 				objectMapper.readValue(response, StructuredImproveResponse.class);
 
 		validateStructuredImproveResponse(structured);
+
+		return structured;
+	}
+
+	private StructuredErrorExplanationResponse parseStructuredErrorExplanationResponse(String response) throws Exception {
+		StructuredErrorExplanationResponse structured =
+				objectMapper.readValue(response, StructuredErrorExplanationResponse.class);
+
+		validateStructuredErrorExplanationResponse(structured);
 
 		return structured;
 	}
@@ -112,6 +135,19 @@ public class AiService {
 		return new AiImproveResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
 	}
 
+	private AiErrorExplainResult buildErrorExplainFallbackResult(String rawResponse, String effectiveMode,
+	                                                             String effectiveLanguage) {
+		StructuredErrorExplanationResponse fallback = new StructuredErrorExplanationResponse();
+		fallback.setSummary("Не удалось структурировать ответ AI");
+		fallback.setLikelyCause("Ответ AI не удалось распарсить в ожидаемую JSON-структуру");
+		fallback.setWhereToLook("Проверь сырой ответ модели в rawJson");
+		fallback.setSuggestedFixes(List.of("Повтори запрос или уточни текст ошибки"));
+		fallback.setRiskHint("Ошибка не была проанализирована надёжно, потому что ответ AI не удалось структурировать");
+		fallback.setConfidence("low");
+
+		return new AiErrorExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
+	}
+
 	private AiExplainResult tryParseResponse(String response, String effectiveMode, String effectiveLanguage)
 			throws Exception {
 		StructuredExplainResponse structured = parseStructuredResponse(response);
@@ -122,6 +158,12 @@ public class AiService {
 			throws Exception {
 		StructuredImproveResponse structured = parseStructuredImproveResponse(response);
 		return new AiImproveResult(structured, null, effectiveMode, effectiveLanguage, false);
+	}
+
+	private AiErrorExplainResult tryParseErrorExplanationResponse(String response, String effectiveMode,
+	                                                              String effectiveLanguage) throws Exception {
+		StructuredErrorExplanationResponse structured = parseStructuredErrorExplanationResponse(response);
+		return new AiErrorExplainResult(structured, null, effectiveMode, effectiveLanguage, false);
 	}
 
 	public AiExplainResult explain(
