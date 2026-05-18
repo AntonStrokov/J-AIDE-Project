@@ -64,6 +64,17 @@ public class ImproveSelectedCodeAction extends AnAction {
 					log.info("Improve response processed, improvedCodeLength="
 							+ getLength(improvement.improvedCode()));
 
+					if (validationService.isBlankImprovedCode(improvement.improvedCode())) {
+						log.warn("Improve action stopped: blank improved code detected");
+
+						notificationService.showWarning(
+								e.getProject(),
+								"J-Aide received an empty improvement. Please try again."
+						);
+
+						return;
+					}
+
 					if (validationService.isNoOpImprovement(context.selectedCode(), improvement.improvedCode())) {
 						log.warn("Improve action stopped: no-op improvement detected, selectedCodeLength="
 								+ context.selectedCode().length()

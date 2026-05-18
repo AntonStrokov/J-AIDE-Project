@@ -18,6 +18,10 @@ public class JaideImprovementValidationService {
 		return improvedCode.contains("```");
 	}
 
+	public boolean isBlankImprovedCode(String improvedCode) {
+		return improvedCode == null || improvedCode.isBlank();
+	}
+
 	private String normalizeCode(String code) {
 		if (code == null) {
 			return "";
