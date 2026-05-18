@@ -100,6 +100,18 @@ public class ImproveSelectedCodeAction extends AnAction {
 						return;
 					}
 
+					if (validationService.hasNoChangeDescriptions(improvement.changes())) {
+						log.warn("Improve action stopped: missing change descriptions, improvedCodeLength="
+								+ getLength(improvement.improvedCode()));
+
+						notificationService.showWarning(
+								e.getProject(),
+								"J-Aide received an improvement without change descriptions. Please try again."
+						);
+
+						return;
+					}
+
 					log.info("Storing latest improvement");
 
 					JaideImprovementState.setLatestImprovement(

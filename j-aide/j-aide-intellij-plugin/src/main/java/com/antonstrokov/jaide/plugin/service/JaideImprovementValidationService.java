@@ -1,5 +1,7 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import java.util.List;
+
 public class JaideImprovementValidationService {
 
 	public boolean isNoOpImprovement(String originalCode, String improvedCode) {
@@ -20,6 +22,15 @@ public class JaideImprovementValidationService {
 
 	public boolean isBlankImprovedCode(String improvedCode) {
 		return improvedCode == null || improvedCode.isBlank();
+	}
+
+	public boolean hasNoChangeDescriptions(List<String> changes) {
+		if (changes == null || changes.isEmpty()) {
+			return true;
+		}
+
+		return changes.stream()
+				.allMatch(change -> change == null || change.isBlank());
 	}
 
 	private String normalizeCode(String code) {
