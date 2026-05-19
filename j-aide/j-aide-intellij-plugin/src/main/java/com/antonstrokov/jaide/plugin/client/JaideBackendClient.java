@@ -9,6 +9,10 @@ import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestF
 import com.antonstrokov.jaide.plugin.dto.improve.JaideBackendImproveRequest;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveResponse;
+import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainRequest;
+import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainResponse;
+import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
+import com.antonstrokov.jaide.plugin.factory.error.JaideBackendErrorExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideBackendImproveRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +31,7 @@ public class JaideBackendClient {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final JaideBackendExplainRequestFactory backendRequestFactory = new JaideBackendExplainRequestFactory();
 	private final JaideBackendImproveRequestFactory improveRequestFactory = new JaideBackendImproveRequestFactory();
+	private final JaideBackendErrorExplainRequestFactory errorExplainRequestFactory = new JaideBackendErrorExplainRequestFactory();
 
 	public JaideExplanation explain(JaideExplainRequest request) throws IOException, InterruptedException {
 		String requestBody = buildExplainRequestBody(request);
@@ -56,6 +61,20 @@ public class JaideBackendClient {
 		return parseImprovement(responseBody);
 	}
 
+	public JaideErrorExplanation explainError(JaideErrorExplainRequest request) throws IOException, InterruptedException {
+		String requestBody = buildErrorExplainRequestBody(request);
+
+		log.info("Sending explain error request to backend, requestBodyLength=" + requestBody.length());
+
+		HttpRequest httpRequest = buildErrorExplainHttpRequest(requestBody);
+
+		String responseBody = send(httpRequest);
+
+		log.info("Explain error response received, responseBodyLength=" + responseBody.length());
+
+		return parseErrorExplanation(responseBody);
+	}
+
 	private String buildExplainRequestBody(JaideExplainRequest request) throws IOException {
 		JaideBackendExplainRequest backendRequest = backendRequestFactory.create(request);
 
@@ -64,6 +83,12 @@ public class JaideBackendClient {
 
 	private String buildImproveRequestBody(JaideImproveRequest request) throws IOException {
 		JaideBackendImproveRequest backendRequest = improveRequestFactory.create(request);
+
+		return objectMapper.writeValueAsString(backendRequest);
+	}
+
+	private String buildErrorExplainRequestBody(JaideErrorExplainRequest request) throws IOException {
+		JaideErrorExplainRequest backendRequest = errorExplainRequestFactory.create(request);
 
 		return objectMapper.writeValueAsString(backendRequest);
 	}
@@ -79,6 +104,14 @@ public class JaideBackendClient {
 	private HttpRequest buildImproveHttpRequest(String requestBody) {
 		return HttpRequest.newBuilder()
 				.uri(URI.create(JaideConstants.IMPROVE_URL))
+				.header("Content-Type", "application/json")
+				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
+				.build();
+	}
+
+	private HttpRequest buildErrorExplainHttpRequest(String requestBody) {
+		return HttpRequest.newBuilder()
+				.uri(URI.create(JaideConstants.EXPLAIN_ERROR_URL))
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
@@ -152,6 +185,26 @@ public class JaideBackendClient {
 		}
 
 		return improveResponse.improvement();
+	}
+
+	private JaideErrorExplanation parseErrorExplanation(String responseBody) throws IOException {
+		JaideErrorExplainResponse errorExplainResponse = objectMapper.readValue(
+				responseBody,
+				JaideErrorExplainResponse.class
+		);
+
+		if (errorExplainResponse.errorExplanation() == null) {
+			return new JaideErrorExplanation(
+					"Error explanation not found",
+					null,
+					null,
+					null,
+					null,
+					null
+			);
+		}
+
+		return errorExplainResponse.errorExplanation();
 	}
 
 	private int getLength(String value) {

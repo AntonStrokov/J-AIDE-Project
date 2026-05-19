@@ -9,6 +9,8 @@ import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
+import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
+import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -27,6 +29,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JPanel previewContainer;
 	private static JaideImprovePreviewPanel improvePreviewPanel;
 	private static JaideExplanationPreviewPanel explanationPreviewPanel;
+	private static JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
 	private static JPanel actionsPanel;
 	private static JButton showDiffButton;
 	private static JButton applyButton;
@@ -39,6 +42,35 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.removeAll();
 				explanationPreviewPanel.updateExplanation(explanation);
 				previewContainer.add(explanationPreviewPanel, BorderLayout.CENTER);
+				previewContainer.revalidate();
+				previewContainer.repaint();
+			}
+
+			if (actionsPanel != null) {
+				actionsPanel.setVisible(true);
+			}
+
+			if (showDiffButton != null) {
+				showDiffButton.setVisible(false);
+			}
+
+			if (applyButton != null) {
+				applyButton.setVisible(false);
+			}
+
+			if (backToCodeButton != null) {
+				backToCodeButton.setVisible(true);
+			}
+		});
+	}
+
+	public static void updateErrorExplanation(JaideErrorExplanation errorExplanation) {
+		ApplicationManager.getApplication().invokeLater(() -> {
+
+			if (previewContainer != null && errorExplanationPreviewPanel != null) {
+				previewContainer.removeAll();
+				errorExplanationPreviewPanel.updateErrorExplanation(errorExplanation);
+				previewContainer.add(errorExplanationPreviewPanel, BorderLayout.CENTER);
 				previewContainer.revalidate();
 				previewContainer.repaint();
 			}
@@ -141,6 +173,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		improvePreviewPanel = new JaideImprovePreviewPanel(project, "");
 		explanationPreviewPanel = new JaideExplanationPreviewPanel("");
+		errorExplanationPreviewPanel = new JaideErrorExplanationPreviewPanel();
 
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
 		panel.add(previewContainer, BorderLayout.CENTER);

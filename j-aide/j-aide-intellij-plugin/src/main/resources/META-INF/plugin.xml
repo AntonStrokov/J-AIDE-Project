@@ -36,12 +36,19 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
         <action
-                id="J-Aide.ApplyLastImprovement"
-                class="com.antonstrokov.jaide.plugin.ApplyLastImprovementAction"
-                text="J-Aide: Apply Last Improvement"
-                description="Replace selected code with the latest J-Aide improvement">
+                id="J-Aide.ExplainRuntimeError"
+                class="com.antonstrokov.jaide.plugin.ExplainRuntimeErrorAction"
+                text="J-Aide: Explain Runtime Error"
+                description="Explain runtime error, stack trace, or application log using J-Aide backend">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
+<!--        <action-->
+<!--                id="J-Aide.ApplyLastImprovement"-->
+<!--                class="com.antonstrokov.jaide.plugin.ApplyLastImprovementAction"-->
+<!--                text="J-Aide: Apply Last Improvement"-->
+<!--                description="Replace selected code with the latest J-Aide improvement">-->
+<!--            <add-to-group group-id="EditorPopupMenu" anchor="last"/>-->
+<!--        </action>-->
     </actions>
 
 </idea-plugin>
