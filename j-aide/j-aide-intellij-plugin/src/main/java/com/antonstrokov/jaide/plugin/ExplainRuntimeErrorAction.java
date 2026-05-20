@@ -46,6 +46,18 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			return;
 		}
 
+		if (!looksLikeErrorText(errorInput.errorText())) {
+			log.warn("Explain runtime error action stopped: input does not look like error text, source="
+					+ errorInput.source()
+					+ ", textLength=" + errorInput.errorText().length());
+
+			notificationService.showWarning(
+					e.getProject(),
+					"Selected text does not look like an error, stack trace, or log. Use J-Aide: Explain Selected Code for source code."
+			);
+			return;
+		}
+
 		log.info("Runtime error input extracted, source=" + errorInput.source()
 				+ ", fileName=" + errorInput.fileName()
 				+ ", errorTextLength=" + errorInput.errorText().length()
@@ -132,6 +144,46 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			log.warn("Cannot read clipboard text: " + ex.getMessage(), ex);
 			return null;
 		}
+	}
+
+	private boolean looksLikeErrorText(String text) {
+		if (text == null || text.isBlank()) {
+			return false;
+		}
+
+		String normalizedText = text.toLowerCase();
+
+		return normalizedText.contains("exception")
+				|| normalizedText.contains("error")
+				|| normalizedText.contains("caused by:")
+				|| normalizedText.contains("at ")
+				|| normalizedText.contains("build failed")
+				|| normalizedText.contains("compilation error")
+				|| normalizedText.contains("failed to start")
+				|| normalizedText.contains("port already in use")
+				|| normalizedText.contains("connection refused")
+				|| normalizedText.contains("beancreationexception")
+				|| normalizedText.contains("nullpointerexception")
+				|| normalizedText.contains("illegalargumentexception")
+				|| normalizedText.contains("sqlexception")
+				|| normalizedText.contains("unsatisfieddependencyexception")
+				|| normalizedText.contains("application run failed")
+				|| normalizedText.contains("cannot find symbol")
+				|| normalizedText.contains("cannot resolve symbol")
+				|| normalizedText.contains("class, interface, enum, or record expected")
+				|| normalizedText.contains("illegal character")
+				|| normalizedText.contains("illegal unicode escape")
+				|| normalizedText.contains("preview feature")
+				|| normalizedText.contains("disabled by default")
+				|| normalizedText.contains("enable-preview")
+				|| normalizedText.contains("source option")
+				|| normalizedText.contains("target option")
+				|| normalizedText.contains("release version")
+				|| normalizedText.contains("package does not exist")
+				|| normalizedText.contains("method does not override")
+				|| normalizedText.contains("incompatible types")
+				|| normalizedText.contains("symbol:")
+				|| normalizedText.contains("location:");
 	}
 
 	private JaideErrorExplainRequest createRequest(ErrorInput input) {
