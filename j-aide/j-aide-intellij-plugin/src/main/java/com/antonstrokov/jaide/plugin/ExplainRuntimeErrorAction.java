@@ -10,12 +10,17 @@ import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.datatransfer.DataFlavor;
 
 public class ExplainRuntimeErrorAction extends AnAction {
 	private static final Logger log = Logger.getInstance(ExplainRuntimeErrorAction.class);
@@ -30,18 +35,22 @@ public class ExplainRuntimeErrorAction extends AnAction {
 	public void actionPerformed(@NotNull AnActionEvent e) {
 		log.info("Explain runtime error action started");
 
-		JaideEditorContext context = contextExtractor.extract(e);
+		ErrorInput errorInput = extractErrorInput(e);
 
-		if (context == null) {
-			log.warn("Explain runtime error action stopped: no selected error text");
-			notificationService.showWarning(e.getProject(), "Please select error text first");
+		if (errorInput == null) {
+			log.warn("Explain runtime error action stopped: no selected error text and clipboard is empty");
+			notificationService.showWarning(
+					e.getProject(),
+					"Please select error text or copy stack trace to clipboard first"
+			);
 			return;
 		}
 
-		log.info("Runtime error context extracted, fileName=" + context.fileName()
-				+ ", errorTextLength=" + context.selectedCode().length()
-				+ ", lineStart=" + context.lineStart()
-				+ ", lineEnd=" + context.lineEnd());
+		log.info("Runtime error input extracted, source=" + errorInput.source()
+				+ ", fileName=" + errorInput.fileName()
+				+ ", errorTextLength=" + errorInput.errorText().length()
+				+ ", lineStart=" + errorInput.lineStart()
+				+ ", lineEnd=" + errorInput.lineEnd());
 
 		new Task.Backgroundable(e.getProject(), JaideConstants.EXPLAIN_ERROR_TASK_TITLE, false) {
 			@Override
@@ -49,7 +58,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 				try {
 					log.info("Creating explain runtime error request");
 
-					JaideErrorExplainRequest request = createRequest(context);
+					JaideErrorExplainRequest request = createRequest(errorInput);
 
 					log.info("Sending explain runtime error request");
 
@@ -74,19 +83,82 @@ public class ExplainRuntimeErrorAction extends AnAction {
 		}.queue();
 	}
 
-	private JaideErrorExplainRequest createRequest(JaideEditorContext context) {
+	private ErrorInput extractErrorInput(AnActionEvent e) {
+		JaideEditorContext context = contextExtractor.extract(e);
+
+		if (context != null) {
+			return new ErrorInput(
+					context.selectedCode(),
+					context.fileName(),
+					context.lineStart(),
+					context.lineEnd(),
+					context.projectName(),
+					context.ideVersion(),
+					context.moduleName(),
+					"editor-selection"
+			);
+		}
+
+		String clipboardText = getClipboardText();
+
+		if (clipboardText == null || clipboardText.isBlank()) {
+			return null;
+		}
+
+		Project project = e.getProject();
+
+		return new ErrorInput(
+				clipboardText,
+				null,
+				null,
+				null,
+				project == null ? null : project.getName(),
+				ApplicationInfo.getInstance().getFullVersion(),
+				null,
+				"clipboard"
+		);
+	}
+
+	private String getClipboardText() {
+		try {
+			Object clipboardContent = CopyPasteManager.getInstance().getContents(DataFlavor.stringFlavor);
+
+			if (clipboardContent instanceof String text) {
+				return text;
+			}
+
+			return null;
+		} catch (Exception ex) {
+			log.warn("Cannot read clipboard text: " + ex.getMessage(), ex);
+			return null;
+		}
+	}
+
+	private JaideErrorExplainRequest createRequest(ErrorInput input) {
 		return new JaideErrorExplainRequest(
-				context.selectedCode(),
+				input.errorText(),
 				"runtime_error",
 				null,
-				context.fileName(),
-				context.lineStart(),
-				context.lineEnd(),
-				context.projectName(),
+				input.fileName(),
+				input.lineStart(),
+				input.lineEnd(),
+				input.projectName(),
 				null,
-				context.ideVersion(),
+				input.ideVersion(),
 				JaideConstants.PLUGIN_VERSION,
-				context.moduleName()
+				input.moduleName()
 		);
+	}
+
+	private record ErrorInput(
+			String errorText,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String ideVersion,
+			String moduleName,
+			String source
+	) {
 	}
 }
