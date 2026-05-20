@@ -42,6 +42,7 @@
                 description="Explain runtime error, stack trace, or application log using J-Aide backend">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
         </action>
 <!--        <action-->
 <!--                id="J-Aide.ApplyLastImprovement"-->
