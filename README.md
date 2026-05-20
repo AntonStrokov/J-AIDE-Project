@@ -175,6 +175,8 @@ Current status:
 - IntelliJ plugin action `J-Aide: Explain Runtime Error` is implemented.
 - The plugin can explain selected error text from the editor.
 - The plugin can also explain error text copied to the clipboard through `Tools -> J-Aide: Explain Runtime Error`.
+- The plugin action is also available from the console popup menu for build output and runtime logs.
+- Runtime error input is validated before sending the request: regular source code is rejected with a warning, while stack traces, compiler errors, and build logs are accepted.
 - Runtime error explanations are displayed in the J-Aide Tool Window using a structured preview panel aligned with the existing Explain/Improve UI style.
 - The endpoint returns structured error explanation with summary, likely cause, where to look, suggested fixes, risk hint, confidence, and metadata.
 - Full error text is not logged; backend logs request length, context metadata, success status, confidence, and response time.
@@ -251,6 +253,8 @@ Current plugin capabilities:
 - Displays structured AI explanation in the J-Aide Tool Window.
 - Explains selected runtime errors, stack traces, and application logs through `J-Aide: Explain Runtime Error`.
 - Supports clipboard fallback for runtime error explanation through `Tools -> J-Aide: Explain Runtime Error`.
+- Supports runtime error explanation directly from the console popup menu.
+- Validates runtime error input to avoid sending regular source code to the error explanation flow.
 - Displays runtime error explanations in a structured Tool Window preview aligned with the existing Explain/Improve UI style.
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
@@ -334,6 +338,8 @@ Module responsibilities:
 | Explain selected code             | Done        | MVP implementation is working                            |
 | Explain Runtime Error             | Done MVP    | Backend endpoint and IntelliJ plugin action explain stack traces and runtime error logs |
 | Error explanation clipboard input | Done MVP    | Allows explaining copied stack traces through `Tools -> J-Aide: Explain Runtime Error` |
+| Error explanation console popup   | Done MVP    | Allows explaining selected build output and runtime logs from console popup menu |
+| Runtime error input validation    | Done MVP    | Rejects regular source code and accepts stack traces, compiler errors, and build logs |
 | Read selected code from editor    | Done        | Uses active IntelliJ editor selection                    |
 | Send editor context to backend    | Done        | Includes file, project, module, IDE, and plugin metadata |
 | Detect language by file extension | Done        | Falls back to plain text when language is unknown        |
@@ -457,9 +463,13 @@ Explain Runtime Error is implemented as an MVP feature.
 Current behavior:
 
 - accepts selected error text from the active editor;
+- accepts selected build output or runtime logs from the console popup menu;
 - supports copied stack traces or logs through clipboard fallback;
 - is available from the editor popup menu;
+- is available from the console popup menu;
 - is also available through `Tools -> J-Aide: Explain Runtime Error`;
+- validates input before sending it to the backend;
+- rejects regular source code with a warning and suggests using `J-Aide: Explain Selected Code`;
 - calls the backend endpoint `POST /ai/explain-error`;
 - displays structured runtime error explanation in the J-Aide Tool Window.
 
@@ -471,15 +481,17 @@ Current status:
 - Runtime error preview uses the same visual style as existing Explain/Improve previews.
 - `Show Diff` and `Apply` are hidden for runtime error explanations.
 - `Back to Code` is available.
+- Console popup integration is implemented.
+- Runtime error input validation is implemented.
 
 Known limitation:
 
-- The action is not yet available directly from Terminal / Run Console popup menu.
-- Current recommended flow for terminal errors is: copy stack trace, then run `Tools -> J-Aide: Explain Runtime Error`.
+- Terminal / Run Console popup integration is available for console-like editor popups covered by IntelliJ `ConsoleEditorPopupMenu`.
+- If a specific terminal UI does not expose this popup group, the fallback flow is: copy stack trace, then run `Tools -> J-Aide: Explain Runtime Error`.
 
 Future polish:
 
-- add `J-Aide: Explain Runtime Error` directly to Terminal / Run Console popup menu;
+- verify more IntelliJ terminal and run console variants and add extra popup groups if needed;
 - test more error types: Spring startup errors, Maven errors, Docker errors, datasource errors, port conflicts;
 - consider a separate error/log length limit instead of reusing the code length limit.
 
