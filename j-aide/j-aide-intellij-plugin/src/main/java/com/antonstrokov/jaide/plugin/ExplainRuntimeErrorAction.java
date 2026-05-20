@@ -8,13 +8,14 @@ import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputValidationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
-import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
@@ -30,6 +31,8 @@ public class ExplainRuntimeErrorAction extends AnAction {
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
+	private final JaideRuntimeErrorInputValidationService inputValidationService =
+			new JaideRuntimeErrorInputValidationService();
 
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
@@ -46,14 +49,15 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			return;
 		}
 
-		if (!looksLikeErrorText(errorInput.errorText())) {
+		if (!inputValidationService.looksLikeErrorText(errorInput.errorText())) {
 			log.warn("Explain runtime error action stopped: input does not look like error text, source="
 					+ errorInput.source()
 					+ ", textLength=" + errorInput.errorText().length());
 
 			notificationService.showWarning(
 					e.getProject(),
-					"Selected text does not look like an error, stack trace, or log. Use J-Aide: Explain Selected Code for source code."
+					"Selected text does not look like an error, stack trace, or log. Use J-Aide: Explain Selected Code" +
+							" for source code."
 			);
 			return;
 		}
@@ -144,46 +148,6 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			log.warn("Cannot read clipboard text: " + ex.getMessage(), ex);
 			return null;
 		}
-	}
-
-	private boolean looksLikeErrorText(String text) {
-		if (text == null || text.isBlank()) {
-			return false;
-		}
-
-		String normalizedText = text.toLowerCase();
-
-		return normalizedText.contains("exception")
-				|| normalizedText.contains("error")
-				|| normalizedText.contains("caused by:")
-				|| normalizedText.contains("at ")
-				|| normalizedText.contains("build failed")
-				|| normalizedText.contains("compilation error")
-				|| normalizedText.contains("failed to start")
-				|| normalizedText.contains("port already in use")
-				|| normalizedText.contains("connection refused")
-				|| normalizedText.contains("beancreationexception")
-				|| normalizedText.contains("nullpointerexception")
-				|| normalizedText.contains("illegalargumentexception")
-				|| normalizedText.contains("sqlexception")
-				|| normalizedText.contains("unsatisfieddependencyexception")
-				|| normalizedText.contains("application run failed")
-				|| normalizedText.contains("cannot find symbol")
-				|| normalizedText.contains("cannot resolve symbol")
-				|| normalizedText.contains("class, interface, enum, or record expected")
-				|| normalizedText.contains("illegal character")
-				|| normalizedText.contains("illegal unicode escape")
-				|| normalizedText.contains("preview feature")
-				|| normalizedText.contains("disabled by default")
-				|| normalizedText.contains("enable-preview")
-				|| normalizedText.contains("source option")
-				|| normalizedText.contains("target option")
-				|| normalizedText.contains("release version")
-				|| normalizedText.contains("package does not exist")
-				|| normalizedText.contains("method does not override")
-				|| normalizedText.contains("incompatible types")
-				|| normalizedText.contains("symbol:")
-				|| normalizedText.contains("location:");
 	}
 
 	private JaideErrorExplainRequest createRequest(ErrorInput input) {
