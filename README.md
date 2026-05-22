@@ -493,6 +493,17 @@ Current status:
 - Runtime error input validation supports multiple error families: JVM/compiler, JavaScript/Node.js, SQL, XML/config, and common system logs.
 - Runtime error input validation is implemented.
 
+Smoke-test checklist:
+
+- selected Java compiler error from editor -> `J-Aide: Explain Runtime Error`;
+- selected stack trace or build output from console popup -> `J-Aide: Explain Runtime Error`;
+- copied stack trace or log -> `Tools -> J-Aide: Explain Runtime Error`;
+- regular Java source code -> should be rejected with a warning;
+- long stack trace over regular source code limit -> should be accepted up to `J_AIDE_ERROR_MAX_LENGTH`;
+- SQL error -> should be accepted;
+- XML/config error -> should be accepted;
+- JavaScript/Node.js error -> should be accepted.
+
 Known limitation:
 
 - Terminal / Run Console popup integration is available for console-like editor popups covered by IntelliJ `ConsoleEditorPopupMenu`.
