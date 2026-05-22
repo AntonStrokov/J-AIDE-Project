@@ -20,6 +20,11 @@ public class JaideRuntimeErrorInputExtractor {
 		JaideEditorContext context = contextExtractor.extract(event);
 
 		if (context != null) {
+			log.info("Runtime error input extracted from editor selection, fileName=" + context.fileName()
+					+ ", textLength=" + context.selectedCode().length()
+					+ ", lineStart=" + context.lineStart()
+					+ ", lineEnd=" + context.lineEnd());
+
 			return new JaideRuntimeErrorInput(
 					context.selectedCode(),
 					context.fileName(),
@@ -35,10 +40,13 @@ public class JaideRuntimeErrorInputExtractor {
 		String clipboardText = getClipboardText();
 
 		if (clipboardText == null || clipboardText.isBlank()) {
+			log.warn("Runtime error input was not found: no editor selection and clipboard is empty");
 			return null;
 		}
 
 		Project project = event.getProject();
+
+		log.info("Runtime error input extracted from clipboard, textLength=" + clipboardText.length());
 
 		return new JaideRuntimeErrorInput(
 				clipboardText,
