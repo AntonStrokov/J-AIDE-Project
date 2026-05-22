@@ -26,6 +26,8 @@ import java.net.http.HttpResponse;
 
 public class JaideBackendClient {
 	private static final Logger log = Logger.getInstance(JaideBackendClient.class);
+	private static final String CONTENT_TYPE_HEADER = "Content-Type";
+	private static final String APPLICATION_JSON = "application/json";
 
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
@@ -110,7 +112,7 @@ public class JaideBackendClient {
 	private HttpRequest buildJsonPostRequest(String url, String requestBody) {
 		return HttpRequest.newBuilder()
 				.uri(URI.create(url))
-				.header("Content-Type", "application/json")
+				.header(CONTENT_TYPE_HEADER, APPLICATION_JSON)
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
 	}
