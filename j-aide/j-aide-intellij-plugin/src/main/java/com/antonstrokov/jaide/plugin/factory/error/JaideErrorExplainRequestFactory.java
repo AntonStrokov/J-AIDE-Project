@@ -5,11 +5,12 @@ import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainRequest;
 import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInput;
 
 public class JaideErrorExplainRequestFactory {
+	private static final String RUNTIME_ERROR_MODE = "runtime_error";
 
 	public JaideErrorExplainRequest create(JaideRuntimeErrorInput input) {
 		return new JaideErrorExplainRequest(
 				input.errorText(),
-				"runtime_error",
+				RUNTIME_ERROR_MODE,
 				null,
 				input.fileName(),
 				input.lineStart(),
