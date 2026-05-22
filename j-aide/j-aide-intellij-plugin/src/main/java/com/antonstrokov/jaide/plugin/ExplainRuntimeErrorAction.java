@@ -5,6 +5,7 @@ import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
+import com.antonstrokov.jaide.plugin.factory.error.JaideErrorExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInput;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputExtractor;
@@ -28,6 +29,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 	private final JaideRuntimeErrorInputValidationService inputValidationService =
 			new JaideRuntimeErrorInputValidationService();
 	private final JaideRuntimeErrorInputExtractor inputExtractor = new JaideRuntimeErrorInputExtractor();
+	private final JaideErrorExplainRequestFactory requestFactory = new JaideErrorExplainRequestFactory();
 
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
@@ -70,7 +72,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 				try {
 					log.info("Creating explain runtime error request");
 
-					JaideErrorExplainRequest request = createRequest(errorInput);
+					JaideErrorExplainRequest request = requestFactory.create(errorInput);
 
 					log.info("Sending explain runtime error request");
 
@@ -93,21 +95,5 @@ public class ExplainRuntimeErrorAction extends AnAction {
 				}
 			}
 		}.queue();
-	}
-
-	private JaideErrorExplainRequest createRequest(JaideRuntimeErrorInput input) {
-		return new JaideErrorExplainRequest(
-				input.errorText(),
-				"runtime_error",
-				null,
-				input.fileName(),
-				input.lineStart(),
-				input.lineEnd(),
-				input.projectName(),
-				null,
-				input.ideVersion(),
-				JaideConstants.PLUGIN_VERSION,
-				input.moduleName()
-		);
 	}
 }
