@@ -180,6 +180,10 @@ Current status:
 - Runtime error explanations are displayed in the J-Aide Tool Window using a structured preview panel aligned with the existing Explain/Improve UI style.
 - The endpoint returns structured error explanation with summary, likely cause, where to look, suggested fixes, risk hint, confidence, and metadata.
 - Full error text is not logged; backend logs request length, context metadata, success status, confidence, and response time.
+- Runtime error explanation uses a dedicated error text length limit.
+- Default maximum error text length is `15000` characters through `J_AIDE_ERROR_MAX_LENGTH`.
+- Plugin-side runtime error input validation supports JVM, Java/Kotlin compiler errors, JavaScript/Node.js, SQL, XML/config, and common system log markers.
+
 ## Explain Modes
 
 J-Aide supports three explanation modes:
@@ -340,6 +344,7 @@ Module responsibilities:
 | Error explanation clipboard input | Done MVP    | Allows explaining copied stack traces through `Tools -> J-Aide: Explain Runtime Error` |
 | Error explanation console popup   | Done MVP    | Allows explaining selected build output and runtime logs from console popup menu |
 | Runtime error input validation    | Done MVP    | Rejects regular source code and accepts stack traces, compiler errors, and build logs |
+| Runtime error text limit          | Done MVP    | Uses dedicated `J_AIDE_ERROR_MAX_LENGTH` limit instead of source code length limit |
 | Read selected code from editor    | Done        | Uses active IntelliJ editor selection                    |
 | Send editor context to backend    | Done        | Includes file, project, module, IDE, and plugin metadata |
 | Detect language by file extension | Done        | Falls back to plain text when language is unknown        |
@@ -472,6 +477,8 @@ Current behavior:
 - rejects regular source code with a warning and suggests using `J-Aide: Explain Selected Code`;
 - calls the backend endpoint `POST /ai/explain-error`;
 - displays structured runtime error explanation in the J-Aide Tool Window.
+- accepts longer stack traces and logs than regular source code explain requests;
+- uses plugin-side multi-language error markers before sending the request to the backend;
 
 Current status:
 
@@ -482,6 +489,8 @@ Current status:
 - `Show Diff` and `Apply` are hidden for runtime error explanations.
 - `Back to Code` is available.
 - Console popup integration is implemented.
+- Dedicated backend error text limit is implemented.
+- Runtime error input validation supports multiple error families: JVM/compiler, JavaScript/Node.js, SQL, XML/config, and common system logs.
 - Runtime error input validation is implemented.
 
 Known limitation:
@@ -493,7 +502,7 @@ Future polish:
 
 - verify more IntelliJ terminal and run console variants and add extra popup groups if needed;
 - test more error types: Spring startup errors, Maven errors, Docker errors, datasource errors, port conflicts;
-- consider a separate error/log length limit instead of reusing the code length limit.
+- continue expanding validation markers based on real failed smoke-test cases;
 
 ## Environment Configuration
 
@@ -505,7 +514,8 @@ Available variables:
 - `OLLAMA_MODEL` — local model used for AI explanations.
 - `J_AIDE_APP_NAME` — backend application name.
 - `J_AIDE_APP_VERSION` — backend version.
-- `J_AIDE_CODE_MAX_LENGTH` — maximum allowed code length for explain requests.
+- `J_AIDE_CODE_MAX_LENGTH` — maximum allowed source code length for code explain and improve requests.
+- `J_AIDE_ERROR_MAX_LENGTH` — maximum allowed error text length for runtime error explanation requests. Default: `15000`.
 
 If these variables are not provided, default values from `application.yaml` are used.
 
