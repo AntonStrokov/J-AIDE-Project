@@ -13,6 +13,8 @@ j-aide:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
     limits:
       code-max-length: ${J_AIDE_CODE_MAX_LENGTH:2000}
+      error-max-length: ${J_AIDE_ERROR_MAX_LENGTH:15000}
   app:
     name: ${J_AIDE_APP_NAME:J-Aide}
     version: ${J_AIDE_APP_VERSION:0.1.0}
+

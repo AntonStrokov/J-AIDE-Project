@@ -2,6 +2,8 @@ package com.antonstrokov.j_aide.core.service;
 
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.dto.common.SupportedLanguage;
+import com.antonstrokov.j_aide.core.dto.error.AiErrorExplainResult;
+import com.antonstrokov.j_aide.core.dto.error.StructuredErrorExplanationResponse;
 import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.explain.StructuredExplainResponse;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
@@ -11,8 +13,6 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.antonstrokov.j_aide.core.dto.error.AiErrorExplainResult;
-import com.antonstrokov.j_aide.core.dto.error.StructuredErrorExplanationResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -81,7 +81,8 @@ public class AiService {
 		return structured;
 	}
 
-	private StructuredErrorExplanationResponse parseStructuredErrorExplanationResponse(String response) throws Exception {
+	private StructuredErrorExplanationResponse parseStructuredErrorExplanationResponse(String response)
+			throws Exception {
 		StructuredErrorExplanationResponse structured =
 				objectMapper.readValue(response, StructuredErrorExplanationResponse.class);
 
@@ -142,7 +143,8 @@ public class AiService {
 		fallback.setLikelyCause("Ответ AI не удалось распарсить в ожидаемую JSON-структуру");
 		fallback.setWhereToLook("Проверь сырой ответ модели в rawJson");
 		fallback.setSuggestedFixes(List.of("Повтори запрос или уточни текст ошибки"));
-		fallback.setRiskHint("Ошибка не была проанализирована надёжно, потому что ответ AI не удалось структурировать");
+		fallback.setRiskHint("Ошибка не была проанализирована надёжно, потому что ответ AI не удалось " +
+				"структурировать");
 		fallback.setConfidence("low");
 
 		return new AiErrorExplainResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
@@ -378,11 +380,11 @@ public class AiService {
 			throw new IllegalArgumentException("Error text is empty");
 		}
 
-		int maxCodeLength = aiProperties.limits().codeMaxLength();
+		int maxErrorLength = aiProperties.limits().errorMaxLength();
 
-		log.info("Configured maxErrorTextLength={}", maxCodeLength);
+		log.info("Configured maxErrorTextLength={}", maxErrorLength);
 
-		if (errorText.length() > maxCodeLength) {
+		if (errorText.length() > maxErrorLength) {
 			throw new IllegalArgumentException("Error text is too long");
 		}
 	}

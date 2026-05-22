@@ -2,18 +2,18 @@ package com.antonstrokov.jaide.plugin.client;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.backend.JaideBackendExplainRequest;
-import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
-import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainResponse;
-import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
-import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestFactory;
-import com.antonstrokov.jaide.plugin.dto.improve.JaideBackendImproveRequest;
-import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
-import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveResponse;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
-import com.antonstrokov.jaide.plugin.factory.error.JaideBackendErrorExplainRequestFactory;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainResponse;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideBackendImproveRequest;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.factory.error.JaideBackendErrorExplainRequestFactory;
+import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideBackendImproveRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
@@ -31,7 +31,8 @@ public class JaideBackendClient {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final JaideBackendExplainRequestFactory backendRequestFactory = new JaideBackendExplainRequestFactory();
 	private final JaideBackendImproveRequestFactory improveRequestFactory = new JaideBackendImproveRequestFactory();
-	private final JaideBackendErrorExplainRequestFactory errorExplainRequestFactory = new JaideBackendErrorExplainRequestFactory();
+	private final JaideBackendErrorExplainRequestFactory errorExplainRequestFactory =
+			new JaideBackendErrorExplainRequestFactory();
 
 	public JaideExplanation explain(JaideExplainRequest request) throws IOException, InterruptedException {
 		String requestBody = buildExplainRequestBody(request);
@@ -61,7 +62,8 @@ public class JaideBackendClient {
 		return parseImprovement(responseBody);
 	}
 
-	public JaideErrorExplanation explainError(JaideErrorExplainRequest request) throws IOException, InterruptedException {
+	public JaideErrorExplanation explainError(JaideErrorExplainRequest request)
+			throws IOException, InterruptedException {
 		String requestBody = buildErrorExplainRequestBody(request);
 
 		log.info("Sending explain error request to backend, requestBodyLength=" + requestBody.length());
