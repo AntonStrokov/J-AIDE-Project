@@ -3,6 +3,7 @@ package com.antonstrokov.jaide.plugin.service;
 import java.util.regex.Pattern;
 
 public class JaideRuntimeErrorInputValidationService {
+	private static final int MAX_VALIDATION_TEXT_LENGTH = 32768;
 
 	private static final String JVM_ERROR_MARKERS =
 			// === JAVA and KOTLIN (JVM stack traces and compiler errors) ===
@@ -70,7 +71,9 @@ public class JaideRuntimeErrorInputValidationService {
 		}
 
 		// Scan only the first 32 KB to avoid expensive validation on very large logs.
-		String textToCheck = text.length() > 32768 ? text.substring(0, 32768) : text;
+		String textToCheck = text.length() > MAX_VALIDATION_TEXT_LENGTH
+				? text.substring(0, MAX_VALIDATION_TEXT_LENGTH)
+				: text;
 
 		return ERROR_PATTERN.matcher(textToCheck).find();
 	}
