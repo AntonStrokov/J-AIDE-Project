@@ -96,24 +96,20 @@ public class JaideBackendClient {
 	}
 
 	private HttpRequest buildExplainHttpRequest(String requestBody) {
-		return HttpRequest.newBuilder()
-				.uri(URI.create(JaideConstants.EXPLAIN_URL))
-				.header("Content-Type", "application/json")
-				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
-				.build();
+		return buildJsonPostRequest(JaideConstants.EXPLAIN_URL, requestBody);
 	}
 
 	private HttpRequest buildImproveHttpRequest(String requestBody) {
-		return HttpRequest.newBuilder()
-				.uri(URI.create(JaideConstants.IMPROVE_URL))
-				.header("Content-Type", "application/json")
-				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
-				.build();
+		return buildJsonPostRequest(JaideConstants.IMPROVE_URL, requestBody);
 	}
 
 	private HttpRequest buildErrorExplainHttpRequest(String requestBody) {
+		return buildJsonPostRequest(JaideConstants.EXPLAIN_ERROR_URL, requestBody);
+	}
+
+	private HttpRequest buildJsonPostRequest(String url, String requestBody) {
 		return HttpRequest.newBuilder()
-				.uri(URI.create(JaideConstants.EXPLAIN_ERROR_URL))
+				.uri(URI.create(url))
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
