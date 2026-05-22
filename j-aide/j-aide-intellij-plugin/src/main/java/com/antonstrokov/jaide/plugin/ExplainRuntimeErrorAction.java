@@ -21,6 +21,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExplainRuntimeErrorAction extends AnAction {
 	private static final Logger log = Logger.getInstance(ExplainRuntimeErrorAction.class);
+	private static final String NO_ERROR_INPUT_MESSAGE =
+			"Please select error text or copy stack trace to clipboard first";
+
+	private static final String INVALID_ERROR_INPUT_MESSAGE =
+			"Selected text does not look like an error, stack trace, or log. " +
+					"Use J-Aide: Explain Selected Code for source code.";
 
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
@@ -41,7 +47,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			log.warn("Explain runtime error action stopped: no selected error text and clipboard is empty");
 			notificationService.showWarning(
 					e.getProject(),
-					"Please select error text or copy stack trace to clipboard first"
+					NO_ERROR_INPUT_MESSAGE
 			);
 			return;
 		}
@@ -53,9 +59,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 
 			notificationService.showWarning(
 					e.getProject(),
-					"Selected text does not look like an error, stack trace, or log. Use J-Aide: Explain Selected " +
-							"Code" +
-							" for source code."
+					INVALID_ERROR_INPUT_MESSAGE
 			);
 			return;
 		}
