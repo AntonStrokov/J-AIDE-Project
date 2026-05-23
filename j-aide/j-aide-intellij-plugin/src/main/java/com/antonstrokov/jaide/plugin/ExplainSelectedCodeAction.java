@@ -53,6 +53,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 					JaideExplainRequest request = requestFactory.create(context);
 
+					log.info("Explain request created, mode=" + request.mode());
 					log.info("Sending explain request");
 
 					JaideExplanation explanation = backendClient.explain(request);
