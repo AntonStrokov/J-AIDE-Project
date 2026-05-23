@@ -12,6 +12,7 @@ import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
+import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -136,6 +137,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+		panel.add(new JaideExplainModeSelectorPanel(), BorderLayout.NORTH);
 
 		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		actionsPanel.setVisible(false);
