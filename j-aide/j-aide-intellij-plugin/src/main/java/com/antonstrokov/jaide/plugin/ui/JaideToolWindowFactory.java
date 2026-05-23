@@ -11,6 +11,7 @@ import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
+import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -34,9 +35,11 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JButton showDiffButton;
 	private static JButton applyButton;
 	private static JButton backToCodeButton;
+	private static JaideToolWindowMode currentMode;
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		ApplicationManager.getApplication().invokeLater(() -> {
+			currentMode = JaideToolWindowMode.EXPLANATION;
 
 			if (previewContainer != null && explanationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -66,6 +69,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 	public static void updateErrorExplanation(JaideErrorExplanation errorExplanation) {
 		ApplicationManager.getApplication().invokeLater(() -> {
+			currentMode = JaideToolWindowMode.ERROR_EXPLANATION;
 
 			if (previewContainer != null && errorExplanationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -95,6 +99,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 	public static void updateImprovement(JaideImprovement improvement, String originalCode) {
 		ApplicationManager.getApplication().invokeLater(() -> {
+			currentMode = JaideToolWindowMode.IMPROVEMENT;
 
 			if (previewContainer != null && improvePreviewPanel != null) {
 				previewContainer.removeAll();
@@ -120,6 +125,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				backToCodeButton.setVisible(true);
 			}
 		});
+	}
+
+	public static boolean isShowingErrorExplanation() {
+		return currentMode == JaideToolWindowMode.ERROR_EXPLANATION;
 	}
 
 	@Override
