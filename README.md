@@ -198,6 +198,8 @@ Current mode behavior:
 - `POST /ai/improve` currently uses one dedicated improve prompt template.
 - `POST /ai/explain-error` currently uses one dedicated runtime error explanation prompt template.
 
+In the IntelliJ plugin, the selected Explain mode is controlled from the J-Aide Tool Window. The default mode is `SMART`.
+
 ## Supported Languages
 
 Currently supported languages:
@@ -261,6 +263,7 @@ Current plugin capabilities:
 - Sends selected code and editor context to the backend.
 - Detects language from file extension.
 - Displays structured AI explanation in the J-Aide Tool Window.
+- Allows selecting Explain mode (`FAST`, `SMART`, `DEEP`) from the J-Aide Tool Window for source code explanations.
 - Explains selected runtime errors, stack traces, and application logs through `J-Aide: Explain Runtime Error`.
 - Supports clipboard fallback for runtime error explanation through `Tools -> J-Aide: Explain Runtime Error`.
 - Supports runtime error explanation directly from the console popup menu.
@@ -271,6 +274,7 @@ Current plugin capabilities:
 - Opens the Tool Window automatically after receiving a response.
 - Shows friendly error notifications when the backend is unavailable.
 - Uses Jackson for safe backend request serialization and response parsing.
+
 
 Current request context sent by the plugin:
 
