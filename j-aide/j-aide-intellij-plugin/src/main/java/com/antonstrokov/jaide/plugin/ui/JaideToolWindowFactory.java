@@ -36,6 +36,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JButton applyButton;
 	private static JButton backToCodeButton;
 	private static JaideToolWindowMode currentMode;
+	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		ApplicationManager.getApplication().invokeLater(() -> {
@@ -189,5 +190,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);
 		toolWindow.getContentManager().addContent(content);
+
+		autoHideService.register(project, toolWindow);
 	}
 }
