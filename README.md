@@ -186,11 +186,17 @@ Current status:
 
 ## Explain Modes
 
-J-Aide supports three explanation modes:
+J-Aide currently supports three explanation modes for source code explanation:
 
 - `FAST` — short and quick explanation.
 - `SMART` — balanced explanation, used by default.
 - `DEEP` — more detailed explanation.
+
+Current mode behavior:
+
+- `POST /ai/explain` uses `FAST`, `SMART`, and `DEEP` to select different prompt templates.
+- `POST /ai/improve` currently uses one dedicated improve prompt template.
+- `POST /ai/explain-error` currently uses one dedicated runtime error explanation prompt template.
 
 ## Supported Languages
 
