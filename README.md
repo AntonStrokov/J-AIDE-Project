@@ -504,7 +504,12 @@ Smoke-test checklist:
 - long stack trace over regular source code limit -> should be accepted up to `J_AIDE_ERROR_MAX_LENGTH`;
 - SQL error -> should be accepted;
 - XML/config error -> should be accepted;
-- JavaScript/Node.js error -> should be accepted.
+- JavaScript/Node.js error -> should be accepted;
+- Docker port binding error -> should be accepted;
+- Maven dependency resolution error -> should be accepted;
+- Maven non-parseable POM error -> should be accepted;
+- Node.js module resolution error -> should be accepted;
+- regular Java source code -> should be rejected with a warning.
 
 Known limitation:
 
