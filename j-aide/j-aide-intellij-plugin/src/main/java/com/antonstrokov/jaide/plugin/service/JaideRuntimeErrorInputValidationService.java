@@ -61,7 +61,9 @@ public class JaideRuntimeErrorInputValidationService {
 			"stack trace",
 			"trace:",
 			"connection refused",
-			"port already in use"
+			"port already in use",
+			"error response from daemon",
+			"ports are not available"
 	};
 
 	private static final Pattern ERROR_PATTERN = buildErrorPattern();
