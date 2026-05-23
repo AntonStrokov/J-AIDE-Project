@@ -493,7 +493,8 @@ Current status:
 - Console popup integration is implemented.
 - Dedicated backend error text limit is implemented.
 - Runtime error input validation supports multiple error families: JVM/compiler, JavaScript/Node.js, SQL, XML/config, and common system logs.
-- Runtime error input validation is implemented.
+- Runtime error input validation is implemented;
+- Error explanation prompt is strengthened to preserve exact file names, class names, methods, ports, dependency names, symbols, error codes, and likely typo hints from logs.
 
 Smoke-test checklist:
 
