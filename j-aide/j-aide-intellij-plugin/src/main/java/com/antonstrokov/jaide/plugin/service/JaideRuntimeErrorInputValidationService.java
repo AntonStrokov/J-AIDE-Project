@@ -54,7 +54,11 @@ public class JaideRuntimeErrorInputValidationService {
 			"xml\\s+parse\\s+error",
 			"markup\\s+not\\s+allowed",
 			"the\\s+element\\s+type\\s+\"[^\"]+\"\\s+must\\s+be\\s+terminated",
-			"unmarshalexception"
+			"unmarshalexception",
+			"non-parseable pom",
+			"end tag name",
+			"must match start tag name",
+			"the build could not read"
 	};
 
 	private static final String[] SYSTEM_ERROR_MARKERS = {
