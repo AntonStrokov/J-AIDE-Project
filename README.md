@@ -476,7 +476,8 @@ Current behavior:
 - validates input before sending it to the backend;
 - rejects regular source code with a warning and suggests using `J-Aide: Explain Selected Code`;
 - calls the backend endpoint `POST /ai/explain-error`;
-- displays structured runtime error explanation in the J-Aide Tool Window.
+- displays structured runtime error explanation in the J-Aide Tool Window;
+- automatically hides the J-Aide Tool Window when the user switches editor tabs after viewing a runtime error explanation;
 - accepts longer stack traces and logs than regular source code explain requests;
 - uses plugin-side multi-language error markers before sending the request to the backend;
 
@@ -488,6 +489,7 @@ Current status:
 - Runtime error preview uses the same visual style as existing Explain/Improve previews.
 - `Show Diff` and `Apply` are hidden for runtime error explanations.
 - `Back to Code` is available.
+- Runtime error preview is automatically hidden on editor tab switch; regular Explain and Improve previews stay open.
 - Console popup integration is implemented.
 - Dedicated backend error text limit is implemented.
 - Runtime error input validation supports multiple error families: JVM/compiler, JavaScript/Node.js, SQL, XML/config, and common system logs.
