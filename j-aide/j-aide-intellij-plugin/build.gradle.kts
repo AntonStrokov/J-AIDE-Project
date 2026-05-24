@@ -17,13 +17,7 @@ repositories {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
-
     intellijPlatform {
         intellijIdeaCommunity("2025.1")
     }
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
