@@ -535,6 +535,24 @@ Future polish:
 - test more error types: Spring startup errors, Maven errors, Docker errors, datasource errors, port conflicts;
 - continue expanding validation markers based on real failed smoke-test cases;
 
+## IntelliJ Plugin Testing Notes
+
+Pure unit tests for the IntelliJ plugin module are currently not enabled.
+
+A first attempt to add JUnit 5 test infrastructure directly to `j-aide-intellij-plugin` was reverted because the IntelliJ Platform Gradle Plugin test task started the test JVM with `com.intellij.util.lang.PathClassLoader`, which caused console `gradlew build` to fail before JUnit execution.
+
+Current rule:
+
+- do not reintroduce plugin test infrastructure until `gradlew build` remains green;
+- prefer manual sandbox checks for plugin behavior in the current MVP stage;
+- future testing strategy should be investigated separately.
+
+Possible future directions:
+
+- extract pure Java validation logic into a plain Java module and test it with regular JUnit;
+- configure a separate clean unit test source set/task that does not use IntelliJ Platform runtime;
+- use proper IntelliJ Platform tests only for plugin behavior that depends on IDE APIs.
+
 ## Environment Configuration
 
 The project includes an `.env.example` file with example environment variables.
