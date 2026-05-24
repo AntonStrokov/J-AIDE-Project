@@ -11,6 +11,7 @@ import com.antonstrokov.jaide.plugin.factory.explain.JaideExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
+import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputValidationService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -27,6 +28,8 @@ public class ExplainSelectedCodeAction extends AnAction {
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideExplainRequestFactory requestFactory = new JaideExplainRequestFactory();
+	private final JaideRuntimeErrorInputValidationService runtimeErrorInputValidationService =
+			new JaideRuntimeErrorInputValidationService();
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -37,6 +40,17 @@ public class ExplainSelectedCodeAction extends AnAction {
 		if (context == null) {
 			log.warn("Explain action stopped: no selected code");
 			notificationService.showWarning(e.getProject(), "Please select code first");
+			return;
+		}
+
+		if (runtimeErrorInputValidationService.looksLikeErrorText(context.selectedCode())) {
+			log.warn("Explain action stopped: selected text looks like runtime error text, selectedCodeLength="
+					+ context.selectedCode().length());
+
+			notificationService.showWarning(
+					e.getProject(),
+					"Selected text looks like an error, stack trace, or log. Use J-Aide: Explain Runtime Error instead."
+			);
 			return;
 		}
 
