@@ -2,6 +2,7 @@ package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.client.JaideBackendClient;
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
@@ -21,13 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExplainRuntimeErrorAction extends AnAction {
 	private static final Logger log = Logger.getInstance(ExplainRuntimeErrorAction.class);
-	private static final String NO_ERROR_INPUT_MESSAGE =
-			"Please select error text or copy stack trace to clipboard first";
-
-	private static final String INVALID_ERROR_INPUT_MESSAGE =
-			"Selected text does not look like an error, stack trace, or log. " +
-					"Use J-Aide: Explain Selected Code for source code.";
-
 	private final JaideBackendClient backendClient = new JaideBackendClient();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 	private final JaideNotificationService notificationService = new JaideNotificationService();
@@ -47,7 +41,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			log.warn("Explain runtime error action stopped: no selected error text and clipboard is empty");
 			notificationService.showWarning(
 					e.getProject(),
-					NO_ERROR_INPUT_MESSAGE
+					JaideNotificationMessages.SELECT_ERROR_TEXT_OR_COPY_STACK_TRACE_FIRST
 			);
 			return;
 		}
@@ -59,7 +53,7 @@ public class ExplainRuntimeErrorAction extends AnAction {
 
 			notificationService.showWarning(
 					e.getProject(),
-					INVALID_ERROR_INPUT_MESSAGE
+					JaideNotificationMessages.USE_EXPLAIN_SELECTED_CODE_FOR_SOURCE_CODE
 			);
 			return;
 		}

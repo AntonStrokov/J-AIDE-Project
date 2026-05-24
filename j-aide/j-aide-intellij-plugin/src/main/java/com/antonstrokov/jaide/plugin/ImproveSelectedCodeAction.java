@@ -13,6 +13,7 @@ import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -40,7 +41,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 		if (context == null) {
 			log.warn("Improve action stopped: no selected code");
-			notificationService.showWarning(e.getProject(), "Please select code first");
+			notificationService.showWarning(e.getProject(), JaideNotificationMessages.SELECT_CODE_FIRST);
 			return;
 		}
 

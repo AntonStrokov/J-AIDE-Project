@@ -12,6 +12,7 @@ import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputValidationService;
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -39,7 +40,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 		if (context == null) {
 			log.warn("Explain action stopped: no selected code");
-			notificationService.showWarning(e.getProject(), "Please select code first");
+			notificationService.showWarning(e.getProject(), JaideNotificationMessages.SELECT_CODE_FIRST);
 			return;
 		}
 
@@ -49,7 +50,7 @@ public class ExplainSelectedCodeAction extends AnAction {
 
 			notificationService.showWarning(
 					e.getProject(),
-					"Selected text looks like an error, stack trace, or log. Use J-Aide: Explain Runtime Error instead."
+					JaideNotificationMessages.USE_EXPLAIN_RUNTIME_ERROR_FOR_ERROR_TEXT
 			);
 			return;
 		}
