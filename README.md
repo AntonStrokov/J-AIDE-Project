@@ -264,6 +264,7 @@ Current plugin capabilities:
 - Detects language from file extension.
 - Displays structured AI explanation in the J-Aide Tool Window.
 - Allows selecting Explain mode (`FAST`, `SMART`, `DEEP`) from the J-Aide Tool Window for source code explanations.
+- Rejects runtime error text in `J-Aide: Explain Selected Code` and suggests using `J-Aide: Explain Runtime Error`.
 - Explains selected runtime errors, stack traces, and application logs through `J-Aide: Explain Runtime Error`.
 - Supports clipboard fallback for runtime error explanation through `Tools -> J-Aide: Explain Runtime Error`.
 - Supports runtime error explanation directly from the console popup menu.
@@ -310,13 +311,14 @@ The IntelliJ plugin is organized by responsibility.
 1. The user selects code in IntelliJ IDEA.
 2. The user runs the Explain Code action.
 3. The plugin extracts the selected code and editor context.
-4. The plugin detects the programming language from the file extension.
-5. The plugin builds a backend request JSON using Jackson.
-6. The plugin sends the request to the J-Aide backend.
-7. The backend returns a structured JSON response.
-8. The plugin parses the response using Jackson.
-9. The explanation is displayed in the J-Aide Tool Window.
-10. If an error occurs, the plugin shows a friendly notification.
+4. The plugin rejects selected runtime error text, stack traces, or logs and suggests using `J-Aide: Explain Runtime Error`.
+5. The plugin detects the programming language from the file extension.
+6. The plugin builds a backend request JSON using Jackson.
+7. The plugin sends the request to the J-Aide backend.
+8. The backend returns a structured JSON response.
+9. The plugin parses the response using Jackson.
+10. The explanation is displayed in the J-Aide Tool Window.
+11. If an error occurs, the plugin shows a friendly notification.
 
 ## Project Structure
 
