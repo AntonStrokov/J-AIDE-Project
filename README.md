@@ -31,6 +31,8 @@ Current model:
 qwen2.5-coder:7b
 ```
 
+The backend configures the Ollama chat model with a low temperature (`0.1`) to reduce response variance and make repeated developer-assistant requests more stable.
+
 Run the backend:
 
 ```bash
@@ -414,7 +416,7 @@ Current status:
 - Blank improved code is rejected.
 - Markdown-fenced improved code is rejected.
 - Improvements without change descriptions are rejected.
-- Improve prompt rules were strengthened to require clean source code and real change descriptions.
+- Improve prompt rules were strengthened to require clean source code, real change descriptions, and Russian user-facing response fields.
 
 Important safety rules:
 
