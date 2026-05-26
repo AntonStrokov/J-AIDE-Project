@@ -20,8 +20,8 @@ public class AiConfig {
 		return OllamaChatModel.builder()
 				.baseUrl(aiProperties.ollama().baseUrl())
 				.modelName(aiProperties.ollama().model())
-				.temperature(0.1)
-				.timeout(Duration.ofSeconds(60))
+				.temperature(aiProperties.ollama().temperature())
+				.timeout(Duration.ofSeconds(aiProperties.ollama().timeoutSeconds()))
 				.build();
 	}
 }

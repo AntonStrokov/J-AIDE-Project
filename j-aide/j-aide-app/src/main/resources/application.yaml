@@ -11,6 +11,8 @@ j-aide:
     ollama:
       model: ${OLLAMA_MODEL:qwen2.5-coder:7b}
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      temperature: ${OLLAMA_TEMPERATURE:0.1}
+      timeout-seconds: ${OLLAMA_TIMEOUT_SECONDS:60}
     limits:
       code-max-length: ${J_AIDE_CODE_MAX_LENGTH:2000}
       error-max-length: ${J_AIDE_ERROR_MAX_LENGTH:15000}

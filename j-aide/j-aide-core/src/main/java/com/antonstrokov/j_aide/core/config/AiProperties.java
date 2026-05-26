@@ -9,7 +9,9 @@ public record AiProperties(
 ) {
 	public record Ollama(
 			String baseUrl,
-			String model
+			String model,
+			double temperature,
+			long timeoutSeconds
 	) {}
 
 	public record Limits(

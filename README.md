@@ -567,6 +567,8 @@ Available variables:
 
 - `OLLAMA_BASE_URL` — Ollama server URL.
 - `OLLAMA_MODEL` — local model used for AI explanations.
+- `OLLAMA_TEMPERATURE` — Ollama generation temperature. Default: `0.1`.
+- `OLLAMA_TIMEOUT_SECONDS` — Ollama request timeout in seconds. Default: `60`.
 - `J_AIDE_APP_NAME` — backend application name.
 - `J_AIDE_APP_VERSION` — backend version.
 - `J_AIDE_CODE_MAX_LENGTH` — maximum allowed source code length for code explain and improve requests.
