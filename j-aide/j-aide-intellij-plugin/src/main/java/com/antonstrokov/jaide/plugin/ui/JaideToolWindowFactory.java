@@ -1,5 +1,7 @@
 package com.antonstrokov.jaide.plugin.ui;
 
+import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
+import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
@@ -7,11 +9,9 @@ import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
 import com.antonstrokov.jaide.plugin.service.JaideDiffViewerService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
+import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
-import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
-import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
-import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -28,16 +28,17 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 	private static final JaideNotificationService notificationService = new JaideNotificationService();
+	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 	private static JPanel previewContainer;
 	private static JaideImprovePreviewPanel improvePreviewPanel;
 	private static JaideExplanationPreviewPanel explanationPreviewPanel;
 	private static JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
 	private static JPanel actionsPanel;
+	private static JaideExplainModeSelectorPanel explainModeSelectorPanel;
 	private static JButton showDiffButton;
 	private static JButton applyButton;
 	private static JButton backToCodeButton;
 	private static JaideToolWindowMode currentMode;
-	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 
 	public static void updateExplanation(JaideExplanation explanation) {
 		ApplicationManager.getApplication().invokeLater(() -> {
@@ -53,6 +54,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 			if (actionsPanel != null) {
 				actionsPanel.setVisible(true);
+			}
+
+			if (explainModeSelectorPanel != null) {
+				explainModeSelectorPanel.setVisible(true);
 			}
 
 			if (showDiffButton != null) {
@@ -85,6 +90,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				actionsPanel.setVisible(true);
 			}
 
+			if (explainModeSelectorPanel != null) {
+				explainModeSelectorPanel.setVisible(false);
+			}
+
 			if (showDiffButton != null) {
 				showDiffButton.setVisible(false);
 			}
@@ -115,6 +124,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				actionsPanel.setVisible(true);
 			}
 
+			if (explainModeSelectorPanel != null) {
+				explainModeSelectorPanel.setVisible(false);
+			}
+
 			if (showDiffButton != null) {
 				showDiffButton.setVisible(true);
 			}
@@ -137,7 +150,9 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-		panel.add(new JaideExplainModeSelectorPanel(), BorderLayout.NORTH);
+		explainModeSelectorPanel = new JaideExplainModeSelectorPanel();
+		explainModeSelectorPanel.setVisible(false);
+		panel.add(explainModeSelectorPanel, BorderLayout.NORTH);
 
 		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		actionsPanel.setVisible(false);
