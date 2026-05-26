@@ -13,6 +13,7 @@ public final class JaideConstants {
 	public static final String EXPLAIN_TASK_TITLE = "J-Aide: Explaining selected code";
 	public static final String IMPROVE_TASK_TITLE = "J-Aide: Improving selected code";
 	public static final String EXPLAIN_ERROR_TASK_TITLE = "J-Aide: Explaining runtime error";
+	public static final int MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH = 32768;
 
 	private JaideConstants() {
 	}

@@ -1,11 +1,12 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.antonstrokov.jaide.plugin.config.JaideConstants;
+
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JaideRuntimeErrorInputValidationService {
-	private static final int MAX_VALIDATION_TEXT_LENGTH = 32768;
 
 	private static final String[] JVM_ERROR_MARKERS = {
 			"\\bjava:\\s+",
@@ -92,8 +93,8 @@ public class JaideRuntimeErrorInputValidationService {
 		}
 
 		// Scan only the first 32 KB to avoid expensive validation on very large logs.
-		String textToCheck = text.length() > MAX_VALIDATION_TEXT_LENGTH
-				? text.substring(0, MAX_VALIDATION_TEXT_LENGTH)
+		String textToCheck = text.length() > JaideConstants.MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH
+				? text.substring(0, JaideConstants.MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH)
 				: text;
 
 		return ERROR_PATTERN.matcher(textToCheck).find();
