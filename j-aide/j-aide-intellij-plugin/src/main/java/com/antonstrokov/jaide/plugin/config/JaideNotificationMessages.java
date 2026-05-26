@@ -27,6 +27,24 @@ public final class JaideNotificationMessages {
 	public static final String MISSING_IMPROVEMENT_CHANGE_DESCRIPTIONS =
 			"J-Aide received an improvement without change descriptions. Please try again.";
 
+	public static final String NO_IMPROVEMENT_TO_APPLY =
+			"No improvement to apply yet";
+
+	public static final String NO_ACTIVE_PROJECT_FOUND =
+			"No active project found";
+
+	public static final String ORIGINAL_DOCUMENT_UNAVAILABLE =
+			"Cannot apply improvement: original document is no longer available";
+
+	public static final String ORIGINAL_SELECTION_RANGE_INVALID =
+			"Cannot apply improvement: original selection range is no longer valid";
+
+	public static final String SELECTED_CODE_CHANGED_SINCE_IMPROVEMENT =
+			"Cannot apply improvement: selected code has changed since improvement was generated";
+
+	public static final String IMPROVEMENT_APPLIED =
+			"Improvement applied. Use IDE Undo/Redo to revert or reapply.";
+
 	private JaideNotificationMessages() {
 	}
 }

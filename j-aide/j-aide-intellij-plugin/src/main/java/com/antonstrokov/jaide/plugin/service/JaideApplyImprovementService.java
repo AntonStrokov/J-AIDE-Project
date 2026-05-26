@@ -1,15 +1,16 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.diagnostic.Logger;
 
 public class JaideApplyImprovementService {
 	private static final Logger log = Logger.getInstance(JaideApplyImprovementService.class);
@@ -21,13 +22,13 @@ public class JaideApplyImprovementService {
 
 		if (!JaideImprovementState.hasLatestImprovement()) {
 			log.warn("Apply stopped: no latest improvement found");
-			notificationService.showWarning(project, "No improvement to apply yet");
+			notificationService.showWarning(project, JaideNotificationMessages.NO_IMPROVEMENT_TO_APPLY);
 			return;
 		}
 
 		if (project == null) {
 			log.warn("Apply stopped: project is null");
-			notificationService.showWarning(null, "No active project found");
+			notificationService.showWarning(null, JaideNotificationMessages.NO_ACTIVE_PROJECT_FOUND);
 			return;
 		}
 
@@ -44,7 +45,7 @@ public class JaideApplyImprovementService {
 
 		if (document == null) {
 			log.warn("Apply stopped: original document is null");
-			notificationService.showWarning(project, "Cannot apply improvement: original document is no longer available");
+			notificationService.showWarning(project, JaideNotificationMessages.ORIGINAL_DOCUMENT_UNAVAILABLE);
 			return;
 		}
 
@@ -55,7 +56,7 @@ public class JaideApplyImprovementService {
 
 			notificationService.showWarning(
 					project,
-					"Cannot apply improvement: original selection range is no longer valid"
+					JaideNotificationMessages.ORIGINAL_SELECTION_RANGE_INVALID
 			);
 			return;
 		}
@@ -65,7 +66,7 @@ public class JaideApplyImprovementService {
 
 			notificationService.showWarning(
 					project,
-					"Cannot apply improvement: selected code has changed since improvement was generated"
+					JaideNotificationMessages.SELECTED_CODE_CHANGED_SINCE_IMPROVEMENT
 			);
 			return;
 		}
@@ -88,7 +89,7 @@ public class JaideApplyImprovementService {
 
 		notificationService.showInfo(
 				project,
-				"Improvement applied. Use IDE Undo/Redo to revert or reapply."
+				JaideNotificationMessages.IMPROVEMENT_APPLIED
 		);
 
 		log.info("Apply latest improvement finished successfully");
