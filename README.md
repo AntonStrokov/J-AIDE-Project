@@ -416,7 +416,7 @@ Current status:
 - Blank improved code is rejected.
 - Markdown-fenced improved code is rejected.
 - Improvements without change descriptions are rejected.
-- Improve prompt rules were strengthened to require clean source code, real change descriptions, and Russian user-facing response fields.
+- Improve prompt rules were strengthened to require clean source code, real change descriptions, Russian user-facing response fields, and to reduce invented change descriptions.
 
 Important safety rules:
 
@@ -437,6 +437,7 @@ Possible improvement types:
 Future polish:
 
 - improve semantic validation of AI suggestions;
+- add diff-aware validation for `changes` to detect descriptions that are not present in `improvedCode`;
 - detect suspicious improvements;
 - add richer highlighting for changed lines;
 - improve confidence and risk visual indicators.
