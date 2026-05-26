@@ -200,6 +200,8 @@ Current mode behavior:
 
 In the IntelliJ plugin, the selected Explain mode is controlled from the J-Aide Tool Window. The default mode is `SMART`.
 
+The Explain mode selector is shown only for `J-Aide: Explain Selected Code` previews. It is hidden for Improve Code and Explain Runtime Error previews because those flows use dedicated prompt templates.
+
 ## Supported Languages
 
 Currently supported languages:
