@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.ui;
 
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
@@ -162,12 +163,12 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
 
 			if (latestImprovement == null) {
-				notificationService.showWarning(project, "No improvement to show in diff yet");
+				notificationService.showWarning(project, JaideNotificationMessages.NO_IMPROVEMENT_TO_SHOW_IN_DIFF);
 				return;
 			}
 
 			if (latestImprovement.originalCode() == null || latestImprovement.improvedCode() == null) {
-				notificationService.showWarning(project, "Cannot show diff: improvement data is incomplete");
+				notificationService.showWarning(project, JaideNotificationMessages.INCOMPLETE_IMPROVEMENT_DIFF_DATA);
 				return;
 			}
 

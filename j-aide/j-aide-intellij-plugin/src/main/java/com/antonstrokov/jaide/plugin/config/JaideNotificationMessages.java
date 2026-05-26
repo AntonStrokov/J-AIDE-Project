@@ -45,6 +45,12 @@ public final class JaideNotificationMessages {
 	public static final String IMPROVEMENT_APPLIED =
 			"Improvement applied. Use IDE Undo/Redo to revert or reapply.";
 
+	public static final String NO_IMPROVEMENT_TO_SHOW_IN_DIFF =
+			"No improvement to show in diff yet";
+
+	public static final String INCOMPLETE_IMPROVEMENT_DIFF_DATA =
+			"Cannot show diff: improvement data is incomplete";
+
 	private JaideNotificationMessages() {
 	}
 }
