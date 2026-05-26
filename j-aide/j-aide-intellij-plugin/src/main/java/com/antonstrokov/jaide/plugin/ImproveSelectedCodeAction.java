@@ -70,7 +70,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 						notificationService.showWarning(
 								e.getProject(),
-								"J-Aide received an empty improvement. Please try again."
+								JaideNotificationMessages.EMPTY_IMPROVEMENT_RECEIVED
 						);
 
 						return;
@@ -83,7 +83,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 						notificationService.showWarning(
 								e.getProject(),
-								"J-Aide did not find meaningful code changes. Please try again or select a different code fragment."
+								JaideNotificationMessages.NO_MEANINGFUL_CODE_CHANGES
 						);
 
 						return;
@@ -95,7 +95,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 						notificationService.showWarning(
 								e.getProject(),
-								"J-Aide received an invalid improvement format. Please try again."
+								JaideNotificationMessages.INVALID_IMPROVEMENT_FORMAT
 						);
 
 						return;
@@ -107,7 +107,7 @@ public class ImproveSelectedCodeAction extends AnAction {
 
 						notificationService.showWarning(
 								e.getProject(),
-								"J-Aide received an improvement without change descriptions. Please try again."
+								JaideNotificationMessages.MISSING_IMPROVEMENT_CHANGE_DESCRIPTIONS
 						);
 
 						return;
