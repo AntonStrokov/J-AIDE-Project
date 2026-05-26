@@ -199,6 +199,7 @@ Current mode behavior:
 - `POST /ai/explain` uses `FAST`, `SMART`, and `DEEP` to select different prompt templates.
 - `POST /ai/improve` currently uses one dedicated improve prompt template.
 - `POST /ai/explain-error` currently uses one dedicated runtime error explanation prompt template.
+- The `SMART` explain prompt is strengthened to reduce inaccurate claims and better highlight nullable calls, weak names, and `System.out.println` usage.
 
 In the IntelliJ plugin, the selected Explain mode is controlled from the J-Aide Tool Window. The default mode is `SMART`.
 
