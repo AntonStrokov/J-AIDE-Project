@@ -8,6 +8,7 @@ import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
+import com.antonstrokov.jaide.plugin.service.JaideCopyImprovedCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideDiffViewerService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
@@ -16,7 +17,6 @@ import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -26,11 +26,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
+	private static final JaideCopyImprovedCodeService copyImprovedCodeService = new JaideCopyImprovedCodeService();
 	private static final JaideNotificationService notificationService = new JaideNotificationService();
 	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 	private static JPanel previewContainer;
@@ -206,25 +206,9 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 
 		copyImprovedCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
-		copyImprovedCodeButton.addActionListener(event -> {
-			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
-
-			if (latestImprovement == null) {
-				notificationService.showWarning(project, JaideNotificationMessages.NO_IMPROVEMENT_TO_COPY);
-				return;
-			}
-
-			if (latestImprovement.improvedCode() == null || latestImprovement.improvedCode().isBlank()) {
-				notificationService.showWarning(project, JaideNotificationMessages.INCOMPLETE_IMPROVEMENT_COPY_DATA);
-				return;
-			}
-
-			CopyPasteManager.getInstance().setContents(
-					new StringSelection(latestImprovement.improvedCode())
-			);
-
-			notificationService.showInfo(project, JaideNotificationMessages.IMPROVED_CODE_COPIED);
-		});
+		copyImprovedCodeButton.addActionListener(
+				event -> copyImprovedCodeService.copyLatestImprovedCode(project)
+		);
 
 		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
 		backToCodeButton.addActionListener(event -> new JaideToolWindowService().hide(project));
