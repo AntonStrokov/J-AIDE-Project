@@ -398,6 +398,7 @@ Current behavior:
 - returns a structured improvement result;
 - displays the improvement in the J-Aide Tool Window;
 - shows Original Code and Improved Code in scrollable editor-like blocks;
+- allows copying the improved code to the clipboard without applying changes;
 - allows the user to open the IntelliJ side-by-side Diff Viewer manually;
 - allows the user to apply the latest improvement explicitly.
 
@@ -408,6 +409,7 @@ Current status:
 - IntelliJ plugin action `J-Aide: Improve Selected Code` is registered.
 - Suggested improved code is displayed in the J-Aide Tool Window.
 - Tool Window preview is structured and uses dedicated UI panels.
+- Improve Preview supports copying the improved code to the clipboard through the `Copy Code` button.
 - Long-code backend errors are displayed as user-friendly plugin errors.
 - Applying changes is implemented as an MVP through `JaideApplyImprovementService`.
 - Apply is available from the J-Aide Tool Window and from the J-Aide Diff Dialog.
