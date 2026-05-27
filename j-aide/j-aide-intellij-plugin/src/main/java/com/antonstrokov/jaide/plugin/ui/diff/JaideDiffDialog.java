@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.ui.diff;
 
+import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
 import com.intellij.diff.DiffManager;
 import com.intellij.diff.DiffRequestPanel;
@@ -51,13 +52,13 @@ public class JaideDiffDialog extends DialogWrapper {
 
 	@Override
 	protected @Nullable JComponent createSouthPanel() {
-		JButton applyButton = new JButton("Apply Improvement");
+		JButton applyButton = new JButton(JaideUiLabels.APPLY_IMPROVEMENT_BUTTON);
 		applyButton.addActionListener(event -> {
 			applyImprovementService.applyLatestImprovement(project);
 			close(OK_EXIT_CODE);
 		});
 
-		JButton closeButton = new JButton("Close");
+		JButton closeButton = new JButton(JaideUiLabels.CLOSE_BUTTON);
 		closeButton.addActionListener(event -> close(CANCEL_EXIT_CODE));
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

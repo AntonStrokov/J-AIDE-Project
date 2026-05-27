@@ -2,6 +2,7 @@ package com.antonstrokov.jaide.plugin.ui;
 
 import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
+import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
@@ -158,7 +159,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		actionsPanel.setVisible(false);
 
-		showDiffButton = new JButton("Show Diff");
+		showDiffButton = new JButton(JaideUiLabels.SHOW_DIFF_BUTTON);
 		showDiffButton.addActionListener(event -> {
 			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
 
@@ -182,14 +183,14 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			);
 		});
 
-		applyButton = new JButton("Apply");
+		applyButton = new JButton(JaideUiLabels.APPLY_BUTTON);
 		applyButton.addActionListener(event -> {
 			applyImprovementService.applyLatestImprovement(project);
 
 			new JaideToolWindowService().hide(project);
 		});
 
-		backToCodeButton = new JButton("Back to Code");
+		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
 		backToCodeButton.addActionListener(event -> new JaideToolWindowService().hide(project));
 
 		actionsPanel.add(showDiffButton);
