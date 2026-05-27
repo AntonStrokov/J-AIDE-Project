@@ -1,5 +1,7 @@
 package com.antonstrokov.jaide.plugin.ui.improve;
 
+import com.antonstrokov.jaide.plugin.config.JaidePreviewLayout;
+import com.antonstrokov.jaide.plugin.config.JaideUiColors;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.intellij.openapi.editor.EditorFactory;
@@ -19,20 +21,6 @@ import java.awt.*;
 
 public class JaideImprovePreviewPanel extends JPanel {
 	private static final String CHANGE_ITEM_PREFIX = "• ";
-	private static final int TEXT_AREA_TAB_SIZE = 4;
-	private static final int CONTENT_PADDING = 12;
-	private static final float TITLE_FONT_SIZE_DELTA = 4f;
-	private static final int TITLE_BORDER_TOP = 4;
-	private static final int TITLE_BORDER_LEFT = 0;
-	private static final int TITLE_BORDER_BOTTOM = 22;
-	private static final int TITLE_BORDER_RIGHT = 0;
-	private static final float SECTION_TITLE_FONT_SIZE_DELTA = 1.5f;
-	private static final int SECTION_TITLE_BORDER_TOP = 18;
-	private static final int SECTION_TITLE_BORDER_LEFT = 0;
-	private static final int SECTION_TITLE_BORDER_BOTTOM = 8;
-	private static final int SECTION_TITLE_BORDER_RIGHT = 0;
-	private static final int SECTION_VALUE_TOP_PADDING = 4;
-	private static final int SECTION_VERTICAL_GAP = 4;
 	private static final int CODE_SCROLL_PREFERRED_WIDTH = 10;
 	private static final int CODE_BLOCK_BORDER_WIDTH = 1;
 	private static final int CODE_BLOCK_PADDING = 8;
@@ -55,7 +43,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		contentPanel.setBackground(JBColor.PanelBackground);
-		contentPanel.setBorder(JBUI.Borders.empty(CONTENT_PADDING));
+		contentPanel.setBorder(JBUI.Borders.empty(JaidePreviewLayout.CONTENT_PADDING));
 
 		add(new JBScrollPane(contentPanel), BorderLayout.CENTER);
 
@@ -100,7 +88,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		textArea.setBackground(JBColor.PanelBackground);
 		textArea.setForeground(JBColor.foreground());
 		textArea.setBorder(JBUI.Borders.empty());
-		textArea.setTabSize(TEXT_AREA_TAB_SIZE);
+		textArea.setTabSize(JaidePreviewLayout.TEXT_AREA_TAB_SIZE);
 		textArea.setAlignmentX(LEFT_ALIGNMENT);
 
 		return textArea;
@@ -108,17 +96,16 @@ public class JaideImprovePreviewPanel extends JPanel {
 
 	private void addTitle() {
 		JBLabel label = new JBLabel(JaideUiLabels.IMPROVE_PREVIEW_TITLE.toUpperCase());
-		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + TITLE_FONT_SIZE_DELTA));
-		label.setForeground(new JBColor(
-				new Color(0x1F2937),
-				new Color(0xE6EDF3)
-		));
+		label.setFont(label.getFont().deriveFont(
+				Font.BOLD,
+				label.getFont().getSize() + JaidePreviewLayout.TITLE_FONT_SIZE_DELTA));
+		label.setForeground(JaideUiColors.PREVIEW_TITLE_FOREGROUND);
 		label.setAlignmentX(LEFT_ALIGNMENT);
 		label.setBorder(JBUI.Borders.empty(
-				TITLE_BORDER_TOP,
-				TITLE_BORDER_LEFT,
-				TITLE_BORDER_BOTTOM,
-				TITLE_BORDER_RIGHT
+				JaidePreviewLayout.TITLE_BORDER_TOP,
+				JaidePreviewLayout.TITLE_BORDER_LEFT,
+				JaidePreviewLayout.TITLE_BORDER_BOTTOM,
+				JaidePreviewLayout.TITLE_BORDER_RIGHT
 		));
 
 		contentPanel.add(label);
@@ -126,18 +113,16 @@ public class JaideImprovePreviewPanel extends JPanel {
 
 	private JBLabel createSectionTitleLabel(String title) {
 		JBLabel titleLabel = new JBLabel(title.toUpperCase());
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD,
-				titleLabel.getFont().getSize() + SECTION_TITLE_FONT_SIZE_DELTA));
-		titleLabel.setForeground(new JBColor(
-				new Color(0x0B6EBD),
-				new Color(0x7AB7FF)
-		));
+		titleLabel.setFont(titleLabel.getFont().deriveFont(
+				Font.BOLD,
+				titleLabel.getFont().getSize() + JaidePreviewLayout.SECTION_TITLE_FONT_SIZE_DELTA));
+		titleLabel.setForeground(JaideUiColors.PREVIEW_SECTION_TITLE_FOREGROUND);
 		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
 		titleLabel.setBorder(JBUI.Borders.empty(
-				SECTION_TITLE_BORDER_TOP,
-				SECTION_TITLE_BORDER_LEFT,
-				SECTION_TITLE_BORDER_BOTTOM,
-				SECTION_TITLE_BORDER_RIGHT
+				JaidePreviewLayout.SECTION_TITLE_BORDER_TOP,
+				JaidePreviewLayout.SECTION_TITLE_BORDER_LEFT,
+				JaidePreviewLayout.SECTION_TITLE_BORDER_BOTTOM,
+				JaidePreviewLayout.SECTION_TITLE_BORDER_RIGHT
 		));
 
 		return titleLabel;
@@ -152,10 +137,10 @@ public class JaideImprovePreviewPanel extends JPanel {
 		JBLabel titleLabel = createSectionTitleLabel(title);
 
 		JTextArea valueArea = createTextArea(value);
-		valueArea.setBorder(JBUI.Borders.emptyTop(SECTION_VALUE_TOP_PADDING));
+		valueArea.setBorder(JBUI.Borders.emptyTop(JaidePreviewLayout.SECTION_VALUE_TOP_PADDING));
 
 		contentPanel.add(titleLabel);
-		contentPanel.add(Box.createVerticalStrut(SECTION_VERTICAL_GAP));
+		contentPanel.add(Box.createVerticalStrut(JaidePreviewLayout.SECTION_VERTICAL_GAP));
 		contentPanel.add(valueArea);
 	}
 
@@ -173,8 +158,8 @@ public class JaideImprovePreviewPanel extends JPanel {
 		codeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		codeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		codeScrollPane.setPreferredSize(new Dimension(
-						CODE_SCROLL_PREFERRED_WIDTH,
-						calculateCodeBlockViewportHeight(code)
+				CODE_SCROLL_PREFERRED_WIDTH,
+				calculateCodeBlockViewportHeight(code)
 		));
 		codeScrollPane.setMaximumSize(new Dimension(
 				Integer.MAX_VALUE,
@@ -186,7 +171,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		));
 
 		contentPanel.add(titleLabel);
-		contentPanel.add(Box.createVerticalStrut(SECTION_VERTICAL_GAP));
+		contentPanel.add(Box.createVerticalStrut(JaidePreviewLayout.SECTION_VERTICAL_GAP));
 		contentPanel.add(codeScrollPane);
 	}
 
