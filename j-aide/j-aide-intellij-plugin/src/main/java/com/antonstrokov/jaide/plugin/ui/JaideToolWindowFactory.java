@@ -32,6 +32,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 	private static final JaideCopyImprovedCodeService copyImprovedCodeService = new JaideCopyImprovedCodeService();
 	private static final JaideNotificationService notificationService = new JaideNotificationService();
+	private static final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 	private static JPanel previewContainer;
 	private static JaideImprovePreviewPanel improvePreviewPanel;
@@ -188,7 +189,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				return;
 			}
 
-			new JaideToolWindowService().hide(project);
+			toolWindowService.hide(project);
 
 			diffViewerService.showImproveDiff(
 					project,
@@ -202,7 +203,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		applyButton.addActionListener(event -> {
 			applyImprovementService.applyLatestImprovement(project);
 
-			new JaideToolWindowService().hide(project);
+			toolWindowService.hide(project);
 		});
 
 		copyImprovedCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
@@ -211,7 +212,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		);
 
 		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
-		backToCodeButton.addActionListener(event -> new JaideToolWindowService().hide(project));
+		backToCodeButton.addActionListener(event -> toolWindowService.hide(project));
 
 		actionsPanel.add(showDiffButton);
 		actionsPanel.add(applyButton);
