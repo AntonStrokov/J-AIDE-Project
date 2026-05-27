@@ -260,6 +260,10 @@ public class JaideImprovePreviewPanel extends JPanel {
 			}
 		}
 
+		if (result.isEmpty()) {
+			return;
+		}
+
 		addTextSection(JaideUiLabels.CHANGES_SECTION, result.toString());
 	}
 }
