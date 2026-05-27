@@ -16,6 +16,7 @@ import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
@@ -39,6 +41,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JaideExplainModeSelectorPanel explainModeSelectorPanel;
 	private static JButton showDiffButton;
 	private static JButton applyButton;
+	private static JButton copyImprovedCodeButton;
 	private static JButton backToCodeButton;
 	private static JaideToolWindowMode currentMode;
 
@@ -68,6 +71,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 			if (applyButton != null) {
 				applyButton.setVisible(false);
+			}
+
+			if (copyImprovedCodeButton != null) {
+				copyImprovedCodeButton.setVisible(false);
 			}
 
 			if (backToCodeButton != null) {
@@ -104,6 +111,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				applyButton.setVisible(false);
 			}
 
+			if (copyImprovedCodeButton != null) {
+				copyImprovedCodeButton.setVisible(false);
+			}
+
 			if (backToCodeButton != null) {
 				backToCodeButton.setVisible(true);
 			}
@@ -136,6 +147,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 			if (applyButton != null) {
 				applyButton.setVisible(true);
+			}
+
+			if (copyImprovedCodeButton != null) {
+				copyImprovedCodeButton.setVisible(true);
 			}
 
 			if (backToCodeButton != null) {
@@ -190,11 +205,33 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			new JaideToolWindowService().hide(project);
 		});
 
+		copyImprovedCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
+		copyImprovedCodeButton.addActionListener(event -> {
+			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
+
+			if (latestImprovement == null) {
+				notificationService.showWarning(project, JaideNotificationMessages.NO_IMPROVEMENT_TO_COPY);
+				return;
+			}
+
+			if (latestImprovement.improvedCode() == null || latestImprovement.improvedCode().isBlank()) {
+				notificationService.showWarning(project, JaideNotificationMessages.INCOMPLETE_IMPROVEMENT_COPY_DATA);
+				return;
+			}
+
+			CopyPasteManager.getInstance().setContents(
+					new StringSelection(latestImprovement.improvedCode())
+			);
+
+			notificationService.showInfo(project, JaideNotificationMessages.IMPROVED_CODE_COPIED);
+		});
+
 		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
 		backToCodeButton.addActionListener(event -> new JaideToolWindowService().hide(project));
 
 		actionsPanel.add(showDiffButton);
 		actionsPanel.add(applyButton);
+		actionsPanel.add(copyImprovedCodeButton);
 		actionsPanel.add(backToCodeButton);
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 

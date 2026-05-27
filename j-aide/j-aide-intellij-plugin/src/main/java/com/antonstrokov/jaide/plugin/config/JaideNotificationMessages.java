@@ -51,6 +51,15 @@ public final class JaideNotificationMessages {
 	public static final String INCOMPLETE_IMPROVEMENT_DIFF_DATA =
 			"Cannot show diff: improvement data is incomplete";
 
+	public static final String NO_IMPROVEMENT_TO_COPY =
+			"No improvement to copy yet";
+
+	public static final String INCOMPLETE_IMPROVEMENT_COPY_DATA =
+			"Cannot copy improvement: improved code is not available";
+
+	public static final String IMPROVED_CODE_COPIED =
+			"Improved code copied to clipboard";
+
 	private JaideNotificationMessages() {
 	}
 }
