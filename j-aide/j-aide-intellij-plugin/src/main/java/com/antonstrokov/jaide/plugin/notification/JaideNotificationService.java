@@ -10,9 +10,9 @@ import com.intellij.util.concurrency.AppExecutorUtil;
 import java.util.concurrent.TimeUnit;
 
 public class JaideNotificationService {
-	private static final int INFO_EXPIRE_DELAY_MILLIS = 2500;
-	private static final int WARNING_EXPIRE_DELAY_MILLIS = 5000;
-	private static final int ERROR_EXPIRE_DELAY_MILLIS = 7000;
+	private static final int INFO_EXPIRE_DELAY_MILLIS = 3000;
+	private static final int WARNING_EXPIRE_DELAY_MILLIS = 8000;
+	private static final int ERROR_EXPIRE_DELAY_MILLIS = 10000;
 
 	public void showWarning(Project project, String message) {
 		showExpiring(project, message, NotificationType.WARNING, WARNING_EXPIRE_DELAY_MILLIS);
