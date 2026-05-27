@@ -29,6 +29,6 @@ public class JaideCopyImprovedCodeService {
 				new StringSelection(latestImprovement.improvedCode())
 		);
 
-		notificationService.showInfo(project, JaideNotificationMessages.IMPROVED_CODE_COPIED);
+		notificationService.showShortInfo(project, JaideNotificationMessages.IMPROVED_CODE_COPIED);
 	}
 }
