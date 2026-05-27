@@ -1,17 +1,12 @@
 package com.antonstrokov.jaide.plugin.ui;
 
-import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
-import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
-import com.antonstrokov.jaide.plugin.service.JaideApplyImprovementService;
 import com.antonstrokov.jaide.plugin.service.JaideCopyImprovedCodeService;
-import com.antonstrokov.jaide.plugin.service.JaideDiffViewerService;
-import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
-import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
+import com.antonstrokov.jaide.plugin.service.JaideToolWindowActionsService;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
@@ -28,12 +23,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
-	private static final JaideDiffViewerService diffViewerService = new JaideDiffViewerService();
-	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
 	private static final JaideCopyImprovedCodeService copyImprovedCodeService = new JaideCopyImprovedCodeService();
-	private static final JaideNotificationService notificationService = new JaideNotificationService();
-	private static final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
+	private static final JaideToolWindowActionsService toolWindowActionsService = new JaideToolWindowActionsService();
 	private static JPanel previewContainer;
 	private static JaideImprovePreviewPanel improvePreviewPanel;
 	private static JaideExplanationPreviewPanel explanationPreviewPanel;
@@ -176,35 +168,14 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel.setVisible(false);
 
 		showDiffButton = new JButton(JaideUiLabels.SHOW_DIFF_BUTTON);
-		showDiffButton.addActionListener(event -> {
-			JaideLastImprovement latestImprovement = JaideImprovementState.getLatestImprovement();
-
-			if (latestImprovement == null) {
-				notificationService.showWarning(project, JaideNotificationMessages.NO_IMPROVEMENT_TO_SHOW_IN_DIFF);
-				return;
-			}
-
-			if (latestImprovement.originalCode() == null || latestImprovement.improvedCode() == null) {
-				notificationService.showWarning(project, JaideNotificationMessages.INCOMPLETE_IMPROVEMENT_DIFF_DATA);
-				return;
-			}
-
-			toolWindowService.hide(project);
-
-			diffViewerService.showImproveDiff(
-					project,
-					latestImprovement.originalCode(),
-					latestImprovement.improvedCode(),
-					latestImprovement.fileName()
-			);
-		});
+		showDiffButton.addActionListener(
+				event -> toolWindowActionsService.showLatestImprovementDiff(project)
+		);
 
 		applyButton = new JButton(JaideUiLabels.APPLY_BUTTON);
-		applyButton.addActionListener(event -> {
-			applyImprovementService.applyLatestImprovement(project);
-
-			toolWindowService.hide(project);
-		});
+		applyButton.addActionListener(
+				event -> toolWindowActionsService.applyLatestImprovement(project)
+		);
 
 		copyImprovedCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
 		copyImprovedCodeButton.addActionListener(
@@ -212,7 +183,9 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		);
 
 		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
-		backToCodeButton.addActionListener(event -> toolWindowService.hide(project));
+		backToCodeButton.addActionListener(
+				event -> toolWindowActionsService.backToCode(project)
+		);
 
 		actionsPanel.add(showDiffButton);
 		actionsPanel.add(applyButton);
