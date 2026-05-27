@@ -278,8 +278,10 @@ Current plugin capabilities:
 - Plugin UI labels, colors, and shared preview layout constants are centralized in dedicated configuration classes.
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
+- Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
 - Opens the Tool Window automatically after receiving a response.
-- Shows friendly error notifications when the backend is unavailable.
+- Shows friendly plugin notifications for info, warning, and error cases.
+- Plugin notifications auto-expire to avoid blocking Tool Window action buttons for too long.
 - Uses Jackson for safe backend request serialization and response parsing.
 
 
@@ -371,6 +373,7 @@ Module responsibilities:
 | Display result in Tool Window     | Done        | Shows structured Explain and Improve previews            |
 | Back to Code button               | Done        | Available in Explain and Improve previews to hide Tool Window and return to editor |
 | Friendly error notifications      | Done        | Backend and plugin errors are handled separately         |
+| Auto-expiring plugin notifications | Done        | Info, warning, and error notifications expire automatically to reduce Tool Window overlap |
 | Backend capability handshake      | Done        | Available through `/backend-info`                        |
 | Improve Code                      | Done        | Backend AI flow, IntelliJ action, preview, validation    |
 | Improve response validation       | Done MVP    | Rejects no-op, blank, markdown-fenced improvements and missing change descriptions |
@@ -410,6 +413,8 @@ Current status:
 - Suggested improved code is displayed in the J-Aide Tool Window.
 - Tool Window preview is structured and uses dedicated UI panels.
 - Improve Preview supports copying the improved code to the clipboard through the `Copy Code` button.
+- Copy Code logic is handled by `JaideCopyImprovedCodeService`, keeping Tool Window orchestration lighter.
+- Copy Code shows a short-lived success notification after copying the improved code.
 - Long-code backend errors are displayed as user-friendly plugin errors.
 - Applying changes is implemented as an MVP through `JaideApplyImprovementService`.
 - Apply is available from the J-Aide Tool Window and from the J-Aide Diff Dialog.
@@ -543,6 +548,20 @@ Future polish:
 - verify more IntelliJ terminal and run console variants and add extra popup groups if needed;
 - test more error types: Spring startup errors, Maven errors, Docker errors, datasource errors, port conflicts;
 - continue expanding validation markers based on real failed smoke-test cases;
+
+### Plugin Notifications
+
+Plugin notifications are implemented through `JaideNotificationService`.
+
+Current behavior:
+
+- Info notifications are displayed as short-lived balloon notifications and expire after approximately 3 seconds;
+- Warning notifications expire after approximately 8 seconds;
+- Error notifications expire after approximately 10 seconds;
+- `Copy Code` uses a short-lived success notification after copying improved code to the clipboard;
+- Warning and error notifications remain visible longer than success notifications, but no longer stay on screen long enough to block Tool Window action buttons for an extended time.
+
+This keeps user feedback visible while reducing notification overlap with Tool Window actions such as `Show Diff`, `Apply`, `Copy Code`, and `Back to Code`.
 
 ## IntelliJ Plugin Testing Notes
 
