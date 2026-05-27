@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.ui.error;
 
+import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class JaideErrorExplanationPreviewPanel extends JPanel {
 
+	private static final String LIST_ITEM_PREFIX = "- ";
+	private static final int TEXT_AREA_TAB_SIZE = 4;
 	private final JPanel contentPanel;
 
 	public JaideErrorExplanationPreviewPanel() {
@@ -30,20 +33,20 @@ public class JaideErrorExplanationPreviewPanel extends JPanel {
 	public void updateErrorExplanation(JaideErrorExplanation explanation) {
 		contentPanel.removeAll();
 
-		addTitle("J-Aide Runtime Error Explanation");
-		addTextSection("Summary", explanation.summary());
-		addTextSection("Likely Cause", explanation.likelyCause());
-		addTextSection("Where To Look", explanation.whereToLook());
-		addTextSection("Suggested Fixes", normalizeList(explanation.suggestedFixes()));
-		addTextSection("Risk Hint", explanation.riskHint());
-		addTextSection("Confidence", explanation.confidence());
+		addTitle();
+		addTextSection(JaideUiLabels.SUMMARY_SECTION, explanation.summary());
+		addTextSection(JaideUiLabels.LIKELY_CAUSE_SECTION, explanation.likelyCause());
+		addTextSection(JaideUiLabels.WHERE_TO_LOOK_SECTION, explanation.whereToLook());
+		addTextSection(JaideUiLabels.SUGGESTED_FIXES_SECTION, normalizeList(explanation.suggestedFixes()));
+		addTextSection(JaideUiLabels.RISK_HINT_SECTION, explanation.riskHint());
+		addTextSection(JaideUiLabels.CONFIDENCE_SECTION, explanation.confidence());
 
 		revalidate();
 		repaint();
 	}
 
-	private void addTitle(String title) {
-		JBLabel label = new JBLabel(title.toUpperCase());
+	private void addTitle() {
+		JBLabel label = new JBLabel(JaideUiLabels.RUNTIME_ERROR_EXPLANATION_TITLE.toUpperCase());
 		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 4f));
 		label.setForeground(new JBColor(
 				new Color(0x1F2937),
@@ -91,16 +94,17 @@ public class JaideErrorExplanationPreviewPanel extends JPanel {
 		);
 		textArea.setBackground(JBColor.PanelBackground);
 		textArea.setForeground(JBColor.foreground());
-		textArea.setBorder(JBUI.Borders.empty(0));
-		textArea.setTabSize(4);
+		textArea.setBorder(JBUI.Borders.empty());
+		textArea.setTabSize(TEXT_AREA_TAB_SIZE);
 		textArea.setAlignmentX(LEFT_ALIGNMENT);
 
 		return textArea;
 	}
 
 	private String normalizeSectionValue(String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
-			return "Not provided by model.";
+		if (value == null || value.isBlank()
+				|| JaideUiLabels.NOT_PROVIDED.equalsIgnoreCase(value.trim())) {
+			return JaideUiLabels.NOT_PROVIDED_BY_MODEL;
 		}
 
 		return value;
@@ -108,19 +112,19 @@ public class JaideErrorExplanationPreviewPanel extends JPanel {
 
 	private String normalizeList(List<String> values) {
 		if (values == null || values.isEmpty()) {
-			return "Not provided by model.";
+			return JaideUiLabels.NOT_PROVIDED_BY_MODEL;
 		}
 
 		StringBuilder builder = new StringBuilder();
 
 		for (String value : values) {
 			if (value != null && !value.isBlank()) {
-				builder.append("- ").append(value).append(System.lineSeparator());
+				builder.append(LIST_ITEM_PREFIX).append(value).append(System.lineSeparator());
 			}
 		}
 
 		if (builder.isEmpty()) {
-			return "Not provided by model.";
+			return JaideUiLabels.NOT_PROVIDED_BY_MODEL;
 		}
 
 		return builder.toString();

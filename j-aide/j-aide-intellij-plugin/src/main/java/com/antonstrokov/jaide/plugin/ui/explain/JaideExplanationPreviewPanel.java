@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.ui.explain;
 
+import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
@@ -13,6 +14,7 @@ import java.awt.*;
 
 public class JaideExplanationPreviewPanel extends JPanel {
 
+	private static final int TEXT_AREA_TAB_SIZE = 4;
 	private final JPanel contentPanel;
 
 	public JaideExplanationPreviewPanel(String initialText) {
@@ -40,15 +42,15 @@ public class JaideExplanationPreviewPanel extends JPanel {
 	public void updateExplanation(JaideExplanation explanation) {
 		contentPanel.removeAll();
 
-		addTitle("J-Aide Explanation");
-		addTextSection("Summary", explanation.summary());
-		addTextSection("Details", explanation.details());
-		addTextSection("Complexity", explanation.complexity());
-		addTextSection("Suggestion", explanation.suggestion());
-		addTextSection("Best Practice", explanation.bestPractice());
-		addTextSection("Risk Hint", explanation.riskHint());
-		addTextSection("Confidence", explanation.confidence());
-		addTextSection("Code Smell", explanation.codeSmell());
+		addTitle();
+		addTextSection(JaideUiLabels.SUMMARY_SECTION, explanation.summary());
+		addTextSection(JaideUiLabels.DETAILS_SECTION, explanation.details());
+		addTextSection(JaideUiLabels.COMPLEXITY_SECTION, explanation.complexity());
+		addTextSection(JaideUiLabels.SUGGESTION_SECTION, explanation.suggestion());
+		addTextSection(JaideUiLabels.BEST_PRACTICE_SECTION, explanation.bestPractice());
+		addTextSection(JaideUiLabels.RISK_HINT_SECTION, explanation.riskHint());
+		addTextSection(JaideUiLabels.CONFIDENCE_SECTION, explanation.confidence());
+		addTextSection(JaideUiLabels.CODE_SMELL_SECTION, explanation.codeSmell());
 
 		revalidate();
 		repaint();
@@ -66,15 +68,15 @@ public class JaideExplanationPreviewPanel extends JPanel {
 		);
 		textArea.setBackground(JBColor.PanelBackground);
 		textArea.setForeground(JBColor.foreground());
-		textArea.setBorder(JBUI.Borders.empty(0));
-		textArea.setTabSize(4);
+		textArea.setBorder(JBUI.Borders.empty());
+		textArea.setTabSize(TEXT_AREA_TAB_SIZE);
 		textArea.setAlignmentX(LEFT_ALIGNMENT);
 
 		return textArea;
 	}
 
-	private void addTitle(String title) {
-		JBLabel label = new JBLabel(title.toUpperCase());
+	private void addTitle() {
+		JBLabel label = new JBLabel(JaideUiLabels.EXPLANATION_TITLE.toUpperCase());
 		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 4f));
 		label.setForeground(new JBColor(
 				new Color(0x1F2937),
@@ -111,8 +113,9 @@ public class JaideExplanationPreviewPanel extends JPanel {
 	}
 
 	private String normalizeSectionValue(String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
-			return "Not provided by model.";
+		if (value == null || value.isBlank()
+				|| JaideUiLabels.NOT_PROVIDED.equalsIgnoreCase(value.trim())) {
+			return JaideUiLabels.NOT_PROVIDED_BY_MODEL;
 		}
 
 		return value;

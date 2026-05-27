@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.ui.improve;
 
+import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
@@ -17,6 +18,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JaideImprovePreviewPanel extends JPanel {
+	private static final String CHANGE_ITEM_PREFIX = "• ";
+	private static final int TEXT_AREA_TAB_SIZE = 4;
 	private final Project project;
 	private final JPanel contentPanel;
 
@@ -47,14 +50,14 @@ public class JaideImprovePreviewPanel extends JPanel {
 	public void updateImprovement(JaideImprovement improvement, String originalCode) {
 		contentPanel.removeAll();
 
-		addTitle("J-Aide Improve Preview");
-		addTextSection("Status", "This is a preview only. No files were changed.");
-		addTextSection("Summary", improvement.summary());
-		addCodeSection("Original Code", originalCode);
-		addCodeSection("Improved Code", improvement.improvedCode());
+		addTitle();
+		addTextSection(JaideUiLabels.STATUS_SECTION, JaideUiLabels.IMPROVE_PREVIEW_STATUS);
+		addTextSection(JaideUiLabels.SUMMARY_SECTION, improvement.summary());
+		addCodeSection(JaideUiLabels.ORIGINAL_CODE_SECTION, originalCode);
+		addCodeSection(JaideUiLabels.IMPROVED_CODE_SECTION, improvement.improvedCode());
 		addChangesSection(improvement.changes());
-		addTextSection("Risk Hint", improvement.riskHint());
-		addTextSection("Confidence", improvement.confidence());
+		addTextSection(JaideUiLabels.RISK_HINT_SECTION, improvement.riskHint());
+		addTextSection(JaideUiLabels.CONFIDENCE_SECTION, improvement.confidence());
 
 		revalidate();
 		repaint();
@@ -72,15 +75,15 @@ public class JaideImprovePreviewPanel extends JPanel {
 		);
 		textArea.setBackground(JBColor.PanelBackground);
 		textArea.setForeground(JBColor.foreground());
-		textArea.setBorder(JBUI.Borders.empty(0));
-		textArea.setTabSize(4);
+		textArea.setBorder(JBUI.Borders.empty());
+		textArea.setTabSize(TEXT_AREA_TAB_SIZE);
 		textArea.setAlignmentX(LEFT_ALIGNMENT);
 
 		return textArea;
 	}
 
-	private void addTitle(String title) {
-		JBLabel label = new JBLabel(title.toUpperCase());
+	private void addTitle() {
+		JBLabel label = new JBLabel(JaideUiLabels.IMPROVE_PREVIEW_TITLE.toUpperCase());
 		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 4f));
 		label.setForeground(new JBColor(
 				new Color(0x1F2937),
@@ -106,7 +109,8 @@ public class JaideImprovePreviewPanel extends JPanel {
 	}
 
 	private void addTextSection(String title, String value) {
-		if (value == null || value.isBlank() || "Not provided".equalsIgnoreCase(value.trim())) {
+		if (value == null || value.isBlank()
+				|| JaideUiLabels.NOT_PROVIDED.equalsIgnoreCase(value.trim())) {
 			return;
 		}
 
@@ -178,7 +182,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		int minHeight = 80;
 		int maxHeight = 260;
 
-		return Math.max(minHeight, Math.min(maxHeight, calculateCodeContentHeight(code)));
+		return Math.clamp(calculateCodeContentHeight(code), minHeight, maxHeight);
 	}
 
 	private int calculateCodeContentWidth(String code) {
@@ -190,7 +194,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		int minWidth = 600;
 		int maxWidth = 2400;
 
-		return Math.max(minWidth, Math.min(maxWidth, maxLineLength * editorFontSize));
+		return Math.clamp((long) maxLineLength * editorFontSize, minWidth, maxWidth);
 	}
 
 	private int calculateCodeContentHeight(String code) {
@@ -228,12 +232,12 @@ public class JaideImprovePreviewPanel extends JPanel {
 
 		for (String change : changes) {
 			if (change != null && !change.isBlank()) {
-				result.append("• ")
+				result.append(CHANGE_ITEM_PREFIX)
 						.append(change)
 						.append(System.lineSeparator());
 			}
 		}
 
-		addTextSection("Changes", result.toString());
+		addTextSection(JaideUiLabels.CHANGES_SECTION, result.toString());
 	}
 }
