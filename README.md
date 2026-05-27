@@ -275,6 +275,7 @@ Current plugin capabilities:
 - Supports runtime error explanation directly from the console popup menu.
 - Validates runtime error input to avoid sending regular source code to the error explanation flow.
 - Displays runtime error explanations in a structured Tool Window preview aligned with the existing Explain/Improve UI style.
+- Plugin UI labels, colors, and shared preview layout constants are centralized in dedicated configuration classes.
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
 - Opens the Tool Window automatically after receiving a response.
