@@ -20,6 +20,30 @@ import java.awt.*;
 public class JaideImprovePreviewPanel extends JPanel {
 	private static final String CHANGE_ITEM_PREFIX = "• ";
 	private static final int TEXT_AREA_TAB_SIZE = 4;
+	private static final int CONTENT_PADDING = 12;
+	private static final float TITLE_FONT_SIZE_DELTA = 4f;
+	private static final int TITLE_BORDER_TOP = 4;
+	private static final int TITLE_BORDER_LEFT = 0;
+	private static final int TITLE_BORDER_BOTTOM = 22;
+	private static final int TITLE_BORDER_RIGHT = 0;
+	private static final float SECTION_TITLE_FONT_SIZE_DELTA = 1.5f;
+	private static final int SECTION_TITLE_BORDER_TOP = 18;
+	private static final int SECTION_TITLE_BORDER_LEFT = 0;
+	private static final int SECTION_TITLE_BORDER_BOTTOM = 8;
+	private static final int SECTION_TITLE_BORDER_RIGHT = 0;
+	private static final int SECTION_VALUE_TOP_PADDING = 4;
+	private static final int SECTION_VERTICAL_GAP = 4;
+	private static final int CODE_SCROLL_PREFERRED_WIDTH = 10;
+	private static final int CODE_BLOCK_BORDER_WIDTH = 1;
+	private static final int CODE_BLOCK_PADDING = 8;
+	private static final int CODE_BLOCK_MIN_HEIGHT = 80;
+	private static final int CODE_BLOCK_MAX_HEIGHT = 260;
+	private static final int CODE_CONTENT_MIN_WIDTH = 600;
+	private static final int CODE_CONTENT_MAX_WIDTH = 2400;
+	private static final int DEFAULT_LINE_COUNT = 1;
+	private static final int DEFAULT_MAX_LINE_LENGTH = 1;
+	private static final int CODE_LINE_HEIGHT_PADDING = 8;
+	private static final int CODE_CONTENT_HEIGHT_PADDING = 24;
 	private final Project project;
 	private final JPanel contentPanel;
 
@@ -31,7 +55,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		contentPanel.setBackground(JBColor.PanelBackground);
-		contentPanel.setBorder(JBUI.Borders.empty(12));
+		contentPanel.setBorder(JBUI.Borders.empty(CONTENT_PADDING));
 
 		add(new JBScrollPane(contentPanel), BorderLayout.CENTER);
 
@@ -84,26 +108,37 @@ public class JaideImprovePreviewPanel extends JPanel {
 
 	private void addTitle() {
 		JBLabel label = new JBLabel(JaideUiLabels.IMPROVE_PREVIEW_TITLE.toUpperCase());
-		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + 4f));
+		label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize() + TITLE_FONT_SIZE_DELTA));
 		label.setForeground(new JBColor(
 				new Color(0x1F2937),
 				new Color(0xE6EDF3)
 		));
 		label.setAlignmentX(LEFT_ALIGNMENT);
-		label.setBorder(JBUI.Borders.empty(4, 0, 22, 0));
+		label.setBorder(JBUI.Borders.empty(
+				TITLE_BORDER_TOP,
+				TITLE_BORDER_LEFT,
+				TITLE_BORDER_BOTTOM,
+				TITLE_BORDER_RIGHT
+		));
 
 		contentPanel.add(label);
 	}
 
 	private JBLabel createSectionTitleLabel(String title) {
 		JBLabel titleLabel = new JBLabel(title.toUpperCase());
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize() + 1.5f));
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD,
+				titleLabel.getFont().getSize() + SECTION_TITLE_FONT_SIZE_DELTA));
 		titleLabel.setForeground(new JBColor(
 				new Color(0x0B6EBD),
 				new Color(0x7AB7FF)
 		));
 		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
-		titleLabel.setBorder(JBUI.Borders.empty(18, 0, 8, 0));
+		titleLabel.setBorder(JBUI.Borders.empty(
+				SECTION_TITLE_BORDER_TOP,
+				SECTION_TITLE_BORDER_LEFT,
+				SECTION_TITLE_BORDER_BOTTOM,
+				SECTION_TITLE_BORDER_RIGHT
+		));
 
 		return titleLabel;
 	}
@@ -117,10 +152,10 @@ public class JaideImprovePreviewPanel extends JPanel {
 		JBLabel titleLabel = createSectionTitleLabel(title);
 
 		JTextArea valueArea = createTextArea(value);
-		valueArea.setBorder(JBUI.Borders.emptyTop(4));
+		valueArea.setBorder(JBUI.Borders.emptyTop(SECTION_VALUE_TOP_PADDING));
 
 		contentPanel.add(titleLabel);
-		contentPanel.add(Box.createVerticalStrut(4));
+		contentPanel.add(Box.createVerticalStrut(SECTION_VERTICAL_GAP));
 		contentPanel.add(valueArea);
 	}
 
@@ -138,20 +173,20 @@ public class JaideImprovePreviewPanel extends JPanel {
 		codeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		codeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		codeScrollPane.setPreferredSize(new Dimension(
-				10,
-				calculateCodeBlockViewportHeight(code)
+						CODE_SCROLL_PREFERRED_WIDTH,
+						calculateCodeBlockViewportHeight(code)
 		));
 		codeScrollPane.setMaximumSize(new Dimension(
 				Integer.MAX_VALUE,
 				calculateCodeBlockViewportHeight(code)
 		));
 		codeScrollPane.setBorder(JBUI.Borders.compound(
-				JBUI.Borders.customLine(JBColor.border(), 1),
-				JBUI.Borders.empty(8)
+				JBUI.Borders.customLine(JBColor.border(), CODE_BLOCK_BORDER_WIDTH),
+				JBUI.Borders.empty(CODE_BLOCK_PADDING)
 		));
 
 		contentPanel.add(titleLabel);
-		contentPanel.add(Box.createVerticalStrut(4));
+		contentPanel.add(Box.createVerticalStrut(SECTION_VERTICAL_GAP));
 		contentPanel.add(codeScrollPane);
 	}
 
@@ -179,10 +214,11 @@ public class JaideImprovePreviewPanel extends JPanel {
 	}
 
 	private int calculateCodeBlockViewportHeight(String code) {
-		int minHeight = 80;
-		int maxHeight = 260;
-
-		return Math.clamp(calculateCodeContentHeight(code), minHeight, maxHeight);
+		return Math.clamp(
+				calculateCodeContentHeight(code),
+				CODE_BLOCK_MIN_HEIGHT,
+				CODE_BLOCK_MAX_HEIGHT
+		);
 	}
 
 	private int calculateCodeContentWidth(String code) {
@@ -191,30 +227,31 @@ public class JaideImprovePreviewPanel extends JPanel {
 				.getGlobalScheme()
 				.getEditorFontSize();
 
-		int minWidth = 600;
-		int maxWidth = 2400;
-
-		return Math.clamp((long) maxLineLength * editorFontSize, minWidth, maxWidth);
+		return Math.clamp(
+				(long) maxLineLength * editorFontSize,
+				CODE_CONTENT_MIN_WIDTH,
+				CODE_CONTENT_MAX_WIDTH
+		);
 	}
 
 	private int calculateCodeContentHeight(String code) {
 		int lineCount = code == null || code.isBlank()
-				? 1
+				? DEFAULT_LINE_COUNT
 				: code.split("\\R", -1).length;
 
 		int lineHeight = EditorColorsManager.getInstance()
 				.getGlobalScheme()
-				.getEditorFontSize() + 8;
+				.getEditorFontSize() + CODE_LINE_HEIGHT_PADDING;
 
-		return lineCount * lineHeight + 24;
+		return lineCount * lineHeight + CODE_CONTENT_HEIGHT_PADDING;
 	}
 
 	private int getMaxLineLength(String code) {
 		if (code == null || code.isBlank()) {
-			return 1;
+			return DEFAULT_MAX_LINE_LENGTH;
 		}
 
-		int maxLineLength = 1;
+		int maxLineLength = DEFAULT_MAX_LINE_LENGTH;
 
 		for (String line : code.split("\\R", -1)) {
 			maxLineLength = Math.max(maxLineLength, line.length());
