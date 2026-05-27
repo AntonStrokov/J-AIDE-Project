@@ -2,7 +2,7 @@ package com.antonstrokov.jaide.plugin.config;
 
 import com.intellij.ui.JBColor;
 
-import java.awt.*;
+import java.awt.Color;
 
 public final class JaideUiColors {
 
