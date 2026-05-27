@@ -4,6 +4,8 @@ import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
 
 public class JaideNotificationService {
 	public void showWarning(Project project, String message) {
@@ -15,7 +17,14 @@ public class JaideNotificationService {
 	}
 
 	public void showInfo(Project project, String message) {
-		show(project, message, NotificationType.INFORMATION);
+		StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+
+		if (statusBar == null) {
+			show(project, message, NotificationType.INFORMATION);
+			return;
+		}
+
+		statusBar.setInfo(message);
 	}
 
 	private void show(Project project, String message, NotificationType type) {
