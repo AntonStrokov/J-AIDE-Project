@@ -33,6 +33,12 @@ public final class JaideUiLabels {
 	public static final String STATUS_SECTION = "Status";
 	public static final String IMPROVE_PREVIEW_STATUS =
 			"This is a preview only. No files were changed.";
+	public static final String TEST_GENERATION_PREVIEW_TITLE = "J-Aide Test Generation Preview";
+	public static final String TEST_GENERATION_PREVIEW_STATUS =
+			"This is a preview only. No test files were created.";
+	public static final String GENERATED_TEST_CODE_SECTION = "Generated Test Code";
+	public static final String TEST_FRAMEWORK_SECTION = "Test Framework";
+	public static final String COVERED_SCENARIOS_SECTION = "Covered Scenarios";
 
 	private JaideUiLabels() {
 	}

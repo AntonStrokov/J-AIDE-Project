@@ -11,6 +11,8 @@ import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
+import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -30,6 +32,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JaideImprovePreviewPanel improvePreviewPanel;
 	private static JaideExplanationPreviewPanel explanationPreviewPanel;
 	private static JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
+	private static JaideTestGenerationPreviewPanel testGenerationPreviewPanel;
 	private static JPanel actionsPanel;
 	private static JaideExplainModeSelectorPanel explainModeSelectorPanel;
 	private static JButton showDiffButton;
@@ -152,6 +155,44 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 	}
 
+	public static void updateTestGeneration(JaideTestGenerationResult testGenerationResult) {
+		ApplicationManager.getApplication().invokeLater(() -> {
+			currentMode = JaideToolWindowMode.TEST_GENERATION;
+
+			if (previewContainer != null && testGenerationPreviewPanel != null) {
+				previewContainer.removeAll();
+				testGenerationPreviewPanel.updateTestGeneration(testGenerationResult);
+				previewContainer.add(testGenerationPreviewPanel, BorderLayout.CENTER);
+				previewContainer.revalidate();
+				previewContainer.repaint();
+			}
+
+			if (actionsPanel != null) {
+				actionsPanel.setVisible(true);
+			}
+
+			if (explainModeSelectorPanel != null) {
+				explainModeSelectorPanel.setVisible(false);
+			}
+
+			if (showDiffButton != null) {
+				showDiffButton.setVisible(false);
+			}
+
+			if (applyButton != null) {
+				applyButton.setVisible(false);
+			}
+
+			if (copyImprovedCodeButton != null) {
+				copyImprovedCodeButton.setVisible(false);
+			}
+
+			if (backToCodeButton != null) {
+				backToCodeButton.setVisible(true);
+			}
+		});
+	}
+
 	public static boolean isShowingErrorExplanation() {
 		return currentMode == JaideToolWindowMode.ERROR_EXPLANATION;
 	}
@@ -198,6 +239,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		improvePreviewPanel = new JaideImprovePreviewPanel(project, "");
 		explanationPreviewPanel = new JaideExplanationPreviewPanel("");
 		errorExplanationPreviewPanel = new JaideErrorExplanationPreviewPanel();
+		testGenerationPreviewPanel = new JaideTestGenerationPreviewPanel(project);
 
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
 		panel.add(previewContainer, BorderLayout.CENTER);

@@ -10,6 +10,8 @@ import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -24,10 +26,11 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 	private final JaideEditorContextExtractor contextExtractor = new JaideEditorContextExtractor();
 	private final JaideErrorMessageBuilder errorMessageBuilder = new JaideErrorMessageBuilder();
 	private final JaideNotificationService notificationService = new JaideNotificationService();
+	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideTestGenerationRequestFactory requestFactory = new JaideTestGenerationRequestFactory();
 
 	@Override
-	public void actionPerformed(AnActionEvent e) {
+	public void actionPerformed(@NotNull AnActionEvent e) {
 		log.info("Generate tests selected code action started");
 
 		JaideEditorContext context = contextExtractor.extract(e);
@@ -57,6 +60,9 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 
 					log.info("Test generation response processed, testCodeLength="
 							+ getLength(result.testCode()));
+
+					toolWindowService.open(e.getProject());
+					JaideToolWindowFactory.updateTestGeneration(result);
 
 					notificationService.showInfo(
 							e.getProject(),
