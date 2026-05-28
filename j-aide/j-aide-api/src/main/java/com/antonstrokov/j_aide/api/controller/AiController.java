@@ -1,19 +1,24 @@
 package com.antonstrokov.j_aide.api.controller;
 
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplainMetadata;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplainRequest;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplainResponse;
+import com.antonstrokov.j_aide.api.dto.error.ErrorExplanation;
 import com.antonstrokov.j_aide.api.dto.explain.*;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveMetadata;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveRequest;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveResponse;
 import com.antonstrokov.j_aide.api.dto.improve.ImproveResult;
+import com.antonstrokov.j_aide.api.dto.tests.TestGenerationMetadata;
+import com.antonstrokov.j_aide.api.dto.tests.TestGenerationRequest;
+import com.antonstrokov.j_aide.api.dto.tests.TestGenerationResponse;
+import com.antonstrokov.j_aide.api.dto.tests.TestGenerationResult;
 import com.antonstrokov.j_aide.core.config.AppProperties;
+import com.antonstrokov.j_aide.core.dto.error.AiErrorExplainResult;
 import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
+import com.antonstrokov.j_aide.core.dto.tests.AiTestGenerationResult;
 import com.antonstrokov.j_aide.core.service.AiService;
-import com.antonstrokov.j_aide.api.dto.error.ErrorExplainMetadata;
-import com.antonstrokov.j_aide.api.dto.error.ErrorExplainRequest;
-import com.antonstrokov.j_aide.api.dto.error.ErrorExplainResponse;
-import com.antonstrokov.j_aide.api.dto.error.ErrorExplanation;
-import com.antonstrokov.j_aide.core.dto.error.AiErrorExplainResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -121,6 +126,73 @@ public class AiController {
 
 		ImproveResponse response = new ImproveResponse();
 		response.setImprovement(improvement);
+		response.setRawJson(result.getRawJson());
+		response.setSuccess(success);
+		response.setMetadata(metadata);
+
+		return response;
+	}
+
+	@PostMapping("/ai/tests")
+	public TestGenerationResponse generateTests(@RequestBody TestGenerationRequest request) {
+		long startTime = System.currentTimeMillis();
+
+		log.info("Received test generation request, code length={}", request.getCode().length());
+		log.info(
+				"Test generation context: language={}, mode={}, fileName={}, lineStart={}, lineEnd={}, projectName={}, " +
+						"moduleName={}, pluginVersion={}, ideVersion={}",
+				request.getLanguage(),
+				request.getMode(),
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
+		);
+
+		AiTestGenerationResult result = aiService.generateTests(
+				request.getCode(),
+				request.getMode(),
+				request.getLanguage(),
+				request.getFileName(),
+				request.getLineStart(),
+				request.getLineEnd(),
+				request.getProjectName(),
+				request.getModuleName(),
+				request.getPluginVersion(),
+				request.getIdeVersion()
+		);
+
+		long responseTimeMs = calculateResponseTimeMs(startTime);
+
+		boolean success = result.getRawJson() == null;
+
+		log.info(
+				"Test generation result: framework={}, confidence={}, success={}, responseTimeMs={}",
+				result.getTestResult().getTestFramework(),
+				result.getTestResult().getConfidence(),
+				success,
+				responseTimeMs
+		);
+
+		TestGenerationResult testResult = new TestGenerationResult();
+		testResult.setSummary(result.getTestResult().getSummary());
+		testResult.setTestCode(result.getTestResult().getTestCode());
+		testResult.setTestFramework(result.getTestResult().getTestFramework());
+		testResult.setCoveredScenarios(result.getTestResult().getCoveredScenarios());
+		testResult.setRiskHint(result.getTestResult().getRiskHint());
+		testResult.setConfidence(result.getTestResult().getConfidence());
+
+		TestGenerationMetadata metadata = new TestGenerationMetadata();
+		metadata.setTraceId(getTraceId());
+		metadata.setBackendVersion(getBackendVersion());
+		metadata.setResponseTimeMs(responseTimeMs);
+		metadata.setRetried(result.getRetried());
+
+		TestGenerationResponse response = new TestGenerationResponse();
+		response.setTestResult(testResult);
 		response.setRawJson(result.getRawJson());
 		response.setSuccess(success);
 		response.setMetadata(metadata);

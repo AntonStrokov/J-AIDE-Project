@@ -141,6 +141,42 @@ public final class AiPromptTemplates {
 					"Код:\n{{code}}"
 	);
 
+	public static final PromptTemplate TEST_GENERATION_TEMPLATE = PromptTemplate.from(
+			"Ты опытный {{language}}-разработчик и Java test engineer.\n" +
+					"Сгенерируй unit tests для выбранного кода на русском языке.\n" +
+					"Главная цель: предложить полезные JUnit 5 / Mockito тесты без изменения production-кода.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"ВАЖНО:\n" +
+					"- Поле testCode должно содержать только чистый исходный код теста без markdown.\n" +
+					"- Поле testCode должно содержать полный тестовый класс с imports, class declaration и test methods, если исходного контекста достаточно.\n" +
+					"- Никогда не оборачивай testCode в ``` или ```java.\n" +
+					"- Не добавляй пояснения, комментарии к ответу или текстовые описания внутрь testCode, кроме обычных Java-комментариев, если они действительно нужны.\n" +
+					"- Предпочитай JUnit 5.\n" +
+					"- Используй Mockito только если для тестируемого кода явно нужны зависимости или mock-объекты.\n" +
+					"- Форматируй testCode как обычный Java-код: аннотации тестов пиши на отдельной строке перед методом.\n" +
+					"- Если исходный код недостаточен для полностью компилируемого теста, всё равно предложи максимально полезный skeleton test и явно укажи риск в riskHint.\n" +
+					"- Если невозможно надёжно определить имя production-класса, используй понятное имя тестового класса на основе fileName.\n" +
+					"- coveredScenarios должен быть массивом строк и описывать реальные сценарии, покрытые testCode.\n" +
+					"- Все user-facing поля JSON, кроме testCode, testFramework и confidence, должны быть на русском языке.\n" +
+					"- confidence должно быть одним из значений: high, medium, low.\n" +
+					"- Не добавляй пояснения вне JSON.\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"краткое описание сгенерированных тестов\",\n" +
+					"  \"testCode\": \"код тестового класса\",\n" +
+					"  \"testFramework\": \"JUnit 5 / Mockito\",\n" +
+					"  \"coveredScenarios\": [\"сценарий 1\", \"сценарий 2\"],\n" +
+					"  \"riskHint\": \"что нужно проверить вручную\",\n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
+					"}\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
+					"Имя файла: {{fileName}}\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
+					"Код:\n{{code}}"
+	);
+
 	public static final PromptTemplate ERROR_EXPLAIN_TEMPLATE = PromptTemplate.from(
 			"Ты опытный {{language}}-разработчик и Java/Spring mentor.\n" +
 					"Проанализируй runtime error, stack trace или лог ошибки на русском языке.\n" +
@@ -183,6 +219,10 @@ public final class AiPromptTemplates {
 
 	public static PromptTemplate resolveErrorExplainTemplate() {
 		return ERROR_EXPLAIN_TEMPLATE;
+	}
+
+	public static PromptTemplate resolveTestGenerationTemplate() {
+		return TEST_GENERATION_TEMPLATE;
 	}
 
 	public static PromptTemplate resolveTemplate(String effectiveMode) {

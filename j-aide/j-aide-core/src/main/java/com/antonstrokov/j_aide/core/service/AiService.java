@@ -8,6 +8,8 @@ import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.explain.StructuredExplainResponse;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.dto.improve.StructuredImproveResponse;
+import com.antonstrokov.j_aide.core.dto.tests.AiTestGenerationResult;
+import com.antonstrokov.j_aide.core.dto.tests.StructuredTestGenerationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -25,7 +27,6 @@ public class AiService {
 	private final OllamaChatModel model;
 	private final AiProperties aiProperties;
 	private final ObjectMapper objectMapper;
-
 
 	public AiService(OllamaChatModel model, AiProperties aiProperties, ObjectMapper objectMapper) {
 		this.model = model;
@@ -48,6 +49,21 @@ public class AiService {
 
 		if (structured.getChanges() == null) {
 			throw new RuntimeException("Invalid AI JSON structure: changes is missing");
+		}
+	}
+
+	private void validateStructuredTestGenerationResponse(StructuredTestGenerationResponse structured) {
+		validateRequiredAiField(structured.getSummary(), "summary");
+		validateRequiredAiField(structured.getTestCode(), "testCode");
+		validateRequiredAiField(structured.getTestFramework(), "testFramework");
+		validateRequiredAiField(structured.getConfidence(), "confidence");
+
+		if (structured.getRiskHint() == null || structured.getRiskHint().isBlank()) {
+			structured.setRiskHint("Явных рисков не обнаружено");
+		}
+
+		if (structured.getCoveredScenarios() == null) {
+			throw new RuntimeException("Invalid AI JSON structure: coveredScenarios is missing");
 		}
 	}
 
@@ -81,6 +97,15 @@ public class AiService {
 		return structured;
 	}
 
+	private StructuredTestGenerationResponse parseStructuredTestGenerationResponse(String response) throws Exception {
+		StructuredTestGenerationResponse structured =
+				objectMapper.readValue(response, StructuredTestGenerationResponse.class);
+
+		validateStructuredTestGenerationResponse(structured);
+
+		return structured;
+	}
+
 	private StructuredErrorExplanationResponse parseStructuredErrorExplanationResponse(String response)
 			throws Exception {
 		StructuredErrorExplanationResponse structured =
@@ -105,7 +130,6 @@ public class AiService {
 
 		return response;
 	}
-
 
 	private String buildRetryPrompt(String prompt) {
 		return prompt + "\n\n" +
@@ -136,6 +160,22 @@ public class AiService {
 		return new AiImproveResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
 	}
 
+	private AiTestGenerationResult buildTestGenerationFallbackResult(
+			String rawResponse,
+			String effectiveMode,
+			String effectiveLanguage
+	) {
+		StructuredTestGenerationResponse fallback = new StructuredTestGenerationResponse();
+		fallback.setSummary("Не удалось структурировать ответ AI");
+		fallback.setTestCode("");
+		fallback.setTestFramework("unknown");
+		fallback.setCoveredScenarios(List.of("Проверь сырой ответ модели в rawJson"));
+		fallback.setRiskHint("Тестовый код не был сгенерирован надёжно, потому что ответ AI не удалось распарсить");
+		fallback.setConfidence("low");
+
+		return new AiTestGenerationResult(fallback, rawResponse, effectiveMode, effectiveLanguage, false);
+	}
+
 	private AiErrorExplainResult buildErrorExplainFallbackResult(String rawResponse, String effectiveMode,
 	                                                             String effectiveLanguage) {
 		StructuredErrorExplanationResponse fallback = new StructuredErrorExplanationResponse();
@@ -160,6 +200,15 @@ public class AiService {
 			throws Exception {
 		StructuredImproveResponse structured = parseStructuredImproveResponse(response);
 		return new AiImproveResult(structured, null, effectiveMode, effectiveLanguage, false);
+	}
+
+	private AiTestGenerationResult tryParseTestGenerationResponse(
+			String response,
+			String effectiveMode,
+			String effectiveLanguage
+	) throws Exception {
+		StructuredTestGenerationResponse structured = parseStructuredTestGenerationResponse(response);
+		return new AiTestGenerationResult(structured, null, effectiveMode, effectiveLanguage, false);
 	}
 
 	private AiErrorExplainResult tryParseErrorExplanationResponse(String response, String effectiveMode,
@@ -263,6 +312,57 @@ public class AiService {
 		boolean shouldRetry = shouldRetry(effectiveMode);
 
 		return parseImproveWithRetry(
+				response,
+				prompt,
+				shouldRetry,
+				effectiveMode,
+				effectiveLanguage
+		);
+	}
+
+	public AiTestGenerationResult generateTests(
+			String code,
+			String mode,
+			String language,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName,
+			String pluginVersion,
+			String ideVersion
+	) {
+		validateAiRequestInput(
+				code,
+				fileName,
+				lineStart,
+				lineEnd,
+				projectName,
+				moduleName,
+				pluginVersion,
+				ideVersion
+		);
+
+		String effectiveMode = resolveMode(mode);
+
+		SupportedLanguage resolvedLanguage = resolveLanguage(language);
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
+
+		String prompt = buildTestGenerationPrompt(
+				code,
+				effectiveLanguage,
+				fileName,
+				lineStart,
+				lineEnd,
+				projectName,
+				moduleName
+		);
+
+		String response = askModel(prompt);
+
+		boolean shouldRetry = shouldRetry(effectiveMode);
+
+		return parseTestGenerationWithRetry(
 				response,
 				prompt,
 				shouldRetry,
@@ -464,6 +564,28 @@ public class AiService {
 		)).text();
 	}
 
+	private String buildTestGenerationPrompt(
+			String code,
+			String effectiveLanguage,
+			String fileName,
+			Integer lineStart,
+			Integer lineEnd,
+			String projectName,
+			String moduleName
+	) {
+		PromptTemplate template = AiPromptTemplates.resolveTestGenerationTemplate();
+
+		return template.apply(Map.of(
+				"code", code,
+				"language", effectiveLanguage,
+				"fileName", safeText(fileName),
+				"lineStart", safeNumber(lineStart),
+				"lineEnd", safeNumber(lineEnd),
+				"projectName", safeText(projectName),
+				"moduleName", safeText(moduleName)
+		)).text();
+	}
+
 	private String buildErrorExplainPrompt(
 			String errorText,
 			String effectiveLanguage,
@@ -587,6 +709,56 @@ public class AiService {
 			}
 		}
 	}
+
+	private AiTestGenerationResult parseTestGenerationWithRetry(
+			String response,
+			String prompt,
+			boolean shouldRetry,
+			String effectiveMode,
+			String effectiveLanguage
+	) {
+		try {
+			return tryParseTestGenerationResponse(response, effectiveMode, effectiveLanguage);
+
+		} catch (Exception e) {
+			if (!shouldRetry) {
+				log.warn("AI test generation response parsing failed, returning fallback without retry", e);
+
+				return buildTestGenerationFallbackResult(response, effectiveMode, effectiveLanguage);
+			}
+
+			log.warn("First AI test generation response parsing failed, retrying once", e);
+
+			String retryResponse = null;
+
+			try {
+				String retryPrompt = buildRetryPrompt(prompt);
+
+				retryResponse = askModel(retryPrompt);
+
+				AiTestGenerationResult retryResult = tryParseTestGenerationResponse(
+						retryResponse,
+						effectiveMode,
+						effectiveLanguage
+				);
+				retryResult.setRetried(true);
+
+				log.info("Retry succeeded and returned valid structured test generation response");
+
+				return retryResult;
+
+			} catch (Exception retryException) {
+				log.warn("Test generation retry also failed, returning fallback", retryException);
+
+				return buildTestGenerationFallbackResult(
+						retryResponse != null ? retryResponse : response,
+						effectiveMode,
+						effectiveLanguage
+				);
+			}
+		}
+	}
+
 
 	private AiErrorExplainResult parseErrorExplainWithRetry(
 			String response,
