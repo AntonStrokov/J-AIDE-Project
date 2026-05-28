@@ -334,6 +334,13 @@ Current plugin capabilities:
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
 - Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
+- Provides `J-Aide: Generate Tests` action from the editor context menu.
+- Sends selected code and editor context to the backend `POST /ai/tests` endpoint.
+- Displays generated test code in the J-Aide Tool Window through a dedicated Generate Tests Preview.
+- Generate Tests Preview follows the same Tool Window UI style as Explain, Improve, and Runtime Error previews.
+- Generate Tests Preview shows structured sections: status, summary, test framework, generated test code, covered scenarios, risk hint, and confidence.
+- Generate Tests Preview supports copying generated test code through the shared `Copy Code` button.
+- Generate Tests MVP does not create test files automatically and does not modify user code.
 - Opens the Tool Window automatically after receiving a response.
 - Shows friendly plugin notifications for info, warning, and error cases.
 - Plugin notifications auto-expire to avoid blocking Tool Window action buttons for too long.
