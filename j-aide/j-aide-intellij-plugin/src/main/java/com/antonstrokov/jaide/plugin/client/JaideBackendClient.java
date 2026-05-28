@@ -12,9 +12,14 @@ import com.antonstrokov.jaide.plugin.dto.improve.JaideBackendImproveRequest;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideBackendTestGenerationRequest;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationRequest;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResponse;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.factory.error.JaideBackendErrorExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideBackendImproveRequestFactory;
+import com.antonstrokov.jaide.plugin.factory.tests.JaideBackendTestGenerationRequestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -35,6 +40,8 @@ public class JaideBackendClient {
 	private final JaideBackendImproveRequestFactory improveRequestFactory = new JaideBackendImproveRequestFactory();
 	private final JaideBackendErrorExplainRequestFactory errorExplainRequestFactory =
 			new JaideBackendErrorExplainRequestFactory();
+	private final JaideBackendTestGenerationRequestFactory testGenerationRequestFactory =
+			new JaideBackendTestGenerationRequestFactory();
 
 	public JaideExplanation explain(JaideExplainRequest request) throws IOException, InterruptedException {
 		String requestBody = buildExplainRequestBody(request);
@@ -64,6 +71,21 @@ public class JaideBackendClient {
 		return parseImprovement(responseBody);
 	}
 
+	public JaideTestGenerationResult generateTests(JaideTestGenerationRequest request)
+			throws IOException, InterruptedException {
+		String requestBody = buildTestGenerationRequestBody(request);
+
+		log.info("Sending test generation request to backend, requestBodyLength=" + requestBody.length());
+
+		HttpRequest httpRequest = buildTestGenerationHttpRequest(requestBody);
+
+		String responseBody = send(httpRequest);
+
+		log.info("Test generation response received, responseBodyLength=" + responseBody.length());
+
+		return parseTestGenerationResult(responseBody);
+	}
+
 	public JaideErrorExplanation explainError(JaideErrorExplainRequest request)
 			throws IOException, InterruptedException {
 		String requestBody = buildErrorExplainRequestBody(request);
@@ -91,6 +113,12 @@ public class JaideBackendClient {
 		return objectMapper.writeValueAsString(backendRequest);
 	}
 
+	private String buildTestGenerationRequestBody(JaideTestGenerationRequest request) throws IOException {
+		JaideBackendTestGenerationRequest backendRequest = testGenerationRequestFactory.create(request);
+
+		return objectMapper.writeValueAsString(backendRequest);
+	}
+
 	private String buildErrorExplainRequestBody(JaideErrorExplainRequest request) throws IOException {
 		JaideErrorExplainRequest backendRequest = errorExplainRequestFactory.create(request);
 
@@ -103,6 +131,10 @@ public class JaideBackendClient {
 
 	private HttpRequest buildImproveHttpRequest(String requestBody) {
 		return buildJsonPostRequest(JaideConstants.IMPROVE_URL, requestBody);
+	}
+
+	private HttpRequest buildTestGenerationHttpRequest(String requestBody) {
+		return buildJsonPostRequest(JaideConstants.TESTS_URL, requestBody);
 	}
 
 	private HttpRequest buildErrorExplainHttpRequest(String requestBody) {
@@ -185,6 +217,26 @@ public class JaideBackendClient {
 		}
 
 		return improveResponse.improvement();
+	}
+
+	private JaideTestGenerationResult parseTestGenerationResult(String responseBody) throws IOException {
+		JaideTestGenerationResponse testGenerationResponse = objectMapper.readValue(
+				responseBody,
+				JaideTestGenerationResponse.class
+		);
+
+		if (testGenerationResponse.testResult() == null) {
+			return new JaideTestGenerationResult(
+					"Test generation result not found",
+					null,
+					null,
+					null,
+					null,
+					null
+			);
+		}
+
+		return testGenerationResponse.testResult();
 	}
 
 	private JaideErrorExplanation parseErrorExplanation(String responseBody) throws IOException {

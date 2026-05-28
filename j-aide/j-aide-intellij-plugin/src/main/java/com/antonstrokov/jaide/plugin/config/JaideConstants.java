@@ -5,6 +5,7 @@ public final class JaideConstants {
 	public static final String EXPLAIN_URL = "http://localhost:8080/ai/explain";
 	public static final String IMPROVE_URL = "http://localhost:8080/ai/improve";
 	public static final String EXPLAIN_ERROR_URL = "http://localhost:8080/ai/explain-error";
+	public static final String TESTS_URL = "http://localhost:8080/ai/tests";
 
 	public static final String PLUGIN_VERSION = "0.1.0";
 	public static final String TOOL_WINDOW_ID = "J-Aide";
@@ -13,6 +14,7 @@ public final class JaideConstants {
 	public static final String EXPLAIN_TASK_TITLE = "J-Aide: Explaining selected code";
 	public static final String IMPROVE_TASK_TITLE = "J-Aide: Improving selected code";
 	public static final String EXPLAIN_ERROR_TASK_TITLE = "J-Aide: Explaining runtime error";
+	public static final String GENERATE_TESTS_TASK_TITLE = "J-Aide: Generating tests";
 	public static final int MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH = 32768;
 
 	private JaideConstants() {
