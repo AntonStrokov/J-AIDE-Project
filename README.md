@@ -418,6 +418,8 @@ Current status:
 - Long-code backend errors are displayed as user-friendly plugin errors.
 - Applying changes is implemented as an MVP through `JaideApplyImprovementService`.
 - Apply is available from the J-Aide Tool Window and from the J-Aide Diff Dialog.
+- Tool Window action handlers for `Show Diff`, `Apply`, and `Back to Code` are extracted into `JaideToolWindowActionsService`.
+- `JaideToolWindowFactory` focuses on Tool Window UI creation, panel switching, and button wiring.
 - Apply uses safety checks before modifying the document.
 - Undo is supported through IntelliJ `WriteCommandAction`.
 - Plugin-side improvement validation prevents saving unsafe or meaningless improvements.
