@@ -121,6 +121,61 @@ Example response:
 }
 ```
 
+### POST /ai/tests
+
+Generates JUnit 5 / Mockito-style test code for selected source code and returns a structured AI response.
+
+This endpoint is the backend MVP for the future `Generate Tests` plugin action. It does not create files automatically and does not modify user code.
+
+Example request:
+
+```json
+{
+  "code": "public int sum(int a, int b) {\n    return a + b;\n}",
+  "mode": "SMART",
+  "language": "java",
+  "fileName": "Calculator.java",
+  "lineStart": 1,
+  "lineEnd": 3,
+  "projectName": "j-aide-test",
+  "moduleName": "app",
+  "pluginVersion": "0.1.0",
+  "ideVersion": "2025.1"
+}
+```
+Example response:
+
+```json
+{
+  "testResult": {
+    "summary": "Тесты для метода sum класса Calculator",
+    "testCode": "import static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\nclass CalculatorTest {\n\n    @Test\n    void testSumWithPositiveNumbers() {\n        Calculator calculator = new Calculator();\n        assertEquals(5, calculator.sum(2, 3));\n    }\n}",
+    "testFramework": "JUnit 5",
+    "coveredScenarios": [
+      "сумма двух положительных чисел"
+    ],
+    "riskHint": "Явных рисков не обнаружено",
+    "confidence": "high"
+  },
+  "rawJson": null,
+  "success": true,
+  "metadata": {
+    "traceId": "example-trace-id",
+    "backendVersion": "0.1.0",
+    "responseTimeMs": 11109,
+    "retried": false
+  }
+}
+```
+Current status:
+
+- Backend endpoint `POST /ai/tests` is implemented.
+- The endpoint returns structured test generation data: `summary`, `testCode`, `testFramework`, `coveredScenarios`, `riskHint`, and `confidence`.
+- `testCode` is expected to contain a full test class with imports, class declaration, and test methods when enough source context is available.
+- Empty `riskHint` values are normalized to a safe default message.
+- The endpoint was manually smoke-tested through Postman.
+- IntelliJ plugin action `Generate Tests` is planned next.
+
 ### POST /ai/explain-error
 
 Explains a runtime error, exception stack trace, or application log and returns a structured AI response.
