@@ -60,6 +60,8 @@ public final class JaideNotificationMessages {
 	public static final String IMPROVED_CODE_COPIED =
 			"Improved code copied to clipboard";
 
+	public static final String TESTS_GENERATED_SUCCESSFULLY = "Tests generated successfully";
+
 	private JaideNotificationMessages() {
 	}
 }

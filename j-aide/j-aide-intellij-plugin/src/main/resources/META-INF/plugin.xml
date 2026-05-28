@@ -36,6 +36,13 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
         <action
+                id="J-Aide.GenerateTestsSelectedCode"
+                class="com.antonstrokov.jaide.plugin.GenerateTestsSelectedCodeAction"
+                text="J-Aide: Generate Tests"
+                description="Generate tests for selected code using J-Aide backend">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+        <action
                 id="J-Aide.ExplainRuntimeError"
                 class="com.antonstrokov.jaide.plugin.ExplainRuntimeErrorAction"
                 text="J-Aide: Explain Runtime Error"
