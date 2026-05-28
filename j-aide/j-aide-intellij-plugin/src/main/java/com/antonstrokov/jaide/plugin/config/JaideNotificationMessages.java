@@ -60,6 +60,15 @@ public final class JaideNotificationMessages {
 	public static final String IMPROVED_CODE_COPIED =
 			"Improved code copied to clipboard";
 
+	public static final String NO_GENERATED_TEST_TO_COPY =
+			"No generated test code to copy";
+
+	public static final String INCOMPLETE_GENERATED_TEST_COPY_DATA =
+			"Generated test copy data is incomplete";
+
+	public static final String GENERATED_TEST_CODE_COPIED =
+			"Generated test code copied to clipboard";
+
 	public static final String TESTS_GENERATED_SUCCESSFULLY = "Tests generated successfully";
 
 	private JaideNotificationMessages() {

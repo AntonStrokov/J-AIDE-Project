@@ -13,6 +13,7 @@ import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
+import com.antonstrokov.jaide.plugin.service.JaideCopyGeneratedTestCodeService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -26,6 +27,8 @@ import java.awt.*;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideCopyImprovedCodeService copyImprovedCodeService = new JaideCopyImprovedCodeService();
+	private static final JaideCopyGeneratedTestCodeService copyGeneratedTestCodeService =
+			new JaideCopyGeneratedTestCodeService();
 	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 	private static final JaideToolWindowActionsService toolWindowActionsService = new JaideToolWindowActionsService();
 	private static JPanel previewContainer;
@@ -184,7 +187,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			}
 
 			if (copyImprovedCodeButton != null) {
-				copyImprovedCodeButton.setVisible(false);
+				copyImprovedCodeButton.setVisible(true);
 			}
 
 			if (backToCodeButton != null) {
@@ -219,9 +222,14 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		);
 
 		copyImprovedCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
-		copyImprovedCodeButton.addActionListener(
-				event -> copyImprovedCodeService.copyLatestImprovedCode(project)
-		);
+		copyImprovedCodeButton.addActionListener(event -> {
+			if (currentMode == JaideToolWindowMode.TEST_GENERATION) {
+				copyGeneratedTestCodeService.copyLatestGeneratedTestCode(project);
+				return;
+			}
+
+			copyImprovedCodeService.copyLatestImprovedCode(project);
+		});
 
 		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
 		backToCodeButton.addActionListener(

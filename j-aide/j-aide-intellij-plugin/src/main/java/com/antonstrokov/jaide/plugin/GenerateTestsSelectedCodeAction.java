@@ -12,6 +12,8 @@ import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFac
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
+import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
+import com.antonstrokov.jaide.plugin.state.JaideTestGenerationState;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -57,6 +59,17 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 					log.info("Sending test generation request");
 
 					JaideTestGenerationResult result = backendClient.generateTests(request);
+
+					JaideTestGenerationState.setLatestGeneratedTest(
+							new JaideLastGeneratedTest(
+									result.testCode(),
+									context.fileName(),
+									context.projectName(),
+									context.moduleName(),
+									context.lineStart(),
+									context.lineEnd()
+							)
+					);
 
 					log.info("Test generation response processed, testCodeLength="
 							+ getLength(result.testCode()));
