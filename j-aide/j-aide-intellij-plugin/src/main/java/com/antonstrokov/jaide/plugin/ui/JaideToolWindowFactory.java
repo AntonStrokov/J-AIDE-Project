@@ -40,7 +40,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JaideExplainModeSelectorPanel explainModeSelectorPanel;
 	private static JButton showDiffButton;
 	private static JButton applyButton;
-	private static JButton copyImprovedCodeButton;
+	private static JButton copyCodeButton;
 	private static JButton backToCodeButton;
 	private static JaideToolWindowMode currentMode;
 
@@ -72,8 +72,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				applyButton.setVisible(false);
 			}
 
-			if (copyImprovedCodeButton != null) {
-				copyImprovedCodeButton.setVisible(false);
+			if (copyCodeButton != null) {
+				copyCodeButton.setVisible(false);
 			}
 
 			if (backToCodeButton != null) {
@@ -110,8 +110,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				applyButton.setVisible(false);
 			}
 
-			if (copyImprovedCodeButton != null) {
-				copyImprovedCodeButton.setVisible(false);
+			if (copyCodeButton != null) {
+				copyCodeButton.setVisible(false);
 			}
 
 			if (backToCodeButton != null) {
@@ -148,8 +148,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				applyButton.setVisible(true);
 			}
 
-			if (copyImprovedCodeButton != null) {
-				copyImprovedCodeButton.setVisible(true);
+			if (copyCodeButton != null) {
+				copyCodeButton.setVisible(true);
 			}
 
 			if (backToCodeButton != null) {
@@ -186,8 +186,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				applyButton.setVisible(false);
 			}
 
-			if (copyImprovedCodeButton != null) {
-				copyImprovedCodeButton.setVisible(true);
+			if (copyCodeButton != null) {
+				copyCodeButton.setVisible(true);
 			}
 
 			if (backToCodeButton != null) {
@@ -221,8 +221,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				event -> toolWindowActionsService.applyLatestImprovement(project)
 		);
 
-		copyImprovedCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
-		copyImprovedCodeButton.addActionListener(event -> {
+		copyCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
+		copyCodeButton.addActionListener(event -> {
 			if (currentMode == JaideToolWindowMode.TEST_GENERATION) {
 				copyGeneratedTestCodeService.copyLatestGeneratedTestCode(project);
 				return;
@@ -238,7 +238,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		actionsPanel.add(showDiffButton);
 		actionsPanel.add(applyButton);
-		actionsPanel.add(copyImprovedCodeButton);
+		actionsPanel.add(copyCodeButton);
 		actionsPanel.add(backToCodeButton);
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 
