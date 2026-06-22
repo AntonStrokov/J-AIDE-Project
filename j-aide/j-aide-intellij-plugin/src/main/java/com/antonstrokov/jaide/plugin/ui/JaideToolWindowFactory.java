@@ -26,19 +26,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
-
-	private static final ViewState EXPLANATION_VIEW_STATE =
-			new ViewState(true, false, false, false, true);
-
-	private static final ViewState ERROR_EXPLANATION_VIEW_STATE =
-			new ViewState(false, false, false, false, true);
-
-	private static final ViewState IMPROVEMENT_VIEW_STATE =
-			new ViewState(false, true, true, true, true);
-
-	private static final ViewState TEST_GENERATION_VIEW_STATE =
-			new ViewState(false, false, false, true, true);
-
 	private static final JaideCopyImprovedCodeService copyImprovedCodeService = new JaideCopyImprovedCodeService();
 	private static final JaideCopyGeneratedTestCodeService copyGeneratedTestCodeService =
 			new JaideCopyGeneratedTestCodeService();
@@ -49,20 +36,16 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JaideExplanationPreviewPanel explanationPreviewPanel;
 	private static JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
 	private static JaideTestGenerationPreviewPanel testGenerationPreviewPanel;
-	private static JPanel actionsPanel;
-	private static JaideExplainModeSelectorPanel explainModeSelectorPanel;
-	private static JButton showDiffButton;
-	private static JButton applyButton;
-	private static JButton copyCodeButton;
-	private static JButton backToCodeButton;
 
 	public static void updateExplanation(
 			Project project,
 			JaideExplanation explanation
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			project.getService(JaideToolWindowController.class)
-					.setCurrentMode(JaideToolWindowMode.EXPLANATION);
+			JaideToolWindowController controller =
+					project.getService(JaideToolWindowController.class);
+
+			controller.setCurrentMode(JaideToolWindowMode.EXPLANATION);
 
 			if (previewContainer != null && explanationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -72,7 +55,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			applyViewState(EXPLANATION_VIEW_STATE);
+			controller.applyExplanationViewState();
 		});
 	}
 
@@ -81,8 +64,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideErrorExplanation errorExplanation
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			project.getService(JaideToolWindowController.class)
-					.setCurrentMode(JaideToolWindowMode.ERROR_EXPLANATION);
+			JaideToolWindowController controller =
+					project.getService(JaideToolWindowController.class);
+
+			controller.setCurrentMode(JaideToolWindowMode.ERROR_EXPLANATION);
 
 			if (previewContainer != null && errorExplanationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -92,7 +77,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			applyViewState(ERROR_EXPLANATION_VIEW_STATE);
+			controller.applyErrorExplanationViewState();
 		});
 	}
 
@@ -102,8 +87,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			String originalCode
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			project.getService(JaideToolWindowController.class)
-					.setCurrentMode(JaideToolWindowMode.IMPROVEMENT);
+			JaideToolWindowController controller =
+					project.getService(JaideToolWindowController.class);
+
+			controller.setCurrentMode(JaideToolWindowMode.IMPROVEMENT);
 
 			if (previewContainer != null && improvePreviewPanel != null) {
 				previewContainer.removeAll();
@@ -113,7 +100,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			applyViewState(IMPROVEMENT_VIEW_STATE);
+			controller.applyImprovementViewState();
 		});
 	}
 
@@ -122,8 +109,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideTestGenerationResult testGenerationResult
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			project.getService(JaideToolWindowController.class)
-					.setCurrentMode(JaideToolWindowMode.TEST_GENERATION);
+			JaideToolWindowController controller =
+					project.getService(JaideToolWindowController.class);
+
+			controller.setCurrentMode(JaideToolWindowMode.TEST_GENERATION);
 
 			if (previewContainer != null && testGenerationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -133,43 +122,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			applyViewState(TEST_GENERATION_VIEW_STATE);
+			controller.applyTestGenerationViewState();
 		});
-	}
-
-	private record ViewState(
-			boolean explainModeSelectorVisible,
-			boolean showDiffVisible,
-			boolean applyVisible,
-			boolean copyCodeVisible,
-			boolean backToCodeVisible
-	) {
-	}
-
-	private static void applyViewState(ViewState viewState) {
-		if (actionsPanel != null) {
-			actionsPanel.setVisible(true);
-		}
-
-		if (explainModeSelectorPanel != null) {
-			explainModeSelectorPanel.setVisible(viewState.explainModeSelectorVisible());
-		}
-
-		if (showDiffButton != null) {
-			showDiffButton.setVisible(viewState.showDiffVisible());
-		}
-
-		if (applyButton != null) {
-			applyButton.setVisible(viewState.applyVisible());
-		}
-
-		if (copyCodeButton != null) {
-			copyCodeButton.setVisible(viewState.copyCodeVisible());
-		}
-
-		if (backToCodeButton != null) {
-			backToCodeButton.setVisible(viewState.backToCodeVisible());
-		}
 	}
 
 	public static boolean isShowingErrorExplanation(Project project) {
@@ -183,29 +137,36 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 	@Override
 	public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+
+		JaideToolWindowController controller =
+				project.getService(JaideToolWindowController.class);
+
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-		explainModeSelectorPanel = new JaideExplainModeSelectorPanel();
+		JaideExplainModeSelectorPanel explainModeSelectorPanel =
+				new JaideExplainModeSelectorPanel();
 		explainModeSelectorPanel.setVisible(false);
 		panel.add(explainModeSelectorPanel, BorderLayout.NORTH);
 
-		actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		actionsPanel.setVisible(false);
 
-		showDiffButton = new JButton(JaideUiLabels.SHOW_DIFF_BUTTON);
+		JButton showDiffButton =
+				new JButton(JaideUiLabels.SHOW_DIFF_BUTTON);
 		showDiffButton.addActionListener(
 				event -> toolWindowActionsService.showLatestImprovementDiff(project)
 		);
 
-		applyButton = new JButton(JaideUiLabels.APPLY_BUTTON);
+		JButton applyButton =
+				new JButton(JaideUiLabels.APPLY_BUTTON);
 		applyButton.addActionListener(
 				event -> toolWindowActionsService.applyLatestImprovement(project)
 		);
 
-		copyCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
+		JButton copyCodeButton =
+				new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
 		copyCodeButton.addActionListener(event -> {
-			if (project.getService(JaideToolWindowController.class)
-					.isShowingTestGeneration()) {
+			if (controller.isShowingTestGeneration()) {
 				copyGeneratedTestCodeService.copyLatestGeneratedTestCode(project);
 				return;
 			}
@@ -213,9 +174,19 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			copyImprovedCodeService.copyLatestImprovedCode(project);
 		});
 
-		backToCodeButton = new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
+		JButton backToCodeButton =
+				new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
 		backToCodeButton.addActionListener(
 				event -> toolWindowActionsService.backToCode(project)
+		);
+
+		controller.bindActionControls(
+				actionsPanel,
+				explainModeSelectorPanel,
+				showDiffButton,
+				applyButton,
+				copyCodeButton,
+				backToCodeButton
 		);
 
 		actionsPanel.add(showDiffButton);
