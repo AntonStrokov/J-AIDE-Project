@@ -26,6 +26,19 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JaideToolWindowFactory implements ToolWindowFactory {
+
+	private static final ViewState EXPLANATION_VIEW_STATE =
+			new ViewState(true, false, false, false, true);
+
+	private static final ViewState ERROR_EXPLANATION_VIEW_STATE =
+			new ViewState(false, false, false, false, true);
+
+	private static final ViewState IMPROVEMENT_VIEW_STATE =
+			new ViewState(false, true, true, true, true);
+
+	private static final ViewState TEST_GENERATION_VIEW_STATE =
+			new ViewState(false, false, false, true, true);
+
 	private static final JaideCopyImprovedCodeService copyImprovedCodeService = new JaideCopyImprovedCodeService();
 	private static final JaideCopyGeneratedTestCodeService copyGeneratedTestCodeService =
 			new JaideCopyGeneratedTestCodeService();
@@ -56,29 +69,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			if (actionsPanel != null) {
-				actionsPanel.setVisible(true);
-			}
-
-			if (explainModeSelectorPanel != null) {
-				explainModeSelectorPanel.setVisible(true);
-			}
-
-			if (showDiffButton != null) {
-				showDiffButton.setVisible(false);
-			}
-
-			if (applyButton != null) {
-				applyButton.setVisible(false);
-			}
-
-			if (copyCodeButton != null) {
-				copyCodeButton.setVisible(false);
-			}
-
-			if (backToCodeButton != null) {
-				backToCodeButton.setVisible(true);
-			}
+			applyViewState(EXPLANATION_VIEW_STATE);
 		});
 	}
 
@@ -94,29 +85,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			if (actionsPanel != null) {
-				actionsPanel.setVisible(true);
-			}
-
-			if (explainModeSelectorPanel != null) {
-				explainModeSelectorPanel.setVisible(false);
-			}
-
-			if (showDiffButton != null) {
-				showDiffButton.setVisible(false);
-			}
-
-			if (applyButton != null) {
-				applyButton.setVisible(false);
-			}
-
-			if (copyCodeButton != null) {
-				copyCodeButton.setVisible(false);
-			}
-
-			if (backToCodeButton != null) {
-				backToCodeButton.setVisible(true);
-			}
+			applyViewState(ERROR_EXPLANATION_VIEW_STATE);
 		});
 	}
 
@@ -132,29 +101,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			if (actionsPanel != null) {
-				actionsPanel.setVisible(true);
-			}
-
-			if (explainModeSelectorPanel != null) {
-				explainModeSelectorPanel.setVisible(false);
-			}
-
-			if (showDiffButton != null) {
-				showDiffButton.setVisible(true);
-			}
-
-			if (applyButton != null) {
-				applyButton.setVisible(true);
-			}
-
-			if (copyCodeButton != null) {
-				copyCodeButton.setVisible(true);
-			}
-
-			if (backToCodeButton != null) {
-				backToCodeButton.setVisible(true);
-			}
+			applyViewState(IMPROVEMENT_VIEW_STATE);
 		});
 	}
 
@@ -170,30 +117,43 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				previewContainer.repaint();
 			}
 
-			if (actionsPanel != null) {
-				actionsPanel.setVisible(true);
-			}
-
-			if (explainModeSelectorPanel != null) {
-				explainModeSelectorPanel.setVisible(false);
-			}
-
-			if (showDiffButton != null) {
-				showDiffButton.setVisible(false);
-			}
-
-			if (applyButton != null) {
-				applyButton.setVisible(false);
-			}
-
-			if (copyCodeButton != null) {
-				copyCodeButton.setVisible(true);
-			}
-
-			if (backToCodeButton != null) {
-				backToCodeButton.setVisible(true);
-			}
+			applyViewState(TEST_GENERATION_VIEW_STATE);
 		});
+	}
+
+	private record ViewState(
+			boolean explainModeSelectorVisible,
+			boolean showDiffVisible,
+			boolean applyVisible,
+			boolean copyCodeVisible,
+			boolean backToCodeVisible
+	) {
+	}
+
+	private static void applyViewState(ViewState viewState) {
+		if (actionsPanel != null) {
+			actionsPanel.setVisible(true);
+		}
+
+		if (explainModeSelectorPanel != null) {
+			explainModeSelectorPanel.setVisible(viewState.explainModeSelectorVisible());
+		}
+
+		if (showDiffButton != null) {
+			showDiffButton.setVisible(viewState.showDiffVisible());
+		}
+
+		if (applyButton != null) {
+			applyButton.setVisible(viewState.applyVisible());
+		}
+
+		if (copyCodeButton != null) {
+			copyCodeButton.setVisible(viewState.copyCodeVisible());
+		}
+
+		if (backToCodeButton != null) {
+			backToCodeButton.setVisible(viewState.backToCodeVisible());
+		}
 	}
 
 	public static boolean isShowingErrorExplanation() {
