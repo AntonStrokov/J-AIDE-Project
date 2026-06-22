@@ -75,7 +75,10 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 							+ getLength(result.testCode()));
 
 					toolWindowService.open(e.getProject());
-					JaideToolWindowFactory.updateTestGeneration(result);
+					JaideToolWindowFactory.updateTestGeneration(
+							e.getProject(),
+							result
+					);
 
 					notificationService.showInfo(
 							e.getProject(),

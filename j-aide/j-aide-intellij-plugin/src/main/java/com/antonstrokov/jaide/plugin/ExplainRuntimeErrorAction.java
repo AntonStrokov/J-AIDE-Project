@@ -79,7 +79,10 @@ public class ExplainRuntimeErrorAction extends AnAction {
 					log.info("Explain runtime error response processed, updating tool window");
 
 					toolWindowService.open(e.getProject());
-					JaideToolWindowFactory.updateErrorExplanation(errorExplanation);
+					JaideToolWindowFactory.updateErrorExplanation(
+							e.getProject(),
+							errorExplanation
+					);
 
 					log.info("Explain runtime error tool window updated");
 

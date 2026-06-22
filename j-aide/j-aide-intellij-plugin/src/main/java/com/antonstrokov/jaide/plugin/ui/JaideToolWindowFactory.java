@@ -57,7 +57,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JButton backToCodeButton;
 	private static JaideToolWindowMode currentMode;
 
-	public static void updateExplanation(JaideExplanation explanation) {
+	public static void updateExplanation(
+			Project project,
+			JaideExplanation explanation
+	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			currentMode = JaideToolWindowMode.EXPLANATION;
 
@@ -73,7 +76,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 	}
 
-	public static void updateErrorExplanation(JaideErrorExplanation errorExplanation) {
+	public static void updateErrorExplanation(
+			Project project,
+			JaideErrorExplanation errorExplanation
+	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			currentMode = JaideToolWindowMode.ERROR_EXPLANATION;
 
@@ -89,7 +95,11 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 	}
 
-	public static void updateImprovement(JaideImprovement improvement, String originalCode) {
+	public static void updateImprovement(
+			Project project,
+			JaideImprovement improvement,
+			String originalCode
+	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			currentMode = JaideToolWindowMode.IMPROVEMENT;
 
@@ -105,7 +115,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 	}
 
-	public static void updateTestGeneration(JaideTestGenerationResult testGenerationResult) {
+	public static void updateTestGeneration(
+			Project project,
+			JaideTestGenerationResult testGenerationResult
+	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
 			currentMode = JaideToolWindowMode.TEST_GENERATION;
 

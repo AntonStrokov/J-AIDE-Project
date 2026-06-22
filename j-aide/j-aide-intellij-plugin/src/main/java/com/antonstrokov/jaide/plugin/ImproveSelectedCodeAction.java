@@ -133,7 +133,11 @@ public class ImproveSelectedCodeAction extends AnAction {
 					log.info("Latest improvement stored, updating tool window");
 
 					toolWindowService.open(e.getProject());
-					JaideToolWindowFactory.updateImprovement(improvement, context.selectedCode());
+					JaideToolWindowFactory.updateImprovement(
+							e.getProject(),
+							improvement,
+							context.selectedCode()
+					);
 
 					log.info("Improve tool window updated");
 

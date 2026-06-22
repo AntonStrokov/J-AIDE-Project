@@ -76,7 +76,10 @@ public class ExplainSelectedCodeAction extends AnAction {
 					log.info("Explain response processed, updating tool window");
 
 					toolWindowService.open(e.getProject());
-					JaideToolWindowFactory.updateExplanation(explanation);
+					JaideToolWindowFactory.updateExplanation(
+							e.getProject(),
+							explanation
+					);
 
 					log.info("Explain tool window updated");
 
