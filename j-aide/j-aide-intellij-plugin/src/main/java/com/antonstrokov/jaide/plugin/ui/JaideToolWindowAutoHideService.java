@@ -21,7 +21,7 @@ public class JaideToolWindowAutoHideService {
 		connection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerListener() {
 			@Override
 			public void selectionChanged(@NotNull FileEditorManagerEvent event) {
-				if (JaideToolWindowFactory.isShowingErrorExplanation()) {
+				if (JaideToolWindowFactory.isShowingErrorExplanation(project)) {
 					toolWindowService.hide(project);
 				}
 			}

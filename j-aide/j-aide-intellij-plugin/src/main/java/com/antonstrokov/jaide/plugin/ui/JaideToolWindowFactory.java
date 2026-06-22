@@ -55,14 +55,14 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static JButton applyButton;
 	private static JButton copyCodeButton;
 	private static JButton backToCodeButton;
-	private static JaideToolWindowMode currentMode;
 
 	public static void updateExplanation(
 			Project project,
 			JaideExplanation explanation
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			currentMode = JaideToolWindowMode.EXPLANATION;
+			project.getService(JaideToolWindowController.class)
+					.setCurrentMode(JaideToolWindowMode.EXPLANATION);
 
 			if (previewContainer != null && explanationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -81,7 +81,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideErrorExplanation errorExplanation
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			currentMode = JaideToolWindowMode.ERROR_EXPLANATION;
+			project.getService(JaideToolWindowController.class)
+					.setCurrentMode(JaideToolWindowMode.ERROR_EXPLANATION);
 
 			if (previewContainer != null && errorExplanationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -101,7 +102,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			String originalCode
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			currentMode = JaideToolWindowMode.IMPROVEMENT;
+			project.getService(JaideToolWindowController.class)
+					.setCurrentMode(JaideToolWindowMode.IMPROVEMENT);
 
 			if (previewContainer != null && improvePreviewPanel != null) {
 				previewContainer.removeAll();
@@ -120,7 +122,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideTestGenerationResult testGenerationResult
 	) {
 		ApplicationManager.getApplication().invokeLater(() -> {
-			currentMode = JaideToolWindowMode.TEST_GENERATION;
+			project.getService(JaideToolWindowController.class)
+					.setCurrentMode(JaideToolWindowMode.TEST_GENERATION);
 
 			if (previewContainer != null && testGenerationPreviewPanel != null) {
 				previewContainer.removeAll();
@@ -169,8 +172,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		}
 	}
 
-	public static boolean isShowingErrorExplanation() {
-		return currentMode == JaideToolWindowMode.ERROR_EXPLANATION;
+	public static boolean isShowingErrorExplanation(Project project) {
+		if (project == null) {
+			return false;
+		}
+
+		return project.getService(JaideToolWindowController.class)
+				.isShowingErrorExplanation();
 	}
 
 	@Override
@@ -196,7 +204,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		copyCodeButton = new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
 		copyCodeButton.addActionListener(event -> {
-			if (currentMode == JaideToolWindowMode.TEST_GENERATION) {
+			if (project.getService(JaideToolWindowController.class)
+					.isShowingTestGeneration()) {
 				copyGeneratedTestCodeService.copyLatestGeneratedTestCode(project);
 				return;
 			}
