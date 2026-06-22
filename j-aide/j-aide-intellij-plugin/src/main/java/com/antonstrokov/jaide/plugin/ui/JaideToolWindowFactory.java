@@ -1,19 +1,18 @@
 package com.antonstrokov.jaide.plugin.ui;
 
-import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
+import com.antonstrokov.jaide.plugin.service.JaideCopyGeneratedTestCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideCopyImprovedCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideToolWindowActionsService;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
-import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
-import com.antonstrokov.jaide.plugin.service.JaideCopyGeneratedTestCodeService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -31,54 +30,25 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			new JaideCopyGeneratedTestCodeService();
 	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 	private static final JaideToolWindowActionsService toolWindowActionsService = new JaideToolWindowActionsService();
-	private static JPanel previewContainer;
-	private static JaideImprovePreviewPanel improvePreviewPanel;
-	private static JaideExplanationPreviewPanel explanationPreviewPanel;
-	private static JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
-	private static JaideTestGenerationPreviewPanel testGenerationPreviewPanel;
 
 	public static void updateExplanation(
 			Project project,
 			JaideExplanation explanation
 	) {
-		ApplicationManager.getApplication().invokeLater(() -> {
-			JaideToolWindowController controller =
-					project.getService(JaideToolWindowController.class);
-
-			controller.setCurrentMode(JaideToolWindowMode.EXPLANATION);
-
-			if (previewContainer != null && explanationPreviewPanel != null) {
-				previewContainer.removeAll();
-				explanationPreviewPanel.updateExplanation(explanation);
-				previewContainer.add(explanationPreviewPanel, BorderLayout.CENTER);
-				previewContainer.revalidate();
-				previewContainer.repaint();
-			}
-
-			controller.applyExplanationViewState();
-		});
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showExplanation(explanation)
+		);
 	}
 
 	public static void updateErrorExplanation(
 			Project project,
 			JaideErrorExplanation errorExplanation
 	) {
-		ApplicationManager.getApplication().invokeLater(() -> {
-			JaideToolWindowController controller =
-					project.getService(JaideToolWindowController.class);
-
-			controller.setCurrentMode(JaideToolWindowMode.ERROR_EXPLANATION);
-
-			if (previewContainer != null && errorExplanationPreviewPanel != null) {
-				previewContainer.removeAll();
-				errorExplanationPreviewPanel.updateErrorExplanation(errorExplanation);
-				previewContainer.add(errorExplanationPreviewPanel, BorderLayout.CENTER);
-				previewContainer.revalidate();
-				previewContainer.repaint();
-			}
-
-			controller.applyErrorExplanationViewState();
-		});
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showErrorExplanation(errorExplanation)
+		);
 	}
 
 	public static void updateImprovement(
@@ -86,44 +56,23 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			JaideImprovement improvement,
 			String originalCode
 	) {
-		ApplicationManager.getApplication().invokeLater(() -> {
-			JaideToolWindowController controller =
-					project.getService(JaideToolWindowController.class);
-
-			controller.setCurrentMode(JaideToolWindowMode.IMPROVEMENT);
-
-			if (previewContainer != null && improvePreviewPanel != null) {
-				previewContainer.removeAll();
-				improvePreviewPanel.updateImprovement(improvement, originalCode);
-				previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
-				previewContainer.revalidate();
-				previewContainer.repaint();
-			}
-
-			controller.applyImprovementViewState();
-		});
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showImprovement(
+								improvement,
+								originalCode
+						)
+		);
 	}
 
 	public static void updateTestGeneration(
 			Project project,
 			JaideTestGenerationResult testGenerationResult
 	) {
-		ApplicationManager.getApplication().invokeLater(() -> {
-			JaideToolWindowController controller =
-					project.getService(JaideToolWindowController.class);
-
-			controller.setCurrentMode(JaideToolWindowMode.TEST_GENERATION);
-
-			if (previewContainer != null && testGenerationPreviewPanel != null) {
-				previewContainer.removeAll();
-				testGenerationPreviewPanel.updateTestGeneration(testGenerationResult);
-				previewContainer.add(testGenerationPreviewPanel, BorderLayout.CENTER);
-				previewContainer.revalidate();
-				previewContainer.repaint();
-			}
-
-			controller.applyTestGenerationViewState();
-		});
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showTestGeneration(testGenerationResult)
+		);
 	}
 
 	public static boolean isShowingErrorExplanation(Project project) {
@@ -195,14 +144,27 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		actionsPanel.add(backToCodeButton);
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 
-		previewContainer = new JPanel(new BorderLayout());
+		JPanel previewContainer = new JPanel(new BorderLayout());
 
-		improvePreviewPanel = new JaideImprovePreviewPanel(project, "");
-		explanationPreviewPanel = new JaideExplanationPreviewPanel("");
-		errorExplanationPreviewPanel = new JaideErrorExplanationPreviewPanel();
-		testGenerationPreviewPanel = new JaideTestGenerationPreviewPanel(project);
+		JaideImprovePreviewPanel improvePreviewPanel =
+				new JaideImprovePreviewPanel(project, "");
+		JaideExplanationPreviewPanel explanationPreviewPanel =
+				new JaideExplanationPreviewPanel("");
+		JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel =
+				new JaideErrorExplanationPreviewPanel();
+		JaideTestGenerationPreviewPanel testGenerationPreviewPanel =
+				new JaideTestGenerationPreviewPanel(project);
 
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
+
+		controller.bindPreviewControls(
+				previewContainer,
+				improvePreviewPanel,
+				explanationPreviewPanel,
+				errorExplanationPreviewPanel,
+				testGenerationPreviewPanel
+		);
+
 		panel.add(previewContainer, BorderLayout.CENTER);
 
 		Content content = ContentFactory.getInstance().createContent(panel, "", false);

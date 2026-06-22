@@ -1,10 +1,19 @@
 package com.antonstrokov.jaide.plugin.ui;
 
 import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
-import com.intellij.openapi.components.Service;
+import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
+import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
+import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
+import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
+import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
+import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
+import com.intellij.openapi.components.Service;
 
 import javax.swing.*;
+import java.awt.*;
 
 
 @Service(Service.Level.PROJECT)
@@ -22,6 +31,12 @@ public final class JaideToolWindowController {
 	private static final ViewState TEST_GENERATION_VIEW_STATE =
 			new ViewState(false, false, false, true, true);
 
+	private JaideExplanation latestExplanation;
+	private JaideErrorExplanation latestErrorExplanation;
+	private JaideImprovement latestImprovement;
+	private String latestOriginalCode;
+	private JaideTestGenerationResult latestTestGenerationResult;
+
 	private JaideToolWindowMode currentMode;
 	private JPanel actionsPanel;
 	private JaideExplainModeSelectorPanel explainModeSelectorPanel;
@@ -30,25 +45,11 @@ public final class JaideToolWindowController {
 	private JButton copyCodeButton;
 	private JButton backToCodeButton;
 
-	public void setCurrentMode(JaideToolWindowMode currentMode) {
-		this.currentMode = currentMode;
-	}
-
-	public void applyExplanationViewState() {
-		applyViewState(EXPLANATION_VIEW_STATE);
-	}
-
-	public void applyErrorExplanationViewState() {
-		applyViewState(ERROR_EXPLANATION_VIEW_STATE);
-	}
-
-	public void applyImprovementViewState() {
-		applyViewState(IMPROVEMENT_VIEW_STATE);
-	}
-
-	public void applyTestGenerationViewState() {
-		applyViewState(TEST_GENERATION_VIEW_STATE);
-	}
+	private JPanel previewContainer;
+	private JaideImprovePreviewPanel improvePreviewPanel;
+	private JaideExplanationPreviewPanel explanationPreviewPanel;
+	private JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
+	private JaideTestGenerationPreviewPanel testGenerationPreviewPanel;
 
 	public boolean isShowingErrorExplanation() {
 		return currentMode == JaideToolWindowMode.ERROR_EXPLANATION;
@@ -72,6 +73,8 @@ public final class JaideToolWindowController {
 		this.applyButton = applyButton;
 		this.copyCodeButton = copyCodeButton;
 		this.backToCodeButton = backToCodeButton;
+
+		applyCurrentViewState();
 	}
 
 	private void applyViewState(ViewState viewState) {
@@ -97,6 +100,152 @@ public final class JaideToolWindowController {
 
 		if (backToCodeButton != null) {
 			backToCodeButton.setVisible(viewState.backToCodeVisible());
+		}
+	}
+
+	public void bindPreviewControls(
+			JPanel previewContainer,
+			JaideImprovePreviewPanel improvePreviewPanel,
+			JaideExplanationPreviewPanel explanationPreviewPanel,
+			JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel,
+			JaideTestGenerationPreviewPanel testGenerationPreviewPanel
+	) {
+		this.previewContainer = previewContainer;
+		this.improvePreviewPanel = improvePreviewPanel;
+		this.explanationPreviewPanel = explanationPreviewPanel;
+		this.errorExplanationPreviewPanel = errorExplanationPreviewPanel;
+		this.testGenerationPreviewPanel = testGenerationPreviewPanel;
+
+		if (currentMode == JaideToolWindowMode.EXPLANATION) {
+			renderExplanation();
+		}
+
+		if (currentMode == JaideToolWindowMode.ERROR_EXPLANATION) {
+			renderErrorExplanation();
+		}
+
+		if (currentMode == JaideToolWindowMode.IMPROVEMENT) {
+			renderImprovement();
+		}
+
+		if (currentMode == JaideToolWindowMode.TEST_GENERATION) {
+			renderTestGeneration();
+		}
+	}
+
+	public void showExplanation(JaideExplanation explanation) {
+		currentMode = JaideToolWindowMode.EXPLANATION;
+		latestExplanation = explanation;
+
+		renderExplanation();
+		applyCurrentViewState();
+	}
+
+	private void renderExplanation() {
+		if (previewContainer == null
+				|| explanationPreviewPanel == null
+				|| latestExplanation == null) {
+			return;
+		}
+
+		previewContainer.removeAll();
+		explanationPreviewPanel.updateExplanation(latestExplanation);
+		previewContainer.add(explanationPreviewPanel, BorderLayout.CENTER);
+		previewContainer.revalidate();
+		previewContainer.repaint();
+	}
+
+	public void showErrorExplanation(JaideErrorExplanation errorExplanation) {
+		currentMode = JaideToolWindowMode.ERROR_EXPLANATION;
+		latestErrorExplanation = errorExplanation;
+
+		renderErrorExplanation();
+		applyCurrentViewState();
+	}
+
+	private void renderErrorExplanation() {
+		if (previewContainer == null
+				|| errorExplanationPreviewPanel == null
+				|| latestErrorExplanation == null) {
+			return;
+		}
+
+		previewContainer.removeAll();
+		errorExplanationPreviewPanel.updateErrorExplanation(latestErrorExplanation);
+		previewContainer.add(errorExplanationPreviewPanel, BorderLayout.CENTER);
+		previewContainer.revalidate();
+		previewContainer.repaint();
+	}
+
+	public void showImprovement(
+			JaideImprovement improvement,
+			String originalCode
+	) {
+		currentMode = JaideToolWindowMode.IMPROVEMENT;
+		latestImprovement = improvement;
+		latestOriginalCode = originalCode;
+
+		renderImprovement();
+		applyCurrentViewState();
+	}
+
+	private void renderImprovement() {
+		if (previewContainer == null
+				|| improvePreviewPanel == null
+				|| latestImprovement == null
+				|| latestOriginalCode == null) {
+			return;
+		}
+
+		previewContainer.removeAll();
+		improvePreviewPanel.updateImprovement(
+				latestImprovement,
+				latestOriginalCode
+		);
+		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
+		previewContainer.revalidate();
+		previewContainer.repaint();
+	}
+
+	public void showTestGeneration(
+			JaideTestGenerationResult testGenerationResult
+	) {
+		currentMode = JaideToolWindowMode.TEST_GENERATION;
+		latestTestGenerationResult = testGenerationResult;
+
+		renderTestGeneration();
+		applyCurrentViewState();
+	}
+
+	private void renderTestGeneration() {
+		if (previewContainer == null
+				|| testGenerationPreviewPanel == null
+				|| latestTestGenerationResult == null) {
+			return;
+		}
+
+		previewContainer.removeAll();
+		testGenerationPreviewPanel.updateTestGeneration(
+				latestTestGenerationResult
+		);
+		previewContainer.add(
+				testGenerationPreviewPanel,
+				BorderLayout.CENTER
+		);
+		previewContainer.revalidate();
+		previewContainer.repaint();
+	}
+
+	private void applyCurrentViewState() {
+		if (currentMode == null) {
+			return;
+		}
+
+		switch (currentMode) {
+			case EXPLANATION -> applyViewState(EXPLANATION_VIEW_STATE);
+			case ERROR_EXPLANATION -> applyViewState(ERROR_EXPLANATION_VIEW_STATE);
+			case IMPROVEMENT -> applyViewState(IMPROVEMENT_VIEW_STATE);
+			case TEST_GENERATION -> applyViewState(TEST_GENERATION_VIEW_STATE);
 		}
 	}
 
