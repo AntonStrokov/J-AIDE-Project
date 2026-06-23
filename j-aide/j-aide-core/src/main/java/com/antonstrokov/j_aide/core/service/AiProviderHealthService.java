@@ -23,4 +23,8 @@ public class AiProviderHealthService {
 				"AI provider health check is not implemented yet."
 		);
 	}
+
+	private String buildOllamaVersionUrl() {
+		return aiProperties.ollama().baseUrl() + "/api/version";
+	}
 }
