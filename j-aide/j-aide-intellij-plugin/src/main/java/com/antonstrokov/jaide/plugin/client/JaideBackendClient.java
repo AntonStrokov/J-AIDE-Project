@@ -24,14 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class JaideBackendClient {
 	private static final Logger log = Logger.getInstance(JaideBackendClient.class);
 
-	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final JaideBackendTransport backendTransport = new JaideBackendTransport();
 	private final JaideBackendExplainRequestFactory backendRequestFactory = new JaideBackendExplainRequestFactory();
@@ -144,31 +141,7 @@ public class JaideBackendClient {
 	}
 
 	private String send(HttpRequest request) throws IOException, InterruptedException {
-		log.info("Sending HTTP request to " + request.uri());
-
-		long startedAt = System.currentTimeMillis();
-
-		HttpResponse<String> response = httpClient.send(
-				request,
-				HttpResponse.BodyHandlers.ofString()
-		);
-
-		long responseTimeMs = System.currentTimeMillis() - startedAt;
-		int statusCode = response.statusCode();
-
-		if (statusCode < 200 || statusCode >= 300) {
-			log.warn("Backend returned error response, statusCode=" + statusCode
-					+ ", responseTimeMs=" + responseTimeMs
-					+ ", responseBodyLength=" + getLength(response.body()));
-
-			throw new JaideBackendException(statusCode, response.body());
-		}
-
-		log.info("Backend returned successful response, statusCode=" + statusCode
-				+ ", responseTimeMs=" + responseTimeMs
-				+ ", responseBodyLength=" + getLength(response.body()));
-
-		return response.body();
+		return backendTransport.send(request);
 	}
 
 	private JaideExplanation parseExplanation(String responseBody) throws IOException {
@@ -251,9 +224,5 @@ public class JaideBackendClient {
 		}
 
 		return errorExplainResponse.errorExplanation();
-	}
-
-	private int getLength(String value) {
-		return value == null ? 0 : value.length();
 	}
 }
