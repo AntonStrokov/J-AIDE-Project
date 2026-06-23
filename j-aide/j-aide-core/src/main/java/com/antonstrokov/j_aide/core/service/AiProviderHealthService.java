@@ -5,6 +5,7 @@ import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthResult;
 import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthStatus;
 import com.antonstrokov.j_aide.core.integration.ollama.OllamaClient;
 import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaTagsResponse;
+import org.springframework.web.client.RestClientException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,24 +24,39 @@ public class AiProviderHealthService {
 	public AiProviderHealthResult getHealthInfo() {
 		long startedAt = System.currentTimeMillis();
 
-		var versionResponse = ollamaClient.getVersion();
-		OllamaTagsResponse tagsResponse = ollamaClient.getModels();
+		try {
+			var versionResponse = ollamaClient.getVersion();
+			OllamaTagsResponse tagsResponse = ollamaClient.getModels();
 
-		boolean configuredModelAvailable = isConfiguredModelAvailable(tagsResponse);
-		long responseTimeMs = System.currentTimeMillis() - startedAt;
+			boolean configuredModelAvailable = isConfiguredModelAvailable(tagsResponse);
+			long responseTimeMs = System.currentTimeMillis() - startedAt;
 
-		return new AiProviderHealthResult(
-				AiProviderHealthStatus.READY,
-				AiProviderHealthStatus.READY,
-				configuredModelAvailable
-						? AiProviderHealthStatus.READY
-						: AiProviderHealthStatus.FAILED,
-				versionResponse == null ? null : versionResponse.version(),
-				responseTimeMs,
-				configuredModelAvailable
-						? "AI provider and configured model are available."
-						: "Configured AI model is not available: " + aiProperties.ollama().model()
-		);
+			return new AiProviderHealthResult(
+					AiProviderHealthStatus.READY,
+					AiProviderHealthStatus.READY,
+					configuredModelAvailable
+							? AiProviderHealthStatus.READY
+							: AiProviderHealthStatus.FAILED,
+					versionResponse == null ? null : versionResponse.version(),
+					responseTimeMs,
+					configuredModelAvailable
+							? "AI provider and configured model are available."
+							: "Configured AI model is not available: "
+							  + aiProperties.ollama().model()
+			);
+		} catch (RestClientException exception) {
+			long responseTimeMs = System.currentTimeMillis() - startedAt;
+
+			return new AiProviderHealthResult(
+					AiProviderHealthStatus.READY,
+					AiProviderHealthStatus.FAILED,
+					AiProviderHealthStatus.UNKNOWN,
+					null,
+					responseTimeMs,
+					"AI provider is not reachable: "
+							+ aiProperties.ollama().baseUrl()
+			);
+		}
 	}
 
 	private boolean isConfiguredModelAvailable(OllamaTagsResponse tagsResponse) {
