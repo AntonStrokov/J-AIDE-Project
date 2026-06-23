@@ -4,13 +4,10 @@ import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthResult;
 import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 @Service
 public class AiProviderHealthService {
 	private final AiProperties aiProperties;
-	private final RestClient restClient = RestClient.create();
 
 	public AiProviderHealthService(AiProperties aiProperties) {
 		this.aiProperties = aiProperties;
