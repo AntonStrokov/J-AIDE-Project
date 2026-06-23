@@ -14,14 +14,18 @@ public class AiProviderHealthService {
 	}
 
 	public AiProviderHealthResult getHealthInfo() {
+		long startedAt = System.currentTimeMillis();
+
 		var versionResponse = ollamaClient.getVersion();
+
+		long responseTimeMs = System.currentTimeMillis() - startedAt;
 
 		return new AiProviderHealthResult(
 				AiProviderHealthStatus.READY,
 				AiProviderHealthStatus.READY,
 				AiProviderHealthStatus.UNKNOWN,
 				versionResponse == null ? null : versionResponse.version(),
-				null,
+				responseTimeMs,
 				"AI provider is reachable. Model health check is not implemented yet."
 		);
 	}
