@@ -64,9 +64,31 @@ Example response:
     "backendName": "J-Aide",
     "backendVersion": "0.1.0",
     "status": "UP"
+  },
+  "defaults": {
+    "defaultMode": "SMART",
+    "defaultLanguage": "JAVA"
+  },
+  "llmInfo": {
+    "llmProvider": "OLLAMA",
+    "llmModel": "qwen2.5-coder:7b"
+  },
+  "health": {
+    "backendStatus": "READY",
+    "providerStatus": "UNKNOWN",
+    "modelStatus": "UNKNOWN",
+    "providerVersion": null,
+    "responseTimeMs": null,
+    "message": "AI provider health check is not implemented yet."
   }
 }
 ```
+Current health behavior:
+
+- `backendStatus` reports whether the J-Aide backend is ready.
+- `providerStatus` and `modelStatus` are currently returned as `UNKNOWN`.
+- AI provider health checks are planned as part of LLM Provider Health & Onboarding.
+- Future checks should verify Ollama API availability, provider version, configured model presence, and model load readiness.
 
 ### POST /ai/explain
 
