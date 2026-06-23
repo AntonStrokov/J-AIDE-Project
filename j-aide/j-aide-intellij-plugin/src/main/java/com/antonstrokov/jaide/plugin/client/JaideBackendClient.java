@@ -24,18 +24,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class JaideBackendClient {
 	private static final Logger log = Logger.getInstance(JaideBackendClient.class);
-	private static final String CONTENT_TYPE_HEADER = "Content-Type";
-	private static final String APPLICATION_JSON = "application/json";
 
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final JaideBackendTransport backendTransport = new JaideBackendTransport();
 	private final JaideBackendExplainRequestFactory backendRequestFactory = new JaideBackendExplainRequestFactory();
 	private final JaideBackendImproveRequestFactory improveRequestFactory = new JaideBackendImproveRequestFactory();
 	private final JaideBackendErrorExplainRequestFactory errorExplainRequestFactory =
@@ -142,11 +140,7 @@ public class JaideBackendClient {
 	}
 
 	private HttpRequest buildJsonPostRequest(String url, String requestBody) {
-		return HttpRequest.newBuilder()
-				.uri(URI.create(url))
-				.header(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
-				.build();
+		return backendTransport.buildJsonPostRequest(url, requestBody);
 	}
 
 	private String send(HttpRequest request) throws IOException, InterruptedException {
