@@ -1,11 +1,6 @@
 package com.antonstrokov.j_aide.api.controller;
 
-import com.antonstrokov.j_aide.api.dto.backend.BackendCapabilities;
-import com.antonstrokov.j_aide.api.dto.backend.BackendDefaults;
-import com.antonstrokov.j_aide.api.dto.backend.BackendEndpoints;
-import com.antonstrokov.j_aide.api.dto.backend.BackendInfoResponse;
-import com.antonstrokov.j_aide.api.dto.backend.BackendLlmInfo;
-import com.antonstrokov.j_aide.api.dto.backend.BackendMetadata;
+import com.antonstrokov.j_aide.api.dto.backend.*;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.common.ExplainMode;
@@ -59,6 +54,9 @@ public class HealthController {
 		BackendCapabilities capabilities = buildBackendCapabilities();
 		response.setCapabilities(capabilities);
 
+		BackendHealthInfo health = buildBackendHealthInfo();
+		response.setHealth(health);
+
 		return response;
 	}
 
@@ -111,5 +109,17 @@ public class HealthController {
 				.toList());
 
 		return capabilities;
+	}
+
+	private BackendHealthInfo buildBackendHealthInfo() {
+		BackendHealthInfo health = new BackendHealthInfo();
+		health.setBackendStatus(BackendHealthStatus.READY);
+		health.setProviderStatus(BackendHealthStatus.UNKNOWN);
+		health.setModelStatus(BackendHealthStatus.UNKNOWN);
+		health.setProviderVersion(null);
+		health.setResponseTimeMs(null);
+		health.setMessage("AI provider health check is not implemented yet.");
+
+		return health;
 	}
 }

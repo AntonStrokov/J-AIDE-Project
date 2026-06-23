@@ -11,4 +11,5 @@ public class BackendInfoResponse {
 	private BackendLlmInfo llmInfo;
 	private BackendEndpoints endpoints;
 	private BackendCapabilities capabilities;
+	private BackendHealthInfo health;
 }
