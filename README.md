@@ -75,20 +75,23 @@ Example response:
   },
   "health": {
     "backendStatus": "READY",
-    "providerStatus": "UNKNOWN",
-    "modelStatus": "UNKNOWN",
-    "providerVersion": null,
-    "responseTimeMs": null,
-    "message": "AI provider health check is not implemented yet."
+    "providerStatus": "READY",
+    "modelStatus": "READY",
+    "providerVersion": "0.30.10",
+    "responseTimeMs": 104,
+    "message": "AI provider and configured model are available."
   }
 }
 ```
 Current health behavior:
 
 - `backendStatus` reports whether the J-Aide backend is ready.
-- `providerStatus` and `modelStatus` are currently returned as `UNKNOWN`.
-- AI provider health checks are planned as part of LLM Provider Health & Onboarding.
-- Future checks should verify Ollama API availability, provider version, configured model presence, and model load readiness.
+- `providerStatus` reports whether the configured AI provider is reachable.
+- `modelStatus` reports whether the configured model is available through the provider.
+- If Ollama is unavailable, `providerStatus` becomes `FAILED` and `modelStatus` becomes `UNKNOWN`.
+- If Ollama is reachable but the configured model is missing, `providerStatus` remains `READY` and `modelStatus` becomes `FAILED`.
+- The current health check verifies Ollama API availability, provider version, and configured model presence.
+- Model trial loading and guided remediation are planned as part of LLM Provider Health & Onboarding.
 
 ### POST /ai/explain
 
