@@ -9,6 +9,8 @@ import com.antonstrokov.j_aide.core.dto.common.SupportedLanguage;
 import com.antonstrokov.j_aide.core.service.HealthService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthResult;
+import com.antonstrokov.j_aide.core.service.AiProviderHealthService;
 
 import java.util.Arrays;
 
@@ -18,11 +20,18 @@ public class HealthController {
 	private final HealthService healthService;
 	private final AppProperties appProperties;
 	private final AiProperties aiProperties;
+	private final AiProviderHealthService aiProviderHealthService;
 
-	public HealthController(HealthService healthService, AppProperties appProperties, AiProperties aiProperties) {
+	public HealthController(
+			HealthService healthService,
+			AppProperties appProperties,
+			AiProperties aiProperties,
+			AiProviderHealthService aiProviderHealthService
+	) {
 		this.healthService = healthService;
 		this.appProperties = appProperties;
 		this.aiProperties = aiProperties;
+		this.aiProviderHealthService = aiProviderHealthService;
 	}
 
 	@GetMapping("/ping")
@@ -112,13 +121,15 @@ public class HealthController {
 	}
 
 	private BackendHealthInfo buildBackendHealthInfo() {
+		AiProviderHealthResult healthResult = aiProviderHealthService.getHealthInfo();
+
 		BackendHealthInfo health = new BackendHealthInfo();
-		health.setBackendStatus(BackendHealthStatus.READY);
-		health.setProviderStatus(BackendHealthStatus.UNKNOWN);
-		health.setModelStatus(BackendHealthStatus.UNKNOWN);
-		health.setProviderVersion(null);
-		health.setResponseTimeMs(null);
-		health.setMessage("AI provider health check is not implemented yet.");
+		health.setBackendStatus(BackendHealthStatus.valueOf(healthResult.backendStatus().name()));
+		health.setProviderStatus(BackendHealthStatus.valueOf(healthResult.providerStatus().name()));
+		health.setModelStatus(BackendHealthStatus.valueOf(healthResult.modelStatus().name()));
+		health.setProviderVersion(healthResult.providerVersion());
+		health.setResponseTimeMs(healthResult.responseTimeMs());
+		health.setMessage(healthResult.message());
 
 		return health;
 	}
