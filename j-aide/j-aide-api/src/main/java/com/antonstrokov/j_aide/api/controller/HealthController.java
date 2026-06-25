@@ -63,10 +63,21 @@ public class HealthController {
 		BackendCapabilities capabilities = buildBackendCapabilities();
 		response.setCapabilities(capabilities);
 
-		BackendHealthInfo health = buildBackendHealthInfo();
+		AiProviderHealthResult healthResult =
+				aiProviderHealthService.getHealthInfo();
+
+		BackendHealthInfo health = buildBackendHealthInfo(healthResult);
 		response.setHealth(health);
 
 		return response;
+	}
+
+	@GetMapping("/ai/health")
+	public BackendHealthInfo aiHealth() {
+		AiProviderHealthResult healthResult =
+				aiProviderHealthService.getSetupHealthInfo();
+
+		return buildBackendHealthInfo(healthResult);
 	}
 
 	private BackendMetadata buildBackendMetadata() {
@@ -120,8 +131,9 @@ public class HealthController {
 		return capabilities;
 	}
 
-	private BackendHealthInfo buildBackendHealthInfo() {
-		AiProviderHealthResult healthResult = aiProviderHealthService.getHealthInfo();
+	private BackendHealthInfo buildBackendHealthInfo(
+			AiProviderHealthResult healthResult
+	) {
 
 		BackendHealthInfo health = new BackendHealthInfo();
 		health.setBackendStatus(BackendHealthStatus.valueOf(healthResult.backendStatus().name()));
