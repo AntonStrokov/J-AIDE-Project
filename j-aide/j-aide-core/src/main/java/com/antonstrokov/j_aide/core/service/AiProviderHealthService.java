@@ -25,6 +25,14 @@ public class AiProviderHealthService {
 	}
 
 	public AiProviderHealthResult getHealthInfo() {
+		return checkHealth(false);
+	}
+
+	public AiProviderHealthResult getSetupHealthInfo() {
+		return checkHealth(true);
+	}
+
+	private AiProviderHealthResult checkHealth(boolean runTrialGeneration) {
 		long startedAt = System.currentTimeMillis();
 
 		try {
@@ -34,7 +42,8 @@ public class AiProviderHealthService {
 			boolean configuredModelAvailable = isConfiguredModelAvailable(tagsResponse);
 
 			boolean configuredModelReady =
-					configuredModelAvailable && isConfiguredModelReady();
+					configuredModelAvailable
+							&& (!runTrialGeneration || isConfiguredModelReady());
 
 			String message;
 
@@ -44,8 +53,10 @@ public class AiProviderHealthService {
 			} else if (!configuredModelReady) {
 				message = "Configured AI model did not pass trial generation: "
 						+ aiProperties.ollama().model();
-			} else {
+			} else if (runTrialGeneration) {
 				message = "AI provider and configured model are ready.";
+			} else {
+				message = "AI provider and configured model are available.";
 			}
 
 			long responseTimeMs = System.currentTimeMillis() - startedAt;
