@@ -93,6 +93,29 @@ Current health behavior:
 - The current health check verifies Ollama API availability, provider version, and configured model presence.
 - Model trial loading and guided remediation are planned as part of LLM Provider Health & Onboarding.
 
+### GET /ai/health
+
+Runs a full AI setup health check, including a trial generation request to the configured model.
+
+Example curl request:
+
+```bash
+curl http://localhost:8080/ai/health
+```
+
+Example response:
+
+```json
+{
+  "backendStatus": "READY",
+  "providerStatus": "READY",
+  "modelStatus": "READY",
+  "providerVersion": "0.30.10",
+  "responseTimeMs": 3187,
+  "message": "AI provider and configured model are ready."
+}
+```
+
 ### POST /ai/explain
 
 Explains a source code snippet and returns a structured AI response with metadata and context.
