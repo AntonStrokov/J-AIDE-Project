@@ -32,20 +32,33 @@ public class AiProviderHealthService {
 			OllamaTagsResponse tagsResponse = ollamaClient.getModels();
 
 			boolean configuredModelAvailable = isConfiguredModelAvailable(tagsResponse);
+
+			boolean configuredModelReady =
+					configuredModelAvailable && isConfiguredModelReady();
+
+			String message;
+
+			if (!configuredModelAvailable) {
+				message = "Configured AI model is not available: "
+						+ aiProperties.ollama().model();
+			} else if (!configuredModelReady) {
+				message = "Configured AI model did not pass trial generation: "
+						+ aiProperties.ollama().model();
+			} else {
+				message = "AI provider and configured model are ready.";
+			}
+
 			long responseTimeMs = System.currentTimeMillis() - startedAt;
 
 			return new AiProviderHealthResult(
 					AiProviderHealthStatus.READY,
 					AiProviderHealthStatus.READY,
-					configuredModelAvailable
+					configuredModelReady
 							? AiProviderHealthStatus.READY
 							: AiProviderHealthStatus.FAILED,
 					versionResponse == null ? null : versionResponse.version(),
 					responseTimeMs,
-					configuredModelAvailable
-							? "AI provider and configured model are available."
-							: "Configured AI model is not available: "
-							  + aiProperties.ollama().model()
+					message
 			);
 		} catch (RestClientException exception) {
 			long responseTimeMs = System.currentTimeMillis() - startedAt;
