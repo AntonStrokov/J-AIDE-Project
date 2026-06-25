@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AiProviderHealthService {
+	private static final String MODEL_TRIAL_PROMPT = "Reply with OK.";
+
 	private final OllamaClient ollamaClient;
 	private final AiProperties aiProperties;
 
@@ -78,5 +80,16 @@ public class AiProviderHealthService {
 				&& Boolean.TRUE.equals(response.done())
 				&& response.response() != null
 				&& !response.response().isBlank();
+	}
+
+	private boolean isConfiguredModelReady() {
+		try {
+			OllamaGenerateResponse response =
+					ollamaClient.generate(MODEL_TRIAL_PROMPT);
+
+			return isSuccessfulTrialResponse(response);
+		} catch (RestClientException exception) {
+			return false;
+		}
 	}
 }
