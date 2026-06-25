@@ -5,6 +5,7 @@ import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthResult;
 import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthStatus;
 import com.antonstrokov.j_aide.core.integration.ollama.OllamaClient;
 import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaTagsResponse;
+import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaGenerateResponse;
 import org.springframework.web.client.RestClientException;
 import org.springframework.stereotype.Service;
 
@@ -70,5 +71,12 @@ public class AiProviderHealthService {
 				.anyMatch(modelInfo -> modelInfo != null
 						&& (configuredModel.equals(modelInfo.name())
 						|| configuredModel.equals(modelInfo.model())));
+	}
+
+	private boolean isSuccessfulTrialResponse(OllamaGenerateResponse response) {
+		return response != null
+				&& Boolean.TRUE.equals(response.done())
+				&& response.response() != null
+				&& !response.response().isBlank();
 	}
 }
