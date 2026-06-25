@@ -3,6 +3,8 @@ package com.antonstrokov.j_aide.core.integration.ollama;
 import com.antonstrokov.j_aide.core.config.AiProperties;
 import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaTagsResponse;
 import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaVersionResponse;
+import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaGenerateRequest;
+import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaGenerateResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -35,5 +37,23 @@ public class OllamaClient {
 
 	private String buildTagsUrl() {
 		return aiProperties.ollama().baseUrl() + "/api/tags";
+	}
+
+	public OllamaGenerateResponse generate(String prompt) {
+		OllamaGenerateRequest request = new OllamaGenerateRequest(
+				aiProperties.ollama().model(),
+				prompt,
+				false
+		);
+
+		return restClient.post()
+				.uri(buildGenerateUrl())
+				.body(request)
+				.retrieve()
+				.body(OllamaGenerateResponse.class);
+	}
+
+	private String buildGenerateUrl() {
+		return aiProperties.ollama().baseUrl() + "/api/generate";
 	}
 }
