@@ -9,6 +9,7 @@ public final class JaideUiLabels {
 	public static final String APPLY_IMPROVEMENT_BUTTON = "Apply Improvement";
 	public static final String COPY_IMPROVED_CODE_BUTTON = "Copy Code";
 	public static final String CLOSE_BUTTON = "Close";
+	public static final String CHECK_AI_SETUP_BUTTON = "Check AI Setup";
 
 	// Preview section labels
 	public static final String SUMMARY_SECTION = "Summary";
