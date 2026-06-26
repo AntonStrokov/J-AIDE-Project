@@ -8,6 +8,7 @@ import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainResponse;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideBackendImproveRequest;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveResponse;
@@ -94,6 +95,22 @@ public class JaideBackendClient {
 		log.info("Explain error response received, responseBodyLength=" + responseBody.length());
 
 		return parseErrorExplanation(responseBody);
+	}
+
+	public JaideHealthResponse checkAiHealth()
+			throws IOException, InterruptedException {
+		HttpRequest httpRequest =
+				backendTransport.buildGetRequest(JaideConstants.AI_HEALTH_URL);
+
+		String responseBody = send(httpRequest);
+
+		log.info("AI health response received, responseBodyLength="
+				+ responseBody.length());
+
+		return objectMapper.readValue(
+				responseBody,
+				JaideHealthResponse.class
+		);
 	}
 
 	private String buildExplainRequestBody(JaideExplainRequest request) throws IOException {
