@@ -41,6 +41,15 @@ public final class JaideUiLabels {
 	public static final String TEST_FRAMEWORK_SECTION = "Test Framework";
 	public static final String COVERED_SCENARIOS_SECTION = "Covered Scenarios";
 
+	public static final String AI_HEALTH_PREVIEW_TITLE =
+			"J-Aide AI Setup Status";
+	public static final String BACKEND_STATUS_SECTION = "Backend";
+	public static final String PROVIDER_STATUS_SECTION = "Provider";
+	public static final String MODEL_STATUS_SECTION = "Model";
+	public static final String PROVIDER_VERSION_SECTION = "Provider Version";
+	public static final String RESPONSE_TIME_SECTION = "Response Time";
+	public static final String HEALTH_MESSAGE_SECTION = "Message";
+
 	private JaideUiLabels() {
 	}
 }
