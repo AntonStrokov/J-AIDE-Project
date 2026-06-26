@@ -24,6 +24,13 @@ public class JaideBackendTransport {
 				.build();
 	}
 
+	public HttpRequest buildGetRequest(String url) {
+		return HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.GET()
+				.build();
+	}
+
 	public String send(HttpRequest request) throws IOException, InterruptedException {
 		log.info("Sending HTTP request to " + request.uri());
 
