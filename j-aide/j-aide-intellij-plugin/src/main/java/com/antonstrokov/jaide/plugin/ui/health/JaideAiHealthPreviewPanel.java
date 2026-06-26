@@ -60,6 +60,7 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 				JaideUiLabels.HEALTH_MESSAGE_SECTION,
 				response.message()
 		);
+		contentPanel.add(Box.createVerticalGlue());
 
 		revalidate();
 		repaint();
@@ -140,6 +141,12 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		textArea.setForeground(JBColor.foreground());
 		textArea.setBorder(JBUI.Borders.empty());
 		textArea.setAlignmentX(LEFT_ALIGNMENT);
+		Dimension preferredSize = textArea.getPreferredSize();
+
+		textArea.setMaximumSize(new Dimension(
+				Integer.MAX_VALUE,
+				preferredSize.height
+		));
 
 		return textArea;
 	}

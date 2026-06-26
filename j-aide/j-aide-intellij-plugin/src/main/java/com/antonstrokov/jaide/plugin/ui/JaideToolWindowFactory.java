@@ -3,13 +3,16 @@ package com.antonstrokov.jaide.plugin.ui;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
+import com.antonstrokov.jaide.plugin.service.JaideAiSetupCheckService;
 import com.antonstrokov.jaide.plugin.service.JaideCopyGeneratedTestCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideCopyImprovedCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideToolWindowActionsService;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
+import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
@@ -19,6 +22,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -30,6 +34,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 			new JaideCopyGeneratedTestCodeService();
 	private static final JaideToolWindowAutoHideService autoHideService = new JaideToolWindowAutoHideService();
 	private static final JaideToolWindowActionsService toolWindowActionsService = new JaideToolWindowActionsService();
+	private static final JaideAiSetupCheckService aiSetupCheckService =
+			new JaideAiSetupCheckService();
 
 	public static void updateExplanation(
 			Project project,
@@ -75,6 +81,16 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		);
 	}
 
+	public static void updateAiHealth(
+			Project project,
+			JaideHealthResponse healthResponse
+	) {
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showAiHealth(healthResponse)
+		);
+	}
+
 	public static boolean isShowingErrorExplanation(Project project) {
 		if (project == null) {
 			return false;
@@ -95,7 +111,30 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JaideExplainModeSelectorPanel explainModeSelectorPanel =
 				new JaideExplainModeSelectorPanel();
 		explainModeSelectorPanel.setVisible(false);
-		panel.add(explainModeSelectorPanel, BorderLayout.NORTH);
+		JPanel headerPanel = new JPanel(new BorderLayout());
+
+		JButton checkAiSetupButton =
+				new JButton(JaideUiLabels.CHECK_AI_SETUP_BUTTON);
+
+		checkAiSetupButton.addActionListener(
+				event -> aiSetupCheckService.check(
+						project,
+						response -> updateAiHealth(project, response)
+				)
+		);
+
+		checkAiSetupButton.setMargin(JBUI.insets(6, 16));
+		checkAiSetupButton.setPreferredSize(JBUI.size(180, 36));
+
+		JPanel setupButtonPanel =
+				new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+
+		setupButtonPanel.add(checkAiSetupButton);
+
+		headerPanel.add(setupButtonPanel, BorderLayout.NORTH);
+		headerPanel.add(explainModeSelectorPanel, BorderLayout.CENTER);
+
+		panel.add(headerPanel, BorderLayout.NORTH);
 
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		actionsPanel.setVisible(false);
@@ -154,6 +193,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				new JaideErrorExplanationPreviewPanel();
 		JaideTestGenerationPreviewPanel testGenerationPreviewPanel =
 				new JaideTestGenerationPreviewPanel(project);
+		JaideAiHealthPreviewPanel aiHealthPreviewPanel =
+				new JaideAiHealthPreviewPanel();
 
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
 
@@ -162,7 +203,8 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				improvePreviewPanel,
 				explanationPreviewPanel,
 				errorExplanationPreviewPanel,
-				testGenerationPreviewPanel
+				testGenerationPreviewPanel,
+				aiHealthPreviewPanel
 		);
 
 		panel.add(previewContainer, BorderLayout.CENTER);

@@ -10,6 +10,8 @@ import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
+import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
+import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
 import com.intellij.openapi.components.Service;
 
 import javax.swing.*;
@@ -31,11 +33,15 @@ public final class JaideToolWindowController {
 	private static final ViewState TEST_GENERATION_VIEW_STATE =
 			new ViewState(false, false, false, true, true);
 
+	private static final ViewState AI_HEALTH_VIEW_STATE =
+			new ViewState(false, false, false, false, true);
+
 	private JaideExplanation latestExplanation;
 	private JaideErrorExplanation latestErrorExplanation;
 	private JaideImprovement latestImprovement;
 	private String latestOriginalCode;
 	private JaideTestGenerationResult latestTestGenerationResult;
+	private JaideHealthResponse latestHealthResponse;
 
 	private JaideToolWindowMode currentMode;
 	private JPanel actionsPanel;
@@ -50,6 +56,7 @@ public final class JaideToolWindowController {
 	private JaideExplanationPreviewPanel explanationPreviewPanel;
 	private JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel;
 	private JaideTestGenerationPreviewPanel testGenerationPreviewPanel;
+	private JaideAiHealthPreviewPanel aiHealthPreviewPanel;
 
 	public boolean isShowingErrorExplanation() {
 		return currentMode == JaideToolWindowMode.ERROR_EXPLANATION;
@@ -108,13 +115,15 @@ public final class JaideToolWindowController {
 			JaideImprovePreviewPanel improvePreviewPanel,
 			JaideExplanationPreviewPanel explanationPreviewPanel,
 			JaideErrorExplanationPreviewPanel errorExplanationPreviewPanel,
-			JaideTestGenerationPreviewPanel testGenerationPreviewPanel
+			JaideTestGenerationPreviewPanel testGenerationPreviewPanel,
+			JaideAiHealthPreviewPanel aiHealthPreviewPanel
 	) {
 		this.previewContainer = previewContainer;
 		this.improvePreviewPanel = improvePreviewPanel;
 		this.explanationPreviewPanel = explanationPreviewPanel;
 		this.errorExplanationPreviewPanel = errorExplanationPreviewPanel;
 		this.testGenerationPreviewPanel = testGenerationPreviewPanel;
+		this.aiHealthPreviewPanel = aiHealthPreviewPanel;
 
 		if (currentMode == JaideToolWindowMode.EXPLANATION) {
 			renderExplanation();
@@ -130,6 +139,10 @@ public final class JaideToolWindowController {
 
 		if (currentMode == JaideToolWindowMode.TEST_GENERATION) {
 			renderTestGeneration();
+		}
+
+		if (currentMode == JaideToolWindowMode.AI_HEALTH) {
+			renderAiHealth();
 		}
 	}
 
@@ -236,6 +249,28 @@ public final class JaideToolWindowController {
 		previewContainer.repaint();
 	}
 
+	public void showAiHealth(JaideHealthResponse healthResponse) {
+		currentMode = JaideToolWindowMode.AI_HEALTH;
+		latestHealthResponse = healthResponse;
+
+		renderAiHealth();
+		applyCurrentViewState();
+	}
+
+	private void renderAiHealth() {
+		if (previewContainer == null
+				|| aiHealthPreviewPanel == null
+				|| latestHealthResponse == null) {
+			return;
+		}
+
+		previewContainer.removeAll();
+		aiHealthPreviewPanel.updateHealth(latestHealthResponse);
+		previewContainer.add(aiHealthPreviewPanel, BorderLayout.CENTER);
+		previewContainer.revalidate();
+		previewContainer.repaint();
+	}
+
 	private void applyCurrentViewState() {
 		if (currentMode == null) {
 			return;
@@ -246,6 +281,7 @@ public final class JaideToolWindowController {
 			case ERROR_EXPLANATION -> applyViewState(ERROR_EXPLANATION_VIEW_STATE);
 			case IMPROVEMENT -> applyViewState(IMPROVEMENT_VIEW_STATE);
 			case TEST_GENERATION -> applyViewState(TEST_GENERATION_VIEW_STATE);
+			case AI_HEALTH -> applyViewState(AI_HEALTH_VIEW_STATE);
 		}
 	}
 
