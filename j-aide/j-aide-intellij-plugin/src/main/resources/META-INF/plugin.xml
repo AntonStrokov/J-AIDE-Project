@@ -51,6 +51,13 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
         </action>
+        <action
+                id="J-Aide.CheckAiSetup"
+                class="com.antonstrokov.jaide.plugin.CheckAiSetupAction"
+                text="J-Aide: Check AI Setup"
+                description="Check backend, Ollama, and configured AI model readiness">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
 <!--        <action-->
 <!--                id="J-Aide.ApplyLastImprovement"-->
 <!--                class="com.antonstrokov.jaide.plugin.ApplyLastImprovementAction"-->
