@@ -1,9 +1,44 @@
 # J-Aide
 
-J-Aide is a backend service for an AI-powered programming assistant.
+J-Aide is a local AI-powered developer assistant consisting of a Spring Boot backend and an IntelliJ IDEA plugin.
 
-The project provides REST API endpoints that can explain source code, return structured AI responses, and expose backend
-capabilities for future IDE plugin integration.
+The plugin sends selected source code, runtime errors, and editor context to the local backend. The backend uses Ollama and Qwen2.5-Coder to generate structured responses that are displayed inside the J-Aide Tool Window.
+
+J-Aide follows an explicit user-control model: AI suggestions never modify project files automatically. Code changes are applied only after a deliberate user action and additional safety checks.
+
+## MVP Scope
+
+The `v0.1.0-mvp` release includes:
+
+- `Explain Selected Code` with `FAST`, `SMART`, and `DEEP` explanation modes;
+- `Improve Selected Code` with structured preview, Copy Code, Diff View, explicit Apply, safety checks, and Undo;
+- `Explain Runtime Error` for selected editor text, console output, and clipboard input;
+- `Generate Tests` with structured preview and generated test code copying;
+- `Check AI Setup` through the Tools menu and the J-Aide Tool Window;
+- local Spring Boot backend integration with Ollama;
+- quick backend/provider/model diagnostics through `GET /backend-info`;
+- full AI readiness diagnostics with trial generation through `GET /ai/health`.
+
+### Scope Freeze
+
+The feature scope of `v0.1.0-mvp` is frozen.
+
+New functionality must not be added to the MVP unless it fixes a confirmed release-blocking defect.
+
+The following improvements are not required for the MVP release:
+
+- guided remediation and automatic Ollama problem fixing;
+- onboarding wizard;
+- loading and retry UX for AI health checks;
+- colored health status indicators;
+- automatic test file creation;
+- cloud AI providers and managed model runtime;
+- streaming responses;
+- RAG and project-wide context;
+- Mentor View;
+- telemetry, request history, and production security.
+
+These items remain in the Post-MVP or Future Research backlog.
 
 ## Tech Stack
 
