@@ -505,11 +505,55 @@ Current plugin capabilities:
 - Generate Tests Preview shows structured sections: status, summary, test framework, generated test code, covered scenarios, risk hint, and confidence.
 - Generate Tests Preview supports copying generated test code through the shared `Copy Code` button.
 - Generate Tests MVP does not create test files automatically and does not modify user code.
+- Provides `J-Aide: Check AI Setup` from the IntelliJ `Tools` menu.
+- Provides a permanent `Check AI Setup` button in the J-Aide Tool Window.
+- Displays the full AI health result directly in the Tool Window when the check is started there.
+- Shows backend, provider, and model statuses together with the Ollama version, response time, and diagnostic message.
+- Uses the backend `GET /ai/health` endpoint, including a lightweight trial generation request when the provider and configured model are available.
+- Reports unavailable Ollama and missing model states without requiring an IntelliJ or backend restart after the local AI setup is restored.
 - Opens the Tool Window automatically after receiving a response.
 - Shows friendly plugin notifications for info, warning, and error cases.
 - Plugin notifications auto-expire to avoid blocking Tool Window action buttons for too long.
 - Uses Jackson for safe backend request serialization and response parsing.
 
+### Build and Install the IntelliJ Plugin
+
+From the repository root, open the plugin module:
+
+```powershell
+cd .\j-aide\j-aide-intellij-plugin
+```
+
+Build the installable plugin distribution:
+
+```powershell
+.\gradlew.bat buildPlugin
+```
+
+The generated plugin archive is located at:
+
+```text
+build\distributions\j-aide-intellij-plugin-0.1.0.zip
+```
+
+Do not extract the ZIP archive before installation.
+
+Install the plugin in IntelliJ IDEA:
+
+- Open `File -> Settings -> Plugins`.
+- Open the plugin settings menu.
+- Select `Install Plugin from Disk`.
+- Choose `j-aide-intellij-plugin-0.1.0.zip`.
+- Restart IntelliJ IDEA only if the IDE requests it.
+
+Before using the plugin:
+
+- Start Ollama.
+- Start the J-Aide backend on `http://localhost:8080`.
+- Open the J-Aide Tool Window.
+- Run `Check AI Setup` and confirm that the backend, provider, and model statuses are `READY`.
+
+The plugin was manually installed and verified in a regular IntelliJ IDEA instance outside the Gradle Sandbox.
 
 Current request context sent by the plugin:
 
