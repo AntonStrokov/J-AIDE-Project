@@ -286,7 +286,7 @@ Example response:
 
 Generates JUnit 5 / Mockito-style test code for selected source code and returns a structured AI response.
 
-This endpoint is the backend MVP for the future `Generate Tests` plugin action. It does not create files automatically and does not modify user code.
+This endpoint supports the implemented `Generate Tests` IntelliJ plugin action. The plugin displays the generated test code in a structured preview and allows the user to copy it. The MVP does not create test files automatically and does not modify user code.
 
 Example request:
 
@@ -331,11 +331,14 @@ Example response:
 Current status:
 
 - Backend endpoint `POST /ai/tests` is implemented.
-- The endpoint returns structured test generation data: `summary`, `testCode`, `testFramework`, `coveredScenarios`, `riskHint`, and `confidence`.
+- IntelliJ plugin action `Generate Tests` is implemented.
+- The plugin displays a structured test generation preview.
+- Generated test code can be copied from the preview.
+- The endpoint returns `summary`, `testCode`, `testFramework`, `coveredScenarios`, `riskHint`, and `confidence`.
 - `testCode` is expected to contain a full test class with imports, class declaration, and test methods when enough source context is available.
 - Empty `riskHint` values are normalized to a safe default message.
-- The endpoint was manually smoke-tested through Postman.
-- IntelliJ plugin action `Generate Tests` is planned next.
+- Automatic test file creation and direct project modification are not included in the MVP.
+- The backend and plugin flow were manually regression-tested.
 
 ### POST /ai/explain-error
 
