@@ -282,6 +282,52 @@ Example response:
 }
 ```
 
+### POST /ai/improve
+
+Improves selected source code and returns a structured AI response. The endpoint does not modify user files.
+
+Example request:
+
+```json
+{
+  "code": "public int sum(int a, int b) {\n    return a + b;\n}",
+  "mode": "SMART",
+  "language": "java",
+  "fileName": "Calculator.java",
+  "lineStart": 1,
+  "lineEnd": 3,
+  "projectName": "j-aide-test",
+  "moduleName": "app",
+  "pluginVersion": "0.1.0",
+  "ideVersion": "2025.1"
+}
+```
+
+Example response:
+
+```json
+{
+  "success": true,
+  "improvement": {
+    "summary": "Improved readability and clarified the method intent.",
+    "improvedCode": "public int sum(int firstNumber, int secondNumber) {\n    return firstNumber + secondNumber;\n}",
+    "changes": [
+      "Renamed method parameters to make their purpose clearer."
+    ],
+    "riskHint": "The method behavior is unchanged.",
+    "confidence": "high"
+  },
+  "metadata": {
+    "traceId": "example-trace-id",
+    "backendVersion": "0.1.0",
+    "responseTimeMs": 1234,
+    "retried": false
+  }
+}
+```
+
+The IntelliJ plugin displays the original and improved code together with the change descriptions, risk hint, and confidence. The user can copy the suggestion, open the Diff View, or apply it explicitly. Before applying, the plugin verifies that the original selected text still matches the current document. Applied changes can be reverted through IntelliJ Undo.
+
 ### POST /ai/tests
 
 Generates JUnit 5 / Mockito-style test code for selected source code and returns a structured AI response.
@@ -471,15 +517,21 @@ Examples of validation rules:
 
 Current status:
 
-- Backend core is implemented.
-- Structured AI responses are supported.
-- Backend capability handshake is available via `/backend-info`.
-- IntelliJ Plugin MVP is implemented and connected to the backend.
-- The project is ready for future plugin features such as Improve Code, Diff View, RAG context, and project chat.
+- Backend MVP version `0.1.0` is implemented and successfully builds as an executable Spring Boot JAR.
+- IntelliJ Plugin MVP version `0.1.0` is implemented and connected to the backend.
+- Explain Selected Code supports `FAST`, `SMART`, and `DEEP` modes.
+- Improve Selected Code supports structured preview, code copying, Diff View, explicit Apply, and Undo.
+- Explain Runtime Error supports editor selection, console selection, and clipboard fallback.
+- Generate Tests supports structured preview and generated test code copying.
+- Check AI Setup reports backend, provider, and model health through the IntelliJ Tool Window and the `Tools` menu.
+- Backend and plugin MVP flows were manually regression-tested.
+- The plugin was installed and verified in a regular IntelliJ IDEA instance outside the Gradle Sandbox.
+- The MVP scope is frozen. New functionality is deferred unless a release-blocking defect is discovered.
+- RAG context, Mentor View, cloud AI providers, automatic remediation, and advanced project-wide analysis remain post-MVP work.
 
 ## IntelliJ Plugin MVP
 
-The project includes an IntelliJ IDEA plugin prototype.
+The project includes an IntelliJ IDEA plugin MVP.
 
 Current plugin capabilities:
 
@@ -624,216 +676,81 @@ Module responsibilities:
 | `j-aide-core` | AI service logic, prompt templates, backend properties, supported modes and languages |
 | `j-aide-intellij-plugin` | IntelliJ IDEA plugin implementation |
 
-
 ## Capabilities Status
 
-| Capability                        | Status      | Notes                                                    |
-|-----------------------------------|-------------|----------------------------------------------------------|
-| Explain selected code             | Done        | MVP implementation is working                            |
-| Explain Runtime Error             | Done MVP    | Backend endpoint and IntelliJ plugin action explain stack traces and runtime error logs |
-| Error explanation clipboard input | Done MVP    | Allows explaining copied stack traces through `Tools -> J-Aide: Explain Runtime Error` |
-| Error explanation console popup   | Done MVP    | Allows explaining selected build output and runtime logs from console popup menu |
-| Runtime error input validation    | Done MVP    | Rejects regular source code and accepts stack traces, compiler errors, and build logs |
-| Runtime error text limit          | Done MVP    | Uses dedicated `J_AIDE_ERROR_MAX_LENGTH` limit instead of source code length limit |
-| Read selected code from editor    | Done        | Uses active IntelliJ editor selection                    |
-| Send editor context to backend    | Done        | Includes file, project, module, IDE, and plugin metadata |
-| Detect language by file extension | Done        | Falls back to plain text when language is unknown        |
-| JSON request serialization        | Done        | Implemented with Jackson                                 |
-| JSON response parsing             | Done        | Implemented with Jackson                                 |
-| Display result in Tool Window     | Done        | Shows structured Explain and Improve previews            |
-| Back to Code button               | Done        | Available in Explain and Improve previews to hide Tool Window and return to editor |
-| Friendly error notifications      | Done        | Backend and plugin errors are handled separately         |
-| Auto-expiring plugin notifications | Done        | Info, warning, and error notifications expire automatically to reduce Tool Window overlap |
-| Backend capability handshake      | Done        | Available through `/backend-info`                        |
-| Improve Code                      | Done        | Backend AI flow, IntelliJ action, preview, validation    |
-| Improve response validation       | Done MVP    | Rejects no-op, blank, markdown-fenced improvements and missing change descriptions |
-| Diff View                         | Done        | Custom J-Aide diff dialog with IntelliJ side-by-side Diff Viewer |
-| Apply Last Improvement            | Done        | Available from Tool Window and Diff dialog with safety checks and Undo support |
-| Diff Viewer flicker               | Known Issue | Tool Window hiding is required before opening Diff Viewer |
-| Refactor Code                     | Planned     | Future feature from project roadmap                      |
-| RAG project context               | Planned     | Future backend feature using vector search               |
-| Chat with project code            | Planned     | Future plugin feature                                    |
+| Capability                       | Status          | Notes                                                                            |
+| -------------------------------- | --------------- | -------------------------------------------------------------------------------- |
+| Explain Selected Code            | Done MVP        | Structured explanation is displayed in the J-Aide Tool Window                    |
+| Explain modes                    | Done MVP        | Supports `FAST`, `SMART`, and `DEEP`                                             |
+| Explain input validation         | Done MVP        | Rejects runtime error text and redirects the user to the correct action          |
+| Improve Selected Code            | Done MVP        | Backend flow, IntelliJ action, structured preview, and validation                |
+| Copy improved code               | Done MVP        | Copies the suggestion without modifying the source file                          |
+| Diff View                        | Done MVP        | Custom J-Aide dialog with the IntelliJ side-by-side Diff Viewer                  |
+| Apply Improvement                | Done MVP        | Available from the Tool Window and Diff dialog with safety checks                |
+| Undo applied improvement         | Done MVP        | Applied editor changes can be reverted through IntelliJ Undo                     |
+| Improve response validation      | Done MVP        | Rejects blank, no-op, markdown-fenced, and incomplete responses                  |
+| Explain Runtime Error            | Done MVP        | Supports stack traces, compiler failures, build output, and runtime logs         |
+| Runtime error editor input       | Done MVP        | Reads selected error text from the active editor                                 |
+| Runtime error clipboard fallback | Done MVP        | Available through `Tools -> J-Aide: Explain Runtime Error`                       |
+| Runtime error console popup      | Done MVP        | Reads selected build output and runtime logs from the console                    |
+| Runtime error input validation   | Done MVP        | Rejects regular source code and accepts supported diagnostic formats             |
+| Generate Tests                   | Done MVP        | Sends selected source context to `POST /ai/tests`                                |
+| Generate Tests preview           | Done MVP        | Displays summary, framework, code, scenarios, risk, and confidence               |
+| Copy generated test code         | Done MVP        | Copies the generated test class from the Tool Window preview                     |
+| Automatic test file creation     | Post-MVP        | The MVP does not create or modify project test files                             |
+| Check AI Setup from Tools        | Done MVP        | Runs the full setup check and displays a notification                            |
+| Check AI Setup from Tool Window  | Done MVP        | Displays the complete health result inside the J-Aide panel                      |
+| Quick backend health             | Done MVP        | `/backend-info` checks backend, provider reachability, and model presence        |
+| Full AI health check             | Done MVP        | `/ai/health` includes a lightweight trial generation request                     |
+| AI setup recovery check          | Done MVP        | Restored Ollama or model availability is detected without restarting the backend |
+| Guided AI setup remediation      | Post-MVP        | Automatic startup, model download, and environment repair are not included       |
+| Structured backend responses     | Done MVP        | Explain, Improve, Runtime Error, and Generate Tests return structured data       |
+| Request metadata                 | Done MVP        | Includes file, project, module, IDE, plugin, trace, and timing information       |
+| Plugin notifications             | Done MVP        | Information, warning, and error notifications expire automatically               |
+| Installable plugin ZIP           | Done MVP        | Built with `buildPlugin` and verified outside the Gradle Sandbox                 |
+| Diff Viewer flicker              | Known Issue     | The Tool Window is hidden before opening the Diff Viewer                         |
+| Explain mode persistence         | Post-MVP        | The selected mode should persist between IDE sessions                            |
+| Tool Window startup state        | Post-MVP        | The last visible J-Aide view should be restored after IDE restart                |
+| RAG project context              | Future Research | Project-wide retrieval and context indexing                                      |
+| Mentor View                      | Future Research | Architectural and educational project analysis                                   |
+| Cloud AI providers               | Future Research | Alternative remote providers and managed runtime options                         |
 
-## Implemented and Planned Features
+## Known Limitations and Post-MVP Work
 
-### Improve Code
+The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 
-Improve Code is implemented as an MVP feature.
+### Known MVP Limitations
 
-The current implementation sends selected code to the backend, asks the AI model to suggest an improved version, and displays the result in the J-Aide Tool Window.
+- Generate Tests displays and copies generated test code but does not create test files automatically.
+- Generated test quality depends on the amount and completeness of the selected source context.
+- AI setup checks report problems but do not automatically start Ollama, download models, or repair environment settings.
+- The selected Explain mode is not yet persisted between IntelliJ IDEA sessions.
+- The J-Aide Tool Window does not yet restore its last visible preview after an IDE restart.
+- Opening the Diff Viewer may cause a short visual flicker while the Tool Window is hidden.
+- Automated IntelliJ plugin tests are not enabled; plugin behavior is verified through manual regression testing.
+- AI-generated improvements and tests must be reviewed by the user before use.
 
-Current behavior:
+### Post-MVP Backlog
 
-- reads selected code from the active editor;
-- sends selected code and editor context to the backend;
-- calls the backend endpoint `POST /ai/improve`;
-- asks the AI model to suggest an improved version of the selected code;
-- returns a structured improvement result;
-- displays the improvement in the J-Aide Tool Window;
-- shows Original Code and Improved Code in scrollable editor-like blocks;
-- allows copying the improved code to the clipboard without applying changes;
-- allows the user to open the IntelliJ side-by-side Diff Viewer manually;
-- allows the user to apply the latest improvement explicitly.
+- Guided Ollama installation, model download, and environment remediation.
+- Loading state, Retry action, status colors, and clearer AI health diagnostics.
+- Explain mode persistence between IDE sessions.
+- Tool Window startup restoration and last-view persistence.
+- Automatic test file creation with explicit user confirmation.
+- Stronger generated test validation and formatting checks.
+- Semantic validation of Improve Code responses.
+- Additional Runtime Error input formats and console integrations.
+- Cleaner Tool Window mode and visibility state management.
+- Automated plugin testing strategy.
 
-Current status:
+### Future Research
 
-- Improve Code backend AI flow is implemented.
-- `POST /ai/improve` is available.
-- IntelliJ plugin action `J-Aide: Improve Selected Code` is registered.
-- Suggested improved code is displayed in the J-Aide Tool Window.
-- Tool Window preview is structured and uses dedicated UI panels.
-- Improve Preview supports copying the improved code to the clipboard through the `Copy Code` button.
-- Copy Code logic is handled by `JaideCopyImprovedCodeService`, keeping Tool Window orchestration lighter.
-- Copy Code shows a short-lived success notification after copying the improved code.
-- Long-code backend errors are displayed as user-friendly plugin errors.
-- Applying changes is implemented as an MVP through `JaideApplyImprovementService`.
-- Apply is available from the J-Aide Tool Window and from the J-Aide Diff Dialog.
-- Tool Window action handlers for `Show Diff`, `Apply`, and `Back to Code` are extracted into `JaideToolWindowActionsService`.
-- `JaideToolWindowFactory` focuses on Tool Window UI creation, panel switching, and button wiring.
-- Apply uses safety checks before modifying the document.
-- Undo is supported through IntelliJ `WriteCommandAction`.
-- Plugin-side improvement validation prevents saving unsafe or meaningless improvements.
-- No-op improvements are rejected when improved code equals original code after normalization.
-- Blank improved code is rejected.
-- Markdown-fenced improved code is rejected.
-- Improvements without change descriptions are rejected.
-- Improve prompt rules were strengthened to require clean source code, real change descriptions, Russian user-facing response fields, and to reduce invented change descriptions.
-
-Important safety rules:
-
-- J-Aide does not change user files automatically.
-- The user must explicitly click Apply before any file is modified.
-- Before applying, the plugin checks that the original selected code still matches the current document text.
-- If the document was changed after the AI response, Apply is stopped with a warning.
-
-Possible improvement types:
-
-- simplify code;
-- improve readability;
-- suggest better naming;
-- reduce duplication;
-- suggest safer implementation;
-- point out possible code smells.
-
-Future polish:
-
-- improve semantic validation of AI suggestions;
-- add diff-aware validation for `changes` to detect descriptions that are not present in `improvedCode`;
-- detect suspicious improvements;
-- add richer highlighting for changed lines;
-- improve confidence and risk visual indicators.
-
-### Diff View
-
-Diff View is implemented as an MVP feature for Improve Code.
-
-The current implementation shows the original selected code and the AI-improved code in two ways:
-
-- a safe preview inside the J-Aide Tool Window;
-- a built-in IntelliJ side-by-side Diff Viewer.
-
-Current status:
-
-- Original Code is displayed in the J-Aide Tool Window.
-- Improved Code is displayed in the J-Aide Tool Window.
-- Code blocks support vertical and horizontal scrolling.
-- Changes are displayed as a structured list.
-- IntelliJ Diff Viewer opens with `Original` and `Improved` contents.
-- The Tool Window is hidden before opening the Diff Viewer to prevent UI overlap.
-- No files are changed automatically.
-- Apply is available as an explicit user action from the J-Aide Tool Window.
-- Apply uses `JaideApplyImprovementService`.
-- Apply checks that the original selected code still matches the current document before modifying it.
-- Undo is supported through IntelliJ `WriteCommandAction`.
-
-Known issue:
-
-- Opening the Diff Viewer from the Tool Window may cause a visual flicker.
-- The Tool Window hide step is required because otherwise the Tool Window overlaps the Diff Viewer.
-- Do not remove Tool Window hiding as a quick fix.
-- Future fix should introduce a coordinated Diff opening flow or a custom J-Aide controlled diff screen.
-
-Future polish:
-
-- add a clearer Apply control inside a custom Diff screen;
-- improve visual highlighting for changed lines;
-- improve the Diff opening UX without breaking Tool Window behavior.
-
-### Explain Runtime Error
-
-Explain Runtime Error is implemented as an MVP feature.
-
-Current behavior:
-
-- accepts selected error text from the active editor;
-- accepts selected build output or runtime logs from the console popup menu;
-- supports copied stack traces or logs through clipboard fallback;
-- is available from the editor popup menu;
-- is available from the console popup menu;
-- is also available through `Tools -> J-Aide: Explain Runtime Error`;
-- validates input before sending it to the backend;
-- rejects regular source code with a warning and suggests using `J-Aide: Explain Selected Code`;
-- calls the backend endpoint `POST /ai/explain-error`;
-- displays structured runtime error explanation in the J-Aide Tool Window;
-- automatically hides the J-Aide Tool Window when the user switches editor tabs after viewing a runtime error explanation;
-- accepts longer stack traces and logs than regular source code explain requests;
-- uses plugin-side multi-language error markers before sending the request to the backend;
-
-Current status:
-
-- Backend endpoint is implemented and tested through Postman.
-- IntelliJ plugin action is implemented.
-- Clipboard fallback is implemented.
-- Runtime error preview uses the same visual style as existing Explain/Improve previews.
-- `Show Diff` and `Apply` are hidden for runtime error explanations.
-- `Back to Code` is available.
-- Runtime error preview is automatically hidden on editor tab switch; regular Explain and Improve previews stay open.
-- Console popup integration is implemented.
-- Dedicated backend error text limit is implemented.
-- Runtime error input validation supports multiple error families: JVM/compiler, JavaScript/Node.js, SQL, XML/config, and common system logs.
-- Runtime error input validation is implemented;
-- Error explanation prompt is strengthened to preserve exact file names, class names, methods, ports, dependency names, symbols, error codes, and likely typo hints from logs.
-
-Smoke-test checklist:
-
-- selected Java compiler error from editor -> `J-Aide: Explain Runtime Error`;
-- selected stack trace or build output from console popup -> `J-Aide: Explain Runtime Error`;
-- copied stack trace or log -> `Tools -> J-Aide: Explain Runtime Error`;
-- regular Java source code -> should be rejected with a warning;
-- long stack trace over regular source code limit -> should be accepted up to `J_AIDE_ERROR_MAX_LENGTH`;
-- SQL error -> should be accepted;
-- XML/config error -> should be accepted;
-- JavaScript/Node.js error -> should be accepted;
-- Docker port binding error -> should be accepted;
-- Maven dependency resolution error -> should be accepted;
-- Maven non-parseable POM error -> should be accepted;
-- Node.js module resolution error -> should be accepted;
-- regular Java source code -> should be rejected with a warning.
-
-Known limitation:
-
-- Terminal / Run Console popup integration is available for console-like editor popups covered by IntelliJ `ConsoleEditorPopupMenu`.
-- If a specific terminal UI does not expose this popup group, the fallback flow is: copy stack trace, then run `Tools -> J-Aide: Explain Runtime Error`.
-
-Future polish:
-
-- verify more IntelliJ terminal and run console variants and add extra popup groups if needed;
-- test more error types: Spring startup errors, Maven errors, Docker errors, datasource errors, port conflicts;
-- continue expanding validation markers based on real failed smoke-test cases;
-
-### Plugin Notifications
-
-Plugin notifications are implemented through `JaideNotificationService`.
-
-Current behavior:
-
-- Info notifications are displayed as short-lived balloon notifications and expire after approximately 3 seconds;
-- Warning notifications expire after approximately 8 seconds;
-- Error notifications expire after approximately 10 seconds;
-- `Copy Code` uses a short-lived success notification after copying improved code to the clipboard;
-- Warning and error notifications remain visible longer than success notifications, but no longer stay on screen long enough to block Tool Window action buttons for an extended time.
-
-This keeps user feedback visible while reducing notification overlap with Tool Window actions such as `Show Diff`, `Apply`, `Copy Code`, and `Back to Code`.
+- RAG-based project context and project-wide indexing.
+- Mentor View for architectural and educational analysis.
+- Cloud AI providers and managed model runtimes.
+- Streaming AI responses.
+- Project history, telemetry, and advanced observability.
+- Deeper IntelliJ project and build-system integration.
 
 ## IntelliJ Plugin Testing Notes
 
@@ -852,6 +769,87 @@ Possible future directions:
 - extract pure Java validation logic into a plain Java module and test it with regular JUnit;
 - configure a separate clean unit test source set/task that does not use IntelliJ Platform runtime;
 - use proper IntelliJ Platform tests only for plugin behavior that depends on IDE APIs.
+
+## Troubleshooting
+
+### Maven Dependency Download Failure
+
+If Maven reports that a dependency download was interrupted and the failure was cached locally, force Maven to download that dependency again.
+
+```powershell
+cd .\j-aide
+
+.\mvnw.cmd -U dependency:get "-Dartifact=groupId:artifactId:version"
+```
+
+Replace `groupId:artifactId:version` with the dependency coordinates shown in the Maven error.
+
+After the download succeeds, reload all Maven projects in IntelliJ IDEA.
+
+### Maven Cannot Delete the Backend JAR
+
+If `mvnw clean verify` cannot delete the backend JAR because it is being used by another process, stop the running backend before rebuilding.
+
+- Find the PowerShell window where the backend is running.
+- Stop the backend with `Ctrl + C`.
+- Keep Ollama running.
+- Run the Maven build again.
+
+Windows cannot delete or replace the executable JAR while its Java process is still running.
+
+### Ollama Uses the Wrong Model Directory
+
+Use only one Ollama server process on port `11434`.
+
+If Ollama tries to load models from an unexpected user-profile directory, stop the Ollama desktop application and any existing `ollama serve` process before starting it again with the correct model path.
+
+```powershell
+$env:OLLAMA_MODELS = "C:\ollama-models"
+
+ollama serve
+```
+
+In another PowerShell window, verify the available models:
+
+```powershell
+ollama list
+```
+
+The expected model is:
+
+```text
+qwen2.5-coder:7b
+```
+
+Do not run the Ollama desktop server and a separate manual `ollama serve` process at the same time. Both processes use port `11434`, and the desktop application may start Ollama with a different model directory.
+
+### AI Health Reports Provider Failed
+
+If `Check AI Setup` reports that the provider is `FAILED` and the model is `UNKNOWN`, verify that Ollama is running and listening on:
+
+```text
+http://127.0.0.1:11434
+```
+
+After Ollama is restored, run `Check AI Setup` again. The J-Aide backend does not need to be restarted.
+
+### AI Health Reports Model Failed
+
+If the provider is `READY` but the model is `FAILED`, verify that the configured model is installed in the active Ollama model directory.
+
+Run:
+
+```powershell
+ollama list
+```
+
+If `qwen2.5-coder:7b` is missing, download it:
+
+```powershell
+ollama pull qwen2.5-coder:7b
+```
+
+After the model download completes, run `Check AI Setup` again. The backend restart is not required.
 
 ## Environment Configuration
 
