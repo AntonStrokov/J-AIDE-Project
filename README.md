@@ -52,33 +52,100 @@ These items remain in the Post-MVP or Future Research backlog.
 
 ## Running the Application
 
-Make sure Ollama is running locally and the required model is available.
+### Requirements
 
-Check available Ollama models:
+- Java 21
+- Ollama
+- The `qwen2.5-coder:7b` model
+- Windows PowerShell for the commands below
 
-```bash
+Verify the installed Java version:
+
+```powershell
+java -version
+```
+
+Verify that Ollama is available:
+
+```powershell
+ollama --version
+```
+
+Check the installed models:
+
+```powershell
 ollama list
 ```
 
-Current model:
+The expected model is:
 
 ```text
 qwen2.5-coder:7b
 ```
 
-The backend configures the Ollama chat model with a low temperature (`0.1`) to reduce response variance and make repeated developer-assistant requests more stable.
+If the model is missing, download it:
 
-Run the backend:
-
-```bash
-mvn spring-boot:run
+```powershell
+ollama pull qwen2.5-coder:7b
 ```
 
-By default, the application starts on:
+### Start Ollama
+
+Run one Ollama server instance only.
+
+Use either the Ollama desktop application or start the server manually:
+
+```powershell
+ollama serve
+```
+
+Do not start `ollama serve` if another Ollama process is already listening on port `11434`.
+
+### Build the Backend
+
+From the repository root:
+
+```powershell
+cd .\j-aide
+
+.\mvnw.cmd clean verify
+```
+
+The command builds all backend modules, runs the tests, and creates the executable JAR:
+
+```text
+j-aide-app\target\j-aide-app-0.1.0.jar
+```
+
+### Run the Backend
+
+```powershell
+cd .\j-aide
+
+java -jar .\j-aide-app\target\j-aide-app-0.1.0.jar
+```
+
+By default, the backend starts at:
 
 ```text
 http://localhost:8080
 ```
+
+Verify that it is running:
+
+```powershell
+Invoke-RestMethod http://localhost:8080/backend-info |
+    ConvertTo-Json -Depth 10
+```
+
+The response should contain:
+
+```text
+backendVersion: 0.1.0
+status: UP
+```
+
+The backend uses Ollama with `qwen2.5-coder:7b` and a low temperature of `0.1` to reduce response variance.
 
 ## API Endpoints
 
