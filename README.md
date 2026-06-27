@@ -185,15 +185,16 @@ Example response:
   }
 }
 ```
-Current health behavior:
+Current `/backend-info` health behavior:
 
+- Performs a quick health check without sending a trial generation request to the model.
 - `backendStatus` reports whether the J-Aide backend is ready.
 - `providerStatus` reports whether the configured AI provider is reachable.
-- `modelStatus` reports whether the configured model is available through the provider.
+- `modelStatus` reports whether the configured model is present in the provider.
+- `providerVersion` reports the detected Ollama version when available.
 - If Ollama is unavailable, `providerStatus` becomes `FAILED` and `modelStatus` becomes `UNKNOWN`.
 - If Ollama is reachable but the configured model is missing, `providerStatus` remains `READY` and `modelStatus` becomes `FAILED`.
-- The current health check verifies Ollama API availability, provider version, and configured model presence.
-- Model trial loading and guided remediation are planned as part of LLM Provider Health & Onboarding.
+- Guided remediation and automatic setup recovery are not included in the MVP.
 
 ### GET /ai/health
 
@@ -217,6 +218,16 @@ Example response:
   "message": "AI provider and configured model are ready."
 }
 ```
+
+Current `/ai/health` behavior:
+
+- Performs the provider reachability and configured model checks.
+- Stops before trial generation if the provider or model prerequisite check fails.
+- Sends a lightweight trial generation request when the prerequisites are ready.
+- Reports `READY` only after the trial generation succeeds.
+- May take longer than `/backend-info` because Ollama may need to load the model.
+- Reports the full check duration in `responseTimeMs`.
+- Does not automatically start Ollama, download a missing model, or change local environment settings.
 
 ### POST /ai/explain
 
