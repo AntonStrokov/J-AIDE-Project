@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.13</version>
+		<version>3.5.15</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.antonstrokov</groupId>
 	<artifactId>j-aide</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 	<name/>
 	<description/>
