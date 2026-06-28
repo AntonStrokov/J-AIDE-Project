@@ -8,6 +8,6 @@ public record JaideRuntimeErrorInput(
 		String projectName,
 		String ideVersion,
 		String moduleName,
-		String source
+		JaideRuntimeErrorInputSource source
 ) {
 }

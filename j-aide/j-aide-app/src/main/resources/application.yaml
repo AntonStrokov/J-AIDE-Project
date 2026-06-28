@@ -14,7 +14,7 @@ j-aide:
       temperature: ${OLLAMA_TEMPERATURE:0.1}
       timeout-seconds: ${OLLAMA_TIMEOUT_SECONDS:60}
     limits:
-      code-max-length: ${J_AIDE_CODE_MAX_LENGTH:2000}
+      code-max-length: ${J_AIDE_CODE_MAX_LENGTH:5000}
       error-max-length: ${J_AIDE_ERROR_MAX_LENGTH:15000}
   app:
     name: ${J_AIDE_APP_NAME:J-Aide}

@@ -11,7 +11,6 @@ import com.antonstrokov.jaide.plugin.factory.explain.JaideExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
-import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputValidationService;
 import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -29,11 +28,9 @@ public class ExplainSelectedCodeAction extends AnAction {
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideExplainRequestFactory requestFactory = new JaideExplainRequestFactory();
-	private final JaideRuntimeErrorInputValidationService runtimeErrorInputValidationService =
-			new JaideRuntimeErrorInputValidationService();
 
 	@Override
-	public void actionPerformed(AnActionEvent e) {
+	public void actionPerformed(@NotNull AnActionEvent e) {
 		log.info("Explain selected code action started");
 
 		JaideEditorContext context = contextExtractor.extract(e);
@@ -41,17 +38,6 @@ public class ExplainSelectedCodeAction extends AnAction {
 		if (context == null) {
 			log.warn("Explain action stopped: no selected code");
 			notificationService.showWarning(e.getProject(), JaideNotificationMessages.SELECT_CODE_FIRST);
-			return;
-		}
-
-		if (runtimeErrorInputValidationService.looksLikeErrorText(context.selectedCode())) {
-			log.warn("Explain action stopped: selected text looks like runtime error text, selectedCodeLength="
-					+ context.selectedCode().length());
-
-			notificationService.showWarning(
-					e.getProject(),
-					JaideNotificationMessages.USE_EXPLAIN_RUNTIME_ERROR_FOR_ERROR_TEXT
-			);
 			return;
 		}
 

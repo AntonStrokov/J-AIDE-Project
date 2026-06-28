@@ -8,6 +8,7 @@ import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.error.JaideErrorExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInput;
+import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInputSource;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputExtractor;
 import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputValidationService;
@@ -46,7 +47,11 @@ public class ExplainRuntimeErrorAction extends AnAction {
 			return;
 		}
 
-		if (!inputValidationService.looksLikeErrorText(errorInput.errorText())) {
+		boolean requiresTextValidation =
+				errorInput.source() != JaideRuntimeErrorInputSource.CONSOLE_SELECTION;
+
+		if (requiresTextValidation
+				&& !inputValidationService.looksLikeErrorText(errorInput.errorText())) {
 			log.warn("Explain runtime error action stopped: input does not look like error text, source="
 					+ errorInput.source()
 					+ ", textLength=" + errorInput.errorText().length());

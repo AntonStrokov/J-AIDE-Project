@@ -2,90 +2,74 @@ package com.antonstrokov.jaide.plugin.service;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class JaideRuntimeErrorInputValidationService {
 
-	private static final String[] JVM_ERROR_MARKERS = {
-			"\\bjava:\\s+",
-			"\\bat\\s+[a-zA-Z0-9_$]+\\.",
-			"caused by:",
-			"exception\\b",
-			"throwable\\b",
-			"cannot find symbol",
-			"cannot resolve symbol",
-			"class, interface, enum, or record expected",
-			"beancreationexception",
-			"unsatisfieddependencyexception",
-			"failed to start",
-			"incompatible types",
-			"preview feature",
-			"disabled by default",
-			"enable-preview",
-			"source option",
-			"target option",
-			"release version",
-			"package does not exist",
-			"method does not override",
-			"illegal character",
-			"illegal unicode escape",
-			"symbol:",
-			"location:"
+	private static final String[] STRUCTURED_ERROR_MARKERS = {
+			// JVM stack traces
+			"^\\s*exception in thread\\s+\"[^\"]+\"",
+			"^\\s*(?:caused by|suppressed):\\s+[\\w.$]+(?:exception|error)(?::.*)?$",
+			"^\\s*[\\w.$]+(?:exception|error):(?:\\s+.*)?$",
+			"^\\s*at\\s+[\\w.$<>]+\\([^\\r\\n()]+:\\d+\\)\\s*$",
+
+			// Java compiler errors
+			"^.*\\.java:\\d+:\\s+(?:error|warning):",
+			"^\\s*java:\\s+(?:cannot find symbol|cannot resolve symbol|incompatible types"
+					+ "|package\\s+.+\\s+does not exist|method does not override"
+					+ "|class, interface, enum, or record expected|illegal character"
+					+ "|illegal unicode escape|preview feature|source option"
+					+ "|target option|release version)",
+			"^\\s*cannot resolve symbol\\s+['\"].+['\"]\\s*$",
+
+			// Maven errors
+			"^\\s*(?:\\[error]\\s+)?failed to execute goal\\s+.+$",
+			"^\\s*(?:\\[error]\\s+)?non-parseable pom\\s+.+$",
+			"^\\s*(?:\\[error]\\s+)?the build could not read\\s+.+$",
+			"^\\s*(?:\\[error]\\s+)?could not resolve dependencies for project\\s+.+$",
+			"^\\s*(?:\\[error]\\s+)?could not find artifact\\s+.+\\s+in\\s+.+$",
+
+			// JavaScript and Node.js errors
+			"^\\s*(?:uncaught\\s+)?(?:typeerror|referenceerror|syntaxerror):\\s+.+$",
+			"^\\s*(?:error:\\s+)?cannot find module\\s+['\"].+['\"](?:\\s+.*)?$",
+			"^\\s*code:\\s*['\"]module_not_found['\"]\\s*,?\\s*$",
+
+			// SQL errors
+			"^\\s*(?:java\\.sql\\.)?sqlexception:(?:\\s+.*)?$",
+			"^\\s*sqlstate\\s*[:=]\\s*.+$",
+
+			// XML and configuration errors
+			"^\\s*xml\\s+parse\\s+error(?:\\s*[:.-].*)?$",
+			"^.*the element type\\s+\"[^\"]+\"\\s+must be terminated.*$",
+			"^.*end tag name.+must match start tag name.*$",
+			"^.*markup\\s+not\\s+allowed.*$",
+
+			// Application and system logs
+			"^\\s*\\d{4}-\\d{2}-\\d{2}[ T].*\\b(?:error|fatal)\\b.+$",
+			"^\\s*error response from daemon:\\s+.+$",
+			"^\\s*bind for\\s+.+\\s+failed:\\s+port is already allocated\\s*$",
+			"^\\s*ports are not available:\\s+.+$"
 	};
 
-	private static final String[] JAVASCRIPT_ERROR_MARKERS = {
-			"\\bat\\s+Async\\s+",
-			"\\bnew\\s+Promise\\s+\\(<anonymous>\\)",
-			"uncaught\\s+typeerror:",
-			"\\bjavascript\\s+error"
-	};
+	private static final Pattern STRUCTURED_ERROR_PATTERN = Pattern.compile(
+			String.join("|", STRUCTURED_ERROR_MARKERS),
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+	);
 
-	private static final String[] SQL_ERROR_MARKERS = {
-			"sqlexception",
-			"syntax error in sql",
-			"foreign key constraint",
-			"table not found",
-			"column not found",
-			"unique constraint violation"
-	};
+	private static final Pattern CANNOT_FIND_SYMBOL_PATTERN = Pattern.compile(
+			"^.*cannot find symbol.*$",
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+	);
 
-	private static final String[] XML_CONFIG_ERROR_MARKERS = {
-			"xml\\s+parse\\s+error",
-			"markup\\s+not\\s+allowed",
-			"the\\s+element\\s+type\\s+\"[^\"]+\"\\s+must\\s+be\\s+terminated",
-			"unmarshalexception",
-			"non-parseable pom",
-			"end tag name",
-			"must match start tag name",
-			"the build could not read"
-	};
+	private static final Pattern SYMBOL_DETAILS_PATTERN = Pattern.compile(
+			"^\\s*symbol:\\s+.+$",
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+	);
 
-	private static final String[] SYSTEM_ERROR_MARKERS = {
-			"stack trace",
-			"trace:",
-			"connection refused",
-			"port already in use",
-			"error response from daemon",
-			"ports are not available"
-	};
-
-	private static final Pattern ERROR_PATTERN = buildErrorPattern();
-
-	private static Pattern buildErrorPattern() {
-		String markers = Arrays.stream(new String[][]{
-						JVM_ERROR_MARKERS,
-						JAVASCRIPT_ERROR_MARKERS,
-						SQL_ERROR_MARKERS,
-						XML_CONFIG_ERROR_MARKERS,
-						SYSTEM_ERROR_MARKERS
-				})
-				.flatMap(Arrays::stream)
-				.collect(Collectors.joining("|"));
-
-		return Pattern.compile(markers, Pattern.CASE_INSENSITIVE);
-	}
+	private static final Pattern LOCATION_DETAILS_PATTERN = Pattern.compile(
+			"^\\s*location:\\s+.+$",
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+	);
 
 	public boolean looksLikeErrorText(String text) {
 		if (text == null || text.isBlank()) {
@@ -93,10 +77,21 @@ public class JaideRuntimeErrorInputValidationService {
 		}
 
 		// Scan only the first 32 KB to avoid expensive validation on very large logs.
-		String textToCheck = text.length() > JaideConstants.MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH
-				? text.substring(0, JaideConstants.MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH)
-				: text;
+		String textToCheck =
+				text.length() > JaideConstants.MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH
+						? text.substring(
+						0,
+						JaideConstants.MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH
+				)
+						: text;
 
-		return ERROR_PATTERN.matcher(textToCheck).find();
+		return STRUCTURED_ERROR_PATTERN.matcher(textToCheck).find()
+				|| looksLikeCannotFindSymbolError(textToCheck);
+	}
+
+	private boolean looksLikeCannotFindSymbolError(String text) {
+		return CANNOT_FIND_SYMBOL_PATTERN.matcher(text).find()
+				&& SYMBOL_DETAILS_PATTERN.matcher(text).find()
+				&& LOCATION_DETAILS_PATTERN.matcher(text).find();
 	}
 }

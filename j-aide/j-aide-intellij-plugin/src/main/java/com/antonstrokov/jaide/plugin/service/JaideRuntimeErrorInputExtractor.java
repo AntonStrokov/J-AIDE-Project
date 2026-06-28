@@ -3,7 +3,9 @@ package com.antonstrokov.jaide.plugin.service;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInput;
+import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInputSource;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -24,6 +26,10 @@ public class JaideRuntimeErrorInputExtractor {
 					+ ", textLength=" + context.selectedCode().length()
 					+ ", lineStart=" + context.lineStart()
 					+ ", lineEnd=" + context.lineEnd());
+			JaideRuntimeErrorInputSource source =
+					event.getData(CommonDataKeys.PSI_FILE) == null
+							? JaideRuntimeErrorInputSource.CONSOLE_SELECTION
+							: JaideRuntimeErrorInputSource.EDITOR_SELECTION;
 
 			return new JaideRuntimeErrorInput(
 					context.selectedCode(),
@@ -33,7 +39,7 @@ public class JaideRuntimeErrorInputExtractor {
 					context.projectName(),
 					context.ideVersion(),
 					context.moduleName(),
-					"editor-selection"
+					source
 			);
 		}
 
@@ -56,7 +62,7 @@ public class JaideRuntimeErrorInputExtractor {
 				project == null ? null : project.getName(),
 				ApplicationInfo.getInstance().getFullVersion(),
 				null,
-				"clipboard"
+				JaideRuntimeErrorInputSource.CLIPBOARD
 		);
 	}
 
