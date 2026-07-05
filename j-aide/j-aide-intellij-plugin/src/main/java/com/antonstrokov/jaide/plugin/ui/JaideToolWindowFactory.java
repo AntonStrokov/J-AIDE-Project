@@ -136,8 +136,12 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		panel.add(headerPanel, BorderLayout.NORTH);
 
-		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		JPanel actionsPanel = new JPanel();
+		actionsPanel.setLayout(new BoxLayout(actionsPanel, BoxLayout.Y_AXIS));
 		actionsPanel.setVisible(false);
+
+		JPanel primaryActionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		JPanel navigationActionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 
 		JButton showDiffButton =
 				new JButton(JaideUiLabels.SHOW_DIFF_BUTTON);
@@ -177,10 +181,16 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				backToCodeButton
 		);
 
-		actionsPanel.add(showDiffButton);
-		actionsPanel.add(applyButton);
-		actionsPanel.add(copyCodeButton);
-		actionsPanel.add(backToCodeButton);
+		primaryActionsPanel.add(showDiffButton);
+		primaryActionsPanel.add(applyButton);
+		primaryActionsPanel.add(copyCodeButton);
+
+		navigationActionsPanel.add(backToCodeButton);
+
+		actionsPanel.add(primaryActionsPanel);
+		actionsPanel.add(Box.createVerticalStrut(6));
+		actionsPanel.add(navigationActionsPanel);
+
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 
 		JPanel previewContainer = new JPanel(new BorderLayout());
