@@ -3,9 +3,8 @@ package com.antonstrokov.jaide.plugin.service;
 import com.antonstrokov.jaide.plugin.client.JaideBackendClient;
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
-import com.antonstrokov.jaide.plugin.dto.health.JaideHealthStatus;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
-import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -25,20 +24,24 @@ public class JaideAiSetupCheckService {
 	private final JaideErrorMessageBuilder errorMessageBuilder =
 			new JaideErrorMessageBuilder();
 
-	private final JaideNotificationService notificationService =
-			new JaideNotificationService();
-
 	public void check(Project project) {
 		check(
 				project,
-				response -> showHealthResult(project, response)
+				response -> JaideToolWindowFactory.updateAiHealth(project, response),
+				errorMessage -> JaideToolWindowFactory.updateAiHealthError(
+						project,
+						errorMessage,
+						() -> check(project)
+				)
 		);
 	}
 
 	public void check(
 			Project project,
-			Consumer<JaideHealthResponse> resultConsumer
+			Consumer<JaideHealthResponse> resultConsumer,
+			Consumer<String> errorConsumer
 	) {
+		JaideToolWindowFactory.updateAiHealthLoading(project);
 		new Task.Backgroundable(
 				project,
 				JaideConstants.CHECK_AI_SETUP_TASK_TITLE,
@@ -69,39 +72,11 @@ public class JaideAiSetupCheckService {
 							exception
 					);
 
-					notificationService.showError(
-							project,
-							errorMessageBuilder.build(exception)
-					);
+					String errorMessage = errorMessageBuilder.build(exception);
+
+					errorConsumer.accept(errorMessage);
 				}
 			}
 		}.queue();
-	}
-
-	private void showHealthResult(
-			Project project,
-			JaideHealthResponse response
-	) {
-		if (hasStatus(response, JaideHealthStatus.FAILED)) {
-			notificationService.showError(project, response.message());
-			return;
-		}
-
-		if (hasStatus(response, JaideHealthStatus.DEGRADED)
-				|| hasStatus(response, JaideHealthStatus.UNKNOWN)) {
-			notificationService.showWarning(project, response.message());
-			return;
-		}
-
-		notificationService.showInfo(project, response.message());
-	}
-
-	private boolean hasStatus(
-			JaideHealthResponse response,
-			JaideHealthStatus status
-	) {
-		return response.backendStatus() == status
-				|| response.providerStatus() == status
-				|| response.modelStatus() == status;
 	}
 }

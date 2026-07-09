@@ -66,10 +66,55 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		repaint();
 	}
 
-	private void addTitle() {
-		JBLabel label = new JBLabel(
-				JaideUiLabels.AI_HEALTH_PREVIEW_TITLE.toUpperCase()
+	public void showLoading() {
+		contentPanel.removeAll();
+
+		addTitle(JaideUiLabels.AI_HEALTH_LOADING_TITLE);
+		addTextSection(
+				JaideUiLabels.STATUS_SECTION,
+				JaideUiLabels.AI_HEALTH_LOADING_MESSAGE
 		);
+		contentPanel.add(Box.createVerticalGlue());
+
+		revalidate();
+		repaint();
+	}
+
+	public void showError(
+			String message,
+			Runnable retryAction
+	) {
+		contentPanel.removeAll();
+
+		addTitle(JaideUiLabels.AI_HEALTH_ERROR_TITLE);
+		addTextSection(
+				JaideUiLabels.AI_HEALTH_ERROR_MESSAGE_SECTION,
+				message
+		);
+
+		if (retryAction != null) {
+			JButton retryButton = new JButton(JaideUiLabels.RETRY_BUTTON);
+			retryButton.setAlignmentX(LEFT_ALIGNMENT);
+			retryButton.addActionListener(event -> retryAction.run());
+
+			contentPanel.add(Box.createVerticalStrut(
+					JaidePreviewLayout.SECTION_VERTICAL_GAP
+			));
+			contentPanel.add(retryButton);
+		}
+
+		contentPanel.add(Box.createVerticalGlue());
+
+		revalidate();
+		repaint();
+	}
+
+	private void addTitle() {
+		addTitle(JaideUiLabels.AI_HEALTH_PREVIEW_TITLE);
+	}
+
+	private void addTitle(String title) {
+		JBLabel label = new JBLabel(title.toUpperCase());
 		label.setFont(label.getFont().deriveFont(
 				Font.BOLD,
 				label.getFont().getSize()

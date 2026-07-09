@@ -3,15 +3,15 @@ package com.antonstrokov.jaide.plugin.ui;
 import com.antonstrokov.jaide.plugin.config.JaideToolWindowMode;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
+import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
+import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
-import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
-import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
 import com.intellij.openapi.components.Service;
 
 import javax.swing.*;
@@ -42,6 +42,9 @@ public final class JaideToolWindowController {
 	private String latestOriginalCode;
 	private JaideTestGenerationResult latestTestGenerationResult;
 	private JaideHealthResponse latestHealthResponse;
+	private boolean aiHealthLoading;
+	private String latestHealthErrorMessage;
+	private Runnable latestHealthRetryAction;
 
 	private JaideToolWindowMode currentMode;
 	private JPanel actionsPanel;
@@ -249,9 +252,37 @@ public final class JaideToolWindowController {
 		previewContainer.repaint();
 	}
 
+	public void showAiHealthLoading() {
+		currentMode = JaideToolWindowMode.AI_HEALTH;
+		aiHealthLoading = true;
+		latestHealthResponse = null;
+		latestHealthErrorMessage = null;
+		latestHealthRetryAction = null;
+
+		renderAiHealth();
+		applyCurrentViewState();
+	}
+
 	public void showAiHealth(JaideHealthResponse healthResponse) {
 		currentMode = JaideToolWindowMode.AI_HEALTH;
+		aiHealthLoading = false;
 		latestHealthResponse = healthResponse;
+		latestHealthErrorMessage = null;
+		latestHealthRetryAction = null;
+
+		renderAiHealth();
+		applyCurrentViewState();
+	}
+
+	public void showAiHealthError(
+			String message,
+			Runnable retryAction
+	) {
+		currentMode = JaideToolWindowMode.AI_HEALTH;
+		aiHealthLoading = false;
+		latestHealthResponse = null;
+		latestHealthErrorMessage = message;
+		latestHealthRetryAction = retryAction;
 
 		renderAiHealth();
 		applyCurrentViewState();
@@ -259,13 +290,25 @@ public final class JaideToolWindowController {
 
 	private void renderAiHealth() {
 		if (previewContainer == null
-				|| aiHealthPreviewPanel == null
-				|| latestHealthResponse == null) {
+				|| aiHealthPreviewPanel == null) {
 			return;
 		}
 
 		previewContainer.removeAll();
-		aiHealthPreviewPanel.updateHealth(latestHealthResponse);
+
+		if (aiHealthLoading) {
+			aiHealthPreviewPanel.showLoading();
+		} else if (latestHealthErrorMessage != null) {
+			aiHealthPreviewPanel.showError(
+					latestHealthErrorMessage,
+					latestHealthRetryAction
+			);
+		} else if (latestHealthResponse != null) {
+			aiHealthPreviewPanel.updateHealth(latestHealthResponse);
+		} else {
+			return;
+		}
+
 		previewContainer.add(aiHealthPreviewPanel, BorderLayout.CENTER);
 		previewContainer.revalidate();
 		previewContainer.repaint();

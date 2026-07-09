@@ -10,6 +10,7 @@ public final class JaideUiLabels {
 	public static final String COPY_IMPROVED_CODE_BUTTON = "Copy Code";
 	public static final String CLOSE_BUTTON = "Close";
 	public static final String CHECK_AI_SETUP_BUTTON = "Check AI Setup";
+	public static final String RETRY_BUTTON = "Retry";
 
 	// Preview section labels
 	public static final String SUMMARY_SECTION = "Summary";
@@ -49,6 +50,14 @@ public final class JaideUiLabels {
 	public static final String PROVIDER_VERSION_SECTION = "Provider Version";
 	public static final String RESPONSE_TIME_SECTION = "Response Time";
 	public static final String HEALTH_MESSAGE_SECTION = "Message";
+	public static final String AI_HEALTH_LOADING_TITLE =
+			"Checking AI Setup";
+	public static final String AI_HEALTH_LOADING_MESSAGE =
+			"Checking backend, provider and configured model...";
+	public static final String AI_HEALTH_ERROR_TITLE =
+			"AI Setup Check Failed";
+	public static final String AI_HEALTH_ERROR_MESSAGE_SECTION =
+			"Error";
 
 	private JaideUiLabels() {
 	}

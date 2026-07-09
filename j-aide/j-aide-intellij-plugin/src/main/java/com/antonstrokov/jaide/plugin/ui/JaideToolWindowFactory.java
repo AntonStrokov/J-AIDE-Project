@@ -81,6 +81,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		);
 	}
 
+	public static void updateAiHealthLoading(Project project) {
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showAiHealthLoading()
+		);
+	}
+
 	public static void updateAiHealth(
 			Project project,
 			JaideHealthResponse healthResponse
@@ -88,6 +95,20 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		ApplicationManager.getApplication().invokeLater(() ->
 				project.getService(JaideToolWindowController.class)
 						.showAiHealth(healthResponse)
+		);
+	}
+
+	public static void updateAiHealthError(
+			Project project,
+			String message,
+			Runnable retryAction
+	) {
+		ApplicationManager.getApplication().invokeLater(() ->
+				project.getService(JaideToolWindowController.class)
+						.showAiHealthError(
+								message,
+								retryAction
+						)
 		);
 	}
 
@@ -117,10 +138,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				new JButton(JaideUiLabels.CHECK_AI_SETUP_BUTTON);
 
 		checkAiSetupButton.addActionListener(
-				event -> aiSetupCheckService.check(
-						project,
-						response -> updateAiHealth(project, response)
-				)
+				event -> aiSetupCheckService.check(project)
 		);
 
 		checkAiSetupButton.setMargin(JBUI.insets(6, 16));
