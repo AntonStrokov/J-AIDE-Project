@@ -36,17 +36,17 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		contentPanel.removeAll();
 
 		addTitle();
-		addTextSection(
+		addStatusSection(
 				JaideUiLabels.BACKEND_STATUS_SECTION,
-				formatStatus(response.backendStatus())
+				response.backendStatus()
 		);
-		addTextSection(
+		addStatusSection(
 				JaideUiLabels.PROVIDER_STATUS_SECTION,
-				formatStatus(response.providerStatus())
+				response.providerStatus()
 		);
-		addTextSection(
+		addStatusSection(
 				JaideUiLabels.MODEL_STATUS_SECTION,
-				formatStatus(response.modelStatus())
+				response.modelStatus()
 		);
 		addTextSection(
 				JaideUiLabels.PROVIDER_VERSION_SECTION,
@@ -151,6 +151,25 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		contentPanel.add(valueArea);
 	}
 
+	private void addStatusSection(
+			String title,
+			JaideHealthStatus status
+	) {
+		JBLabel titleLabel = createSectionTitleLabel(title);
+		JTextArea valueArea = createTextArea(formatStatus(status));
+		valueArea.setForeground(resolveStatusColor(status));
+
+		valueArea.setBorder(JBUI.Borders.emptyTop(
+				JaidePreviewLayout.SECTION_VALUE_TOP_PADDING
+		));
+
+		contentPanel.add(titleLabel);
+		contentPanel.add(Box.createVerticalStrut(
+				JaidePreviewLayout.SECTION_VERTICAL_GAP
+		));
+		contentPanel.add(valueArea);
+	}
+
 	private JBLabel createSectionTitleLabel(String title) {
 		JBLabel titleLabel = new JBLabel(title.toUpperCase());
 		titleLabel.setFont(titleLabel.getFont().deriveFont(
@@ -202,6 +221,19 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		}
 
 		return status.name();
+	}
+
+	private JBColor resolveStatusColor(JaideHealthStatus status) {
+		if (status == null) {
+			return JaideUiColors.HEALTH_STATUS_UNKNOWN_FOREGROUND;
+		}
+
+		return switch (status) {
+			case READY -> JaideUiColors.HEALTH_STATUS_READY_FOREGROUND;
+			case DEGRADED -> JaideUiColors.HEALTH_STATUS_DEGRADED_FOREGROUND;
+			case FAILED -> JaideUiColors.HEALTH_STATUS_FAILED_FOREGROUND;
+			case UNKNOWN -> JaideUiColors.HEALTH_STATUS_UNKNOWN_FOREGROUND;
+		};
 	}
 
 	private String formatResponseTime(Long responseTimeMs) {
