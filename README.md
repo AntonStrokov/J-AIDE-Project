@@ -29,7 +29,6 @@ The following improvements are not required for the MVP release:
 
 - guided remediation and automatic Ollama problem fixing;
 - onboarding wizard;
-- loading and retry UX for AI health checks;
 - colored health status indicators;
 - automatic test file creation;
 - cloud AI providers and managed model runtime;
@@ -559,13 +558,14 @@ Current plugin capabilities:
 - Generate Tests MVP does not create test files automatically and does not modify user code.
 - Provides `J-Aide: Check AI Setup` from the IntelliJ `Tools` menu.
 - Provides a permanent `Check AI Setup` button in the J-Aide Tool Window.
-- Displays the full AI health result directly in the Tool Window when the check is started there.
+- Opens the J-Aide Tool Window automatically when the check is started from the `Tools` menu.
+- Shows a loading state directly in the Tool Window while the AI setup check is running.
+- Displays the full AI health result directly in the Tool Window.
 - Shows backend, provider, and model statuses together with the Ollama version, response time, and diagnostic message.
+- Displays backend connection errors directly in the Tool Window with a `Retry` action.
 - Uses the backend `GET /ai/health` endpoint, including a lightweight trial generation request when the provider and configured model are available.
 - Reports unavailable Ollama and missing model states without requiring an IntelliJ or backend restart after the local AI setup is restored.
-- Opens the Tool Window automatically after receiving a response.
-- Shows friendly plugin notifications for info, warning, and error cases.
-- Plugin notifications auto-expire to avoid blocking Tool Window action buttons for too long.
+- Uses the Tool Window as the primary UX channel for AI setup checks instead of popup notifications.
 - Uses Jackson for safe backend request serialization and response parsing.
 
 ### Build and Install the IntelliJ Plugin
@@ -698,8 +698,8 @@ Module responsibilities:
 | Generate Tests preview           | Done MVP        | Displays summary, framework, code, scenarios, risk, and confidence               |
 | Copy generated test code         | Done MVP        | Copies the generated test class from the Tool Window preview                     |
 | Automatic test file creation     | Post-MVP        | The MVP does not create or modify project test files                             |
-| Check AI Setup from Tools        | Done MVP        | Runs the full setup check and displays a notification                            |
-| Check AI Setup from Tool Window  | Done MVP        | Displays the complete health result inside the J-Aide panel                      |
+| Check AI Setup from Tools        | Done MVP+       | Opens the J-Aide Tool Window and runs the full setup check in-panel              |
+| Check AI Setup from Tool Window  | Done MVP+       | Shows loading, result, error, and Retry states inside the J-Aide panel           |
 | Quick backend health             | Done MVP        | `/backend-info` checks backend, provider reachability, and model presence        |
 | Full AI health check             | Done MVP        | `/ai/health` includes a lightweight trial generation request                     |
 | AI setup recovery check          | Done MVP        | Restored Ollama or model availability is detected without restarting the backend |
@@ -733,7 +733,7 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 ### Post-MVP Backlog
 
 - Guided Ollama installation, model download, and environment remediation.
-- Loading state, Retry action, status colors, and clearer AI health diagnostics.
+- Colored health status indicators and clearer guided AI health diagnostics.
 - Explain mode persistence between IDE sessions.
 - Tool Window startup restoration and last-view persistence.
 - Automatic test file creation with explicit user confirmation.
