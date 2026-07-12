@@ -29,7 +29,6 @@ The following improvements are not required for the MVP release:
 
 - guided remediation and automatic Ollama problem fixing;
 - onboarding wizard;
-- colored health status indicators;
 - automatic test file creation;
 - cloud AI providers and managed model runtime;
 - streaming responses;
@@ -562,6 +561,7 @@ Current plugin capabilities:
 - Shows a loading state directly in the Tool Window while the AI setup check is running.
 - Displays the full AI health result directly in the Tool Window.
 - Shows backend, provider, and model statuses together with the Ollama version, response time, and diagnostic message.
+- Uses colored health status indicators: `READY` is green, `DEGRADED` uses a warning color, `FAILED` is red, and `UNKNOWN` is gray.
 - Displays backend connection errors directly in the Tool Window with a `Retry` action.
 - Uses the backend `GET /ai/health` endpoint, including a lightweight trial generation request when the provider and configured model are available.
 - Reports unavailable Ollama and missing model states without requiring an IntelliJ or backend restart after the local AI setup is restored.
@@ -703,6 +703,7 @@ Module responsibilities:
 | Quick backend health             | Done MVP        | `/backend-info` checks backend, provider reachability, and model presence        |
 | Full AI health check             | Done MVP        | `/ai/health` includes a lightweight trial generation request                     |
 | AI setup recovery check          | Done MVP        | Restored Ollama or model availability is detected without restarting the backend |
+| Colored health indicators        | Done MVP+       | READY is green, DEGRADED uses a warning color, FAILED is red, and UNKNOWN is gray |
 | Guided AI setup remediation      | Post-MVP        | Automatic startup, model download, and environment repair are not included       |
 | Structured backend responses     | Done MVP        | Explain, Improve, Runtime Error, and Generate Tests return structured data       |
 | Request metadata                 | Done MVP        | Includes file, project, module, IDE, plugin, trace, and timing information       |
@@ -733,7 +734,7 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 ### Post-MVP Backlog
 
 - Guided Ollama installation, model download, and environment remediation.
-- Colored health status indicators and clearer guided AI health diagnostics.
+- Clearer guided AI health diagnostics and remediation instructions.
 - Explain mode persistence between IDE sessions.
 - Tool Window startup restoration and last-view persistence.
 - Automatic test file creation with explicit user confirmation.
