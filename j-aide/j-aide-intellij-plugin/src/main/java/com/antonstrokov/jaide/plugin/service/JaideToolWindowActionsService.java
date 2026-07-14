@@ -37,8 +37,12 @@ public class JaideToolWindowActionsService {
 	}
 
 	public void applyLatestImprovement(Project project) {
-		applyImprovementService.applyLatestImprovement(project);
-		toolWindowService.hide(project);
+		boolean applied =
+				applyImprovementService.applyLatestImprovement(project);
+
+		if (applied) {
+			toolWindowService.hide(project);
+		}
 	}
 
 	public void backToCode(Project project) {

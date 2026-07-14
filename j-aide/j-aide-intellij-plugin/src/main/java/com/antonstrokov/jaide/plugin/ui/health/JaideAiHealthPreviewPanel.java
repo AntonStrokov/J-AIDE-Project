@@ -5,6 +5,7 @@ import com.antonstrokov.jaide.plugin.config.JaideUiColors;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.health.JaideHealthStatus;
+import com.antonstrokov.jaide.plugin.ui.JaideActionButtonFactory;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.ui.JBColor;
@@ -32,7 +33,10 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		add(new JBScrollPane(contentPanel), BorderLayout.CENTER);
 	}
 
-	public void updateHealth(JaideHealthResponse response) {
+	public void updateHealth(
+			JaideHealthResponse response,
+			Runnable retryAction
+	) {
 		contentPanel.removeAll();
 
 		addTitle();
@@ -60,6 +64,11 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 				JaideUiLabels.HEALTH_MESSAGE_SECTION,
 				response.message()
 		);
+
+		if (!isFullyReady(response)) {
+			addRetryButton(retryAction);
+		}
+
 		contentPanel.add(Box.createVerticalGlue());
 
 		revalidate();
@@ -92,21 +101,36 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 				message
 		);
 
-		if (retryAction != null) {
-			JButton retryButton = new JButton(JaideUiLabels.RETRY_BUTTON);
-			retryButton.setAlignmentX(LEFT_ALIGNMENT);
-			retryButton.addActionListener(event -> retryAction.run());
-
-			contentPanel.add(Box.createVerticalStrut(
-					JaidePreviewLayout.SECTION_VERTICAL_GAP
-			));
-			contentPanel.add(retryButton);
-		}
+		addRetryButton(retryAction);
 
 		contentPanel.add(Box.createVerticalGlue());
 
 		revalidate();
 		repaint();
+	}
+
+	private boolean isFullyReady(JaideHealthResponse response) {
+		return response != null
+				&& response.backendStatus() == JaideHealthStatus.READY
+				&& response.providerStatus() == JaideHealthStatus.READY
+				&& response.modelStatus() == JaideHealthStatus.READY;
+	}
+
+	private void addRetryButton(Runnable retryAction) {
+		if (retryAction == null) {
+			return;
+		}
+
+		JButton retryButton = JaideActionButtonFactory.create(
+				JaideUiLabels.RETRY_BUTTON
+		);
+		retryButton.setAlignmentX(LEFT_ALIGNMENT);
+		retryButton.addActionListener(event -> retryAction.run());
+
+		contentPanel.add(Box.createVerticalStrut(
+				JaidePreviewLayout.SECTION_VERTICAL_GAP
+		));
+		contentPanel.add(retryButton);
 	}
 
 	private void addTitle() {

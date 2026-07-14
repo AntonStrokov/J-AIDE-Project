@@ -16,6 +16,11 @@ public final class JaideUiColors {
 			new Color(0x7AB7FF)
 	);
 
+	public static final JBColor TOOL_WINDOW_BUTTON_ACCENT = new JBColor(
+			new Color(0x0B6EBD),
+			new Color(0x7AB7FF)
+	);
+
 	public static final JBColor HEALTH_STATUS_READY_FOREGROUND = new JBColor(
 			new Color(0x15803D),
 			new Color(0x4ADE80)

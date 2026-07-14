@@ -78,15 +78,13 @@ public class JaideEmptyStatePanel extends JPanel {
 	}
 
 	private JComponent createStartWithCodeButton() {
-		JButton button = new JButton(
+		JButton button = JaideActionButtonFactory.create(
 				JaideUiLabels.START_WITH_CODE_BUTTON
 		);
 
 		button.addActionListener(event ->
 				startWithCodeAction.run()
 		);
-		button.setMargin(JBUI.insets(6, 16));
-		button.setPreferredSize(JBUI.size(180, 36));
 
 		JPanel buttonPanel =
 				new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));

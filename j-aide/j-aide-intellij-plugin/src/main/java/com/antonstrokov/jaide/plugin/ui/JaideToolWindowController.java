@@ -263,12 +263,15 @@ public final class JaideToolWindowController {
 		applyCurrentViewState();
 	}
 
-	public void showAiHealth(JaideHealthResponse healthResponse) {
+	public void showAiHealth(
+			JaideHealthResponse healthResponse,
+			Runnable retryAction
+	) {
 		currentMode = JaideToolWindowMode.AI_HEALTH;
 		aiHealthLoading = false;
 		latestHealthResponse = healthResponse;
 		latestHealthErrorMessage = null;
-		latestHealthRetryAction = null;
+		latestHealthRetryAction = retryAction;
 
 		renderAiHealth();
 		applyCurrentViewState();
@@ -304,7 +307,10 @@ public final class JaideToolWindowController {
 					latestHealthRetryAction
 			);
 		} else if (latestHealthResponse != null) {
-			aiHealthPreviewPanel.updateHealth(latestHealthResponse);
+			aiHealthPreviewPanel.updateHealth(
+					latestHealthResponse,
+					latestHealthRetryAction
+			);
 		} else {
 			return;
 		}

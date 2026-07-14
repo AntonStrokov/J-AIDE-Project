@@ -27,7 +27,11 @@ public class JaideAiSetupCheckService {
 	public void check(Project project) {
 		check(
 				project,
-				response -> JaideToolWindowFactory.updateAiHealth(project, response),
+				response -> JaideToolWindowFactory.updateAiHealth(
+						project,
+						response,
+						() -> check(project)
+				),
 				errorMessage -> JaideToolWindowFactory.updateAiHealthError(
 						project,
 						errorMessage,

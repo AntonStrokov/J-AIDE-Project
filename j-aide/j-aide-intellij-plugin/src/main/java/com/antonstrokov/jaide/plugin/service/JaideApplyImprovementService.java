@@ -17,19 +17,19 @@ public class JaideApplyImprovementService {
 
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 
-	public void applyLatestImprovement(Project project) {
+	public boolean applyLatestImprovement(Project project) {
 		log.info("Apply latest improvement started");
 
 		if (!JaideImprovementState.hasLatestImprovement()) {
 			log.warn("Apply stopped: no latest improvement found");
 			notificationService.showWarning(project, JaideNotificationMessages.NO_IMPROVEMENT_TO_APPLY);
-			return;
+			return false;
 		}
 
 		if (project == null) {
 			log.warn("Apply stopped: project is null");
 			notificationService.showWarning(null, JaideNotificationMessages.NO_ACTIVE_PROJECT_FOUND);
-			return;
+			return false;
 		}
 
 		JaideLastImprovement improvement = JaideImprovementState.getLatestImprovement();
@@ -46,7 +46,7 @@ public class JaideApplyImprovementService {
 		if (document == null) {
 			log.warn("Apply stopped: original document is null");
 			notificationService.showWarning(project, JaideNotificationMessages.ORIGINAL_DOCUMENT_UNAVAILABLE);
-			return;
+			return false;
 		}
 
 		if (!isValidSelectionRange(document, improvement)) {
@@ -58,7 +58,7 @@ public class JaideApplyImprovementService {
 					project,
 					JaideNotificationMessages.ORIGINAL_SELECTION_RANGE_INVALID
 			);
-			return;
+			return false;
 		}
 
 		if (!isOriginalCodeStillPresent(document, improvement)) {
@@ -68,7 +68,7 @@ public class JaideApplyImprovementService {
 					project,
 					JaideNotificationMessages.SELECTED_CODE_CHANGED_SINCE_IMPROVEMENT
 			);
-			return;
+			return false;
 		}
 
 		log.info("Apply safety checks passed, replacing document text");
@@ -93,6 +93,8 @@ public class JaideApplyImprovementService {
 		);
 
 		log.info("Apply latest improvement finished successfully");
+
+		return true;
 	}
 
 	private boolean isValidSelectionRange(Document document, JaideLastImprovement improvement) {

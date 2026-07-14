@@ -14,6 +14,7 @@ import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.improve.JaideImprovePreviewPanel;
+import com.antonstrokov.jaide.plugin.ui.layout.JaideWrapLayout;
 import com.antonstrokov.jaide.plugin.ui.settings.JaideExplainModeSelectorPanel;
 import com.antonstrokov.jaide.plugin.ui.tests.JaideTestGenerationPreviewPanel;
 import com.intellij.openapi.application.ApplicationManager;
@@ -22,7 +23,6 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -90,11 +90,15 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 	public static void updateAiHealth(
 			Project project,
-			JaideHealthResponse healthResponse
+			JaideHealthResponse healthResponse,
+			Runnable retryAction
 	) {
 		ApplicationManager.getApplication().invokeLater(() ->
 				project.getService(JaideToolWindowController.class)
-						.showAiHealth(healthResponse)
+						.showAiHealth(
+								healthResponse,
+								retryAction
+						)
 		);
 	}
 
@@ -135,14 +139,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JPanel headerPanel = new JPanel(new BorderLayout());
 
 		JButton checkAiSetupButton =
-				new JButton(JaideUiLabels.CHECK_AI_SETUP_BUTTON);
+				JaideActionButtonFactory.create(
+						JaideUiLabels.CHECK_AI_SETUP_BUTTON
+				);
 
 		checkAiSetupButton.addActionListener(
 				event -> aiSetupCheckService.check(project)
 		);
-
-		checkAiSetupButton.setMargin(JBUI.insets(6, 16));
-		checkAiSetupButton.setPreferredSize(JBUI.size(180, 36));
 
 		JPanel setupButtonPanel =
 				new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -154,27 +157,36 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		panel.add(headerPanel, BorderLayout.NORTH);
 
-		JPanel actionsPanel = new JPanel();
-		actionsPanel.setLayout(new BoxLayout(actionsPanel, BoxLayout.Y_AXIS));
+		JPanel actionsPanel = new JPanel(
+				new JaideWrapLayout(
+						FlowLayout.LEFT,
+						8,
+						6
+				)
+		);
 		actionsPanel.setVisible(false);
 
-		JPanel primaryActionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-		JPanel navigationActionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 
 		JButton showDiffButton =
-				new JButton(JaideUiLabels.SHOW_DIFF_BUTTON);
+				JaideActionButtonFactory.create(
+						JaideUiLabels.SHOW_DIFF_BUTTON
+				);
 		showDiffButton.addActionListener(
 				event -> toolWindowActionsService.showLatestImprovementDiff(project)
 		);
 
 		JButton applyButton =
-				new JButton(JaideUiLabels.APPLY_BUTTON);
+				JaideActionButtonFactory.create(
+						JaideUiLabels.APPLY_BUTTON
+				);
 		applyButton.addActionListener(
 				event -> toolWindowActionsService.applyLatestImprovement(project)
 		);
 
 		JButton copyCodeButton =
-				new JButton(JaideUiLabels.COPY_IMPROVED_CODE_BUTTON);
+				JaideActionButtonFactory.create(
+						JaideUiLabels.COPY_IMPROVED_CODE_BUTTON
+				);
 		copyCodeButton.addActionListener(event -> {
 			if (controller.isShowingTestGeneration()) {
 				copyGeneratedTestCodeService.copyLatestGeneratedTestCode(project);
@@ -185,7 +197,9 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		});
 
 		JButton backToCodeButton =
-				new JButton(JaideUiLabels.BACK_TO_CODE_BUTTON);
+				JaideActionButtonFactory.create(
+						JaideUiLabels.BACK_TO_CODE_BUTTON
+				);
 		backToCodeButton.addActionListener(
 				event -> toolWindowActionsService.backToCode(project)
 		);
@@ -199,15 +213,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				backToCodeButton
 		);
 
-		primaryActionsPanel.add(showDiffButton);
-		primaryActionsPanel.add(applyButton);
-		primaryActionsPanel.add(copyCodeButton);
-
-		navigationActionsPanel.add(backToCodeButton);
-
-		actionsPanel.add(primaryActionsPanel);
-		actionsPanel.add(Box.createVerticalStrut(6));
-		actionsPanel.add(navigationActionsPanel);
+		actionsPanel.add(showDiffButton);
+		actionsPanel.add(applyButton);
+		actionsPanel.add(copyCodeButton);
+		actionsPanel.add(backToCodeButton);
 
 		panel.add(actionsPanel, BorderLayout.SOUTH);
 

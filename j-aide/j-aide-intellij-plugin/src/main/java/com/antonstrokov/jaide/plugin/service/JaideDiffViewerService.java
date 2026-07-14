@@ -1,18 +1,21 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.antonstrokov.jaide.plugin.ui.diff.JaideDiffDialog;
-import com.intellij.diff.DiffManager;
-import com.intellij.diff.contents.DiffContent;
 import com.intellij.diff.DiffContentFactory;
+import com.intellij.diff.contents.DiffContent;
 import com.intellij.diff.requests.SimpleDiffRequest;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 
 public class JaideDiffViewerService {
 	private static final Logger log = Logger.getInstance(JaideDiffViewerService.class);
 
 	private static final JaideApplyImprovementService applyImprovementService = new JaideApplyImprovementService();
+	private static final JaideToolWindowService toolWindowService =
+			new JaideToolWindowService();
 
 	public void showImproveDiff(
 			Project project,
@@ -64,6 +67,10 @@ public class JaideDiffViewerService {
 			);
 
 			dialog.show();
+
+			if (dialog.getExitCode() == DialogWrapper.CANCEL_EXIT_CODE) {
+				toolWindowService.open(project);
+			}
 
 			log.info("Improve diff dialog opened");
 		});
