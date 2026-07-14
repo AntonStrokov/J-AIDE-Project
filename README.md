@@ -545,6 +545,10 @@ Current plugin capabilities:
 - Validates runtime error input to avoid sending regular source code to the error explanation flow.
 - Displays runtime error explanations in a structured Tool Window preview aligned with the existing Explain/Improve UI style.
 - Plugin UI labels, colors, and shared preview layout constants are centralized in dedicated configuration classes.
+- Displays a dedicated Tool Window empty state when no AI result is available.
+- The empty state provides clear guidance for Explain, Improve, Generate Tests, Runtime Error, and AI Setup flows.
+- Provides a `Start with Code` button that hides the Tool Window and returns the user to the editor.
+- After an IDE restart, IntelliJ restores the Tool Window visibility while J-Aide shows the safe empty state instead of restoring stale AI results or Apply context.
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
 - Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
@@ -710,8 +714,9 @@ Module responsibilities:
 | Plugin notifications             | Done MVP        | Information, warning, and error notifications expire automatically               |
 | Installable plugin ZIP           | Done MVP        | Built with `buildPlugin` and verified outside the Gradle Sandbox                 |
 | Diff Viewer flicker              | Known Issue     | The Tool Window is hidden before opening the Diff Viewer                         |
-| Explain mode persistence         | Post-MVP        | The selected mode should persist between IDE sessions                            |
-| Tool Window startup state        | Post-MVP        | The last visible J-Aide view should be restored after IDE restart                |
+| Explain mode persistence         | Done MVP        | The selected `FAST`, `SMART`, or `DEEP` mode persists between IDE sessions       |
+| Tool Window empty state          | Done MVP+       | Shows guided startup content and `Start with Code` when no AI result is available |
+| Last-view persistence            | Post-MVP        | AI previews and Apply context are not restored after an IDE restart              |
 | RAG project context              | Future Research | Project-wide retrieval and context indexing                                      |
 | Mentor View                      | Future Research | Architectural and educational project analysis                                   |
 | Cloud AI providers               | Future Research | Alternative remote providers and managed runtime options                         |
@@ -725,8 +730,7 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 - Generate Tests displays and copies generated test code but does not create test files automatically.
 - Generated test quality depends on the amount and completeness of the selected source context.
 - AI setup checks report problems but do not automatically start Ollama, download models, or repair environment settings.
-- The selected Explain mode is not yet persisted between IntelliJ IDEA sessions.
-- The J-Aide Tool Window does not yet restore its last visible preview after an IDE restart.
+- IntelliJ restores the J-Aide Tool Window visibility after restart, while J-Aide intentionally shows a safe empty state instead of restoring stale AI previews or Apply context.
 - Opening the Diff Viewer may cause a short visual flicker while the Tool Window is hidden.
 - Automated IntelliJ plugin tests are not enabled; plugin behavior is verified through manual regression testing.
 - AI-generated improvements and tests must be reviewed by the user before use.
@@ -735,8 +739,8 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 
 - Guided Ollama installation, model download, and environment remediation.
 - Clearer guided AI health diagnostics and remediation instructions.
-- Explain mode persistence between IDE sessions.
-- Tool Window startup restoration and last-view persistence.
+- Optional persistence for safe, non-actionable Tool Window previews; stale Apply context must not be restored.
+- Unified Tool Window button styling across all actions, including consistent borders, accent colors, sizes, and spacing.
 - Automatic test file creation with explicit user confirmation.
 - Stronger generated test validation and formatting checks.
 - Semantic validation of Improve Code responses.
