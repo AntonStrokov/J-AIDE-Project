@@ -6,6 +6,7 @@ public final class JaideUiLabels {
 	public static final String SHOW_DIFF_BUTTON = "Show Diff";
 	public static final String APPLY_BUTTON = "Apply";
 	public static final String BACK_TO_CODE_BUTTON = "Back to Code";
+	public static final String START_WITH_CODE_BUTTON =  "Start with Code";
 	public static final String APPLY_IMPROVEMENT_BUTTON = "Apply Improvement";
 	public static final String COPY_IMPROVED_CODE_BUTTON = "Copy Code";
 	public static final String CLOSE_BUTTON = "Close";
@@ -13,6 +14,45 @@ public final class JaideUiLabels {
 	public static final String RETRY_BUTTON = "Retry";
 
 	// Preview section labels
+	public static final String EMPTY_STATE_TITLE =
+			"J-Aide Assistant";
+
+	public static final String EMPTY_STATE_INTRO =
+			"Start by selecting code in the editor or choosing one of the J-Aide actions.";
+
+	public static final String EMPTY_STATE_CODE_ACTIONS_SECTION =
+			"Code Actions";
+
+	public static final String EMPTY_STATE_EXPLAIN_ACTION =
+			"J-Aide: Explain Selected Code";
+
+	public static final String EMPTY_STATE_IMPROVE_ACTION =
+			"J-Aide: Improve Selected Code";
+
+	public static final String EMPTY_STATE_GENERATE_TESTS_ACTION =
+			"J-Aide: Generate Tests";
+
+	public static final String EMPTY_STATE_ERROR_ANALYSIS_SECTION =
+			"Error Analysis";
+
+	public static final String EMPTY_STATE_ERROR_HINT =
+			"Select or copy a stack trace and run:";
+
+	public static final String EMPTY_STATE_EXPLAIN_ERROR_ACTION =
+			"J-Aide: Explain Runtime Error";
+
+	public static final String EMPTY_STATE_AI_SETUP_SECTION =
+			"AI Setup";
+
+	public static final String EMPTY_STATE_AI_SETUP_HINT =
+			"Use Check AI Setup to verify the backend, provider and configured model.";
+
+	public static final String EMPTY_STATE_NOTE_SECTION =
+			"Note";
+
+	public static final String EMPTY_STATE_RESTART_NOTE =
+			"Previous AI results are not restored after an IDE restart.";
+
 	public static final String SUMMARY_SECTION = "Summary";
 	public static final String DETAILS_SECTION = "Details";
 	public static final String ORIGINAL_CODE_SECTION = "Original Code";

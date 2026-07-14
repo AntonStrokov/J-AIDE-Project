@@ -213,6 +213,11 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 
 		JPanel previewContainer = new JPanel(new BorderLayout());
 
+		JaideEmptyStatePanel emptyStatePanel =
+				new JaideEmptyStatePanel(
+						() -> toolWindowActionsService.backToCode(project)
+				);
+
 		JaideImprovePreviewPanel improvePreviewPanel =
 				new JaideImprovePreviewPanel(project, "");
 		JaideExplanationPreviewPanel explanationPreviewPanel =
@@ -224,7 +229,7 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 		JaideAiHealthPreviewPanel aiHealthPreviewPanel =
 				new JaideAiHealthPreviewPanel();
 
-		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
+		previewContainer.add(emptyStatePanel, BorderLayout.CENTER);
 
 		controller.bindPreviewControls(
 				previewContainer,
