@@ -545,6 +545,10 @@ Current plugin capabilities:
 - Validates runtime error input to avoid sending regular source code to the error explanation flow.
 - Displays runtime error explanations in a structured Tool Window preview aligned with the existing Explain/Improve UI style.
 - Plugin UI labels, colors, and shared preview layout constants are centralized in dedicated configuration classes.
+- Uses a shared action button factory for consistent borders, accent colors, sizes, and spacing across Tool Window, AI Health, Empty State, and Diff dialog actions.
+- Wraps Tool Window actions adaptively when the panel becomes too narrow, without hiding available actions.
+- Restores the previous Improve Preview when the Diff Viewer is closed or canceled.
+- Hides the Tool Window after Apply only when the source code replacement completes successfully.
 - Displays a dedicated Tool Window empty state when no AI result is available.
 - The empty state provides clear guidance for Explain, Improve, Generate Tests, Runtime Error, and AI Setup flows.
 - Provides a `Start with Code` button that hides the Tool Window and returns the user to the editor.
@@ -566,7 +570,7 @@ Current plugin capabilities:
 - Displays the full AI health result directly in the Tool Window.
 - Shows backend, provider, and model statuses together with the Ollama version, response time, and diagnostic message.
 - Uses colored health status indicators: `READY` is green, `DEGRADED` uses a warning color, `FAILED` is red, and `UNKNOWN` is gray.
-- Displays backend connection errors directly in the Tool Window with a `Retry` action.
+- Displays a `Retry` action for backend connection errors and non-ready health results with `DEGRADED`, `FAILED`, or `UNKNOWN` statuses.
 - Uses the backend `GET /ai/health` endpoint, including a lightweight trial generation request when the provider and configured model are available.
 - Reports unavailable Ollama and missing model states without requiring an IntelliJ or backend restart after the local AI setup is restored.
 - Uses the Tool Window as the primary UX channel for AI setup checks instead of popup notifications.
@@ -703,7 +707,7 @@ Module responsibilities:
 | Copy generated test code         | Done MVP        | Copies the generated test class from the Tool Window preview                     |
 | Automatic test file creation     | Post-MVP        | The MVP does not create or modify project test files                             |
 | Check AI Setup from Tools        | Done MVP+       | Opens the J-Aide Tool Window and runs the full setup check in-panel              |
-| Check AI Setup from Tool Window  | Done MVP+       | Shows loading, result, error, and Retry states inside the J-Aide panel           |
+| Check AI Setup from Tool Window  | Done MVP+       | Shows loading, result, error, and Retry for connection failures or non-ready statuses |
 | Quick backend health             | Done MVP        | `/backend-info` checks backend, provider reachability, and model presence        |
 | Full AI health check             | Done MVP        | `/ai/health` includes a lightweight trial generation request                     |
 | AI setup recovery check          | Done MVP        | Restored Ollama or model availability is detected without restarting the backend |
@@ -716,6 +720,10 @@ Module responsibilities:
 | Diff Viewer flicker              | Known Issue     | The Tool Window is hidden before opening the Diff Viewer                         |
 | Explain mode persistence         | Done MVP        | The selected `FAST`, `SMART`, or `DEEP` mode persists between IDE sessions       |
 | Tool Window empty state          | Done MVP+       | Shows guided startup content and `Start with Code` when no AI result is available |
+| Unified action button styling    | Done MVP+       | Shared borders, accent colors, sizes, and spacing across plugin action buttons     |
+| Adaptive Tool Window actions     | Done MVP+       | Visible actions wrap to additional rows when the Tool Window becomes narrow        |
+| Diff Viewer cancellation UX      | Done MVP+       | Closing or canceling the dialog restores the previous Improve Preview              |
+| Safe Apply completion UX         | Done MVP+       | The Tool Window hides only after the source replacement succeeds                   |
 | Last-view persistence            | Post-MVP        | AI previews and Apply context are not restored after an IDE restart              |
 | RAG project context              | Future Research | Project-wide retrieval and context indexing                                      |
 | Mentor View                      | Future Research | Architectural and educational project analysis                                   |
@@ -740,7 +748,6 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 - Guided Ollama installation, model download, and environment remediation.
 - Clearer guided AI health diagnostics and remediation instructions.
 - Optional persistence for safe, non-actionable Tool Window previews; stale Apply context must not be restored.
-- Unified Tool Window button styling across all actions, including consistent borders, accent colors, sizes, and spacing.
 - Automatic test file creation with explicit user confirmation.
 - Stronger generated test validation and formatting checks.
 - Semantic validation of Improve Code responses.
