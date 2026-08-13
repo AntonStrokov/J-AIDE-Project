@@ -10,10 +10,11 @@ import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
-import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
-import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
+import com.antonstrokov.jaide.plugin.service.JaideTestGenerationValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
 import com.antonstrokov.jaide.plugin.state.JaideTestGenerationState;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
+import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -30,6 +31,7 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 	private final JaideNotificationService notificationService = new JaideNotificationService();
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideTestGenerationRequestFactory requestFactory = new JaideTestGenerationRequestFactory();
+	private final JaideTestGenerationValidationService validationService = new JaideTestGenerationValidationService();
 
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
@@ -59,6 +61,29 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 					log.info("Sending test generation request");
 
 					JaideTestGenerationResult result = backendClient.generateTests(request);
+
+					String testCode = result.testCode();
+
+					if (validationService.isBlankTestCode(testCode)) {
+						log.warn("Test generation failed: blank test code");
+						notificationService.showWarning(e.getProject(),
+								JaideNotificationMessages.EMPTY_GENERATED_TEST_CODE);
+						return;
+					}
+
+					if (validationService.hasMarkdownCodeFence(testCode)) {
+						log.warn("Test generation failed: markdown fences detected");
+						notificationService.showWarning(e.getProject(),
+								JaideNotificationMessages.MARKDOWN_FENCED_TEST_CODE);
+						return;
+					}
+
+					if (validationService.isMissingClassDeclaration(testCode)) {
+						log.warn("Test generation failed: missing class declaration");
+						notificationService.showWarning(e.getProject(),
+								JaideNotificationMessages.INVALID_TEST_CLASS_STRUCTURE);
+						return;
+					}
 
 					JaideTestGenerationState.setLatestGeneratedTest(
 							new JaideLastGeneratedTest(

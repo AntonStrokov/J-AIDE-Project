@@ -2,6 +2,10 @@ package com.antonstrokov.jaide.plugin.config;
 
 public final class JaideNotificationMessages {
 
+	public static final String EMPTY_GENERATED_TEST_CODE = "Generated test code is empty.";
+	public static final String MARKDOWN_FENCED_TEST_CODE = "Generated test code contains markdown fences.";
+	public static final String INVALID_TEST_CLASS_STRUCTURE = "Generated test code is missing a class declaration.";
+
 	public static final String SELECT_CODE_FIRST =
 			"Please select code first";
 
