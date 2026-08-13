@@ -20,4 +20,12 @@ public class JaideTestGenerationValidationService {
 
 		return !testCode.contains("class ");
 	}
+
+	public boolean isMissingImports(String testCode) {
+		if (testCode == null) {
+			return false;
+		}
+
+		return testCode.contains("@Test") && !testCode.contains("import ");
+	}
 }

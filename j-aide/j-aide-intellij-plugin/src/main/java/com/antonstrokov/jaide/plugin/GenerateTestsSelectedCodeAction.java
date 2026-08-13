@@ -85,6 +85,12 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 						return;
 					}
 
+					if (validationService.isMissingImports(testCode)) {
+						log.warn("Test generation failed: missing imports");
+						notificationService.showWarning(e.getProject(), JaideNotificationMessages.MISSING_IMPORTS_IN_TEST_CODE);
+						return;
+					}
+
 					JaideTestGenerationState.setLatestGeneratedTest(
 							new JaideLastGeneratedTest(
 									result.testCode(),
