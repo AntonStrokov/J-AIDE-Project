@@ -10,7 +10,7 @@ import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
-import com.antonstrokov.jaide.plugin.service.JaideTestGenerationValidationService;
+import com.antonstrokov.jaide.plugin.service.validation.JaideTestGenerationValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
 import com.antonstrokov.jaide.plugin.state.JaideTestGenerationState;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;

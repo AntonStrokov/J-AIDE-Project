@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.service;
+package com.antonstrokov.jaide.plugin.service.validation;
 
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
 

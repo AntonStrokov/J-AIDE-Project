@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.service;
+package com.antonstrokov.jaide.plugin.service.validation;
 
 public class JaideTestGenerationValidationService {
 
