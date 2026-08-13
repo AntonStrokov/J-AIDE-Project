@@ -20,22 +20,17 @@ import java.awt.*;
 
 @Service(Service.Level.PROJECT)
 public final class JaideToolWindowController {
-
 	private static final ViewState EXPLANATION_VIEW_STATE =
 			new ViewState(true, false, false, false, true);
-
 	private static final ViewState ERROR_EXPLANATION_VIEW_STATE =
 			new ViewState(false, false, false, false, true);
-
 	private static final ViewState IMPROVEMENT_VIEW_STATE =
 			new ViewState(false, true, true, true, true);
-
 	private static final ViewState TEST_GENERATION_VIEW_STATE =
 			new ViewState(false, false, false, true, true);
-
 	private static final ViewState AI_HEALTH_VIEW_STATE =
 			new ViewState(false, false, false, false, true);
-
+	private boolean latestIsSuspicious;
 	private JaideExplanation latestExplanation;
 	private JaideErrorExplanation latestErrorExplanation;
 	private JaideImprovement latestImprovement;
@@ -195,11 +190,13 @@ public final class JaideToolWindowController {
 
 	public void showImprovement(
 			JaideImprovement improvement,
-			String originalCode
+			String originalCode,
+			boolean isSuspicious
 	) {
 		currentMode = JaideToolWindowMode.IMPROVEMENT;
 		latestImprovement = improvement;
 		latestOriginalCode = originalCode;
+		latestIsSuspicious = isSuspicious;
 
 		renderImprovement();
 		applyCurrentViewState();
@@ -216,7 +213,8 @@ public final class JaideToolWindowController {
 		previewContainer.removeAll();
 		improvePreviewPanel.updateImprovement(
 				latestImprovement,
-				latestOriginalCode
+				latestOriginalCode,
+				latestIsSuspicious
 		);
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
 		previewContainer.revalidate();
@@ -301,17 +299,20 @@ public final class JaideToolWindowController {
 
 		if (aiHealthLoading) {
 			aiHealthPreviewPanel.showLoading();
-		} else if (latestHealthErrorMessage != null) {
+		}
+		else if (latestHealthErrorMessage != null) {
 			aiHealthPreviewPanel.showError(
 					latestHealthErrorMessage,
 					latestHealthRetryAction
 			);
-		} else if (latestHealthResponse != null) {
+		}
+		else if (latestHealthResponse != null) {
 			aiHealthPreviewPanel.updateHealth(
 					latestHealthResponse,
 					latestHealthRetryAction
 			);
-		} else {
+		}
+		else {
 			return;
 		}
 

@@ -43,4 +43,24 @@ public class JaideImprovementValidationService {
 				.replace("\r", "\n")
 				.trim();
 	}
+
+	public boolean hasSuspiciousChanges(String originalCode, String improvedCode, List<String> changes) {
+		if (changes == null || changes.isEmpty() || improvedCode == null) {
+			return false;
+		}
+
+		for (String change : changes) {
+			if (change == null) {
+				continue;
+			}
+			String lowerChange = change.toLowerCase();
+			if ((lowerChange.contains("удален") || lowerChange.contains("removed") ||
+					lowerChange.contains("удалил") || lowerChange.contains("deleted")) &&
+					!lowerChange.contains("не ") && !lowerChange.contains("not ")) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

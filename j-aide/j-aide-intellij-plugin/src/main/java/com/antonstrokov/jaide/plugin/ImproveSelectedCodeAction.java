@@ -2,6 +2,7 @@ package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.client.JaideBackendClient;
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveRequest;
@@ -9,17 +10,16 @@ import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideImproveRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.service.JaideImprovementValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
-import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.diagnostic.Logger;
-import com.antonstrokov.jaide.plugin.service.JaideImprovementValidationService;
 import org.jetbrains.annotations.NotNull;
 
 public class ImproveSelectedCodeAction extends AnAction {
@@ -33,8 +33,9 @@ public class ImproveSelectedCodeAction extends AnAction {
 	private final JaideImproveRequestFactory requestFactory = new JaideImproveRequestFactory();
 	private final JaideImprovementValidationService validationService = new JaideImprovementValidationService();
 
+
 	@Override
-	public void actionPerformed(AnActionEvent e) {
+	public void actionPerformed(@NotNull AnActionEvent e) {
 		log.info("Improve selected code action started");
 
 		JaideEditorContext context = contextExtractor.extract(e);
@@ -90,8 +91,10 @@ public class ImproveSelectedCodeAction extends AnAction {
 					}
 
 					if (validationService.hasMarkdownCodeFence(improvement.improvedCode())) {
-						log.warn("Improve action stopped: markdown code fence detected in improved code, improvedCodeLength="
-								+ getLength(improvement.improvedCode()));
+						log.warn(
+								"Improve action stopped: markdown code fence detected in improved code, " +
+										"improvedCodeLength="
+										+ getLength(improvement.improvedCode()));
 
 						notificationService.showWarning(
 								e.getProject(),
@@ -130,14 +133,26 @@ public class ImproveSelectedCodeAction extends AnAction {
 							)
 					);
 
+
 					log.info("Latest improvement stored, updating tool window");
 
 					toolWindowService.open(e.getProject());
+
+					boolean isSuspicious = validationService.hasSuspiciousChanges(
+							context.selectedCode(),
+							improvement.improvedCode(),
+							improvement.changes()
+					);
+
 					JaideToolWindowFactory.updateImprovement(
 							e.getProject(),
 							improvement,
-							context.selectedCode()
+							context.selectedCode(),
+							isSuspicious
 					);
+
+					log.info("Improve tool window updated");
+
 
 					log.info("Improve tool window updated");
 
