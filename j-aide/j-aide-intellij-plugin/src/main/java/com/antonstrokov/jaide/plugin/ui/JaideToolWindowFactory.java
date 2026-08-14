@@ -60,15 +60,13 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	public static void updateImprovement(
 			Project project,
 			JaideImprovement improvement,
-			String originalCode,
-			boolean isSuspicious
+			String originalCode
 	) {
 		ApplicationManager.getApplication().invokeLater(() ->
 				project.getService(JaideToolWindowController.class)
 						.showImprovement(
 								improvement,
-								originalCode,
-								isSuspicious
+								originalCode
 						)
 		);
 	}

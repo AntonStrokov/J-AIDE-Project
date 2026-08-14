@@ -1,4 +1,4 @@
-package com.antonstrokov.jaide.plugin.service.error;
+package com.antonstrokov.jaide.plugin.service;
 
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;

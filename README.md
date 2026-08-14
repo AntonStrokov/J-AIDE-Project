@@ -19,16 +19,6 @@ The `v0.1.0-mvp` release includes:
 - quick backend/provider/model diagnostics through `GET /backend-info`;
 - full AI readiness diagnostics with trial generation through `GET /ai/health`.
 
-## Post-MVP Updates (v0.2.0 In Progress)
-
-The following capabilities have been implemented after the `v0.1.0-mvp` scope freeze and are part of the ongoing `v0.2.0` development:
-
-- `Semantic Validation:` Implemented a pure-text heuristic validation service (`JaideImprovementValidationService`) that warns the user if the AI's change description claims to have removed or deleted code, but no actual deletions are found in the change list.
-- `Preview UI Polish:`
-    - Enabled adaptive text wrapping (Soft Wrap) for warning messages to prevent horizontal scrolling in the Tool Window.
-    - Added layout margins (whitespace) and a distinct `JBColor.ORANGE` foreground to the semantic validation warning for better visual hierarchy.
-- `Validation Architecture:` Extracted and grouped all validation-related services (`JaideImprovementValidationService`, `JaideRuntimeErrorInputValidationService`, `JaideTestGenerationValidationService`) into a dedicated `validation` domain package to ensure High Cohesion and Separation of Concerns.
-
 ### Scope Freeze
 
 The feature scope of `v0.1.0-mvp` is frozen.
@@ -760,6 +750,7 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 - Optional persistence for safe, non-actionable Tool Window previews; stale Apply context must not be restored.
 - Automatic test file creation with explicit user confirmation.
 - Stronger generated test validation and formatting checks.
+- Semantic validation of Improve Code responses.
 - Additional Runtime Error input formats and console integrations.
 - Cleaner Tool Window mode and visibility state management.
 - Automated plugin testing strategy.

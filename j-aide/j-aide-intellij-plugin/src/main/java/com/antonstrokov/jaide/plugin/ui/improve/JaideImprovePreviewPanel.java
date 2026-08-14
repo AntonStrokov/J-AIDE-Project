@@ -59,7 +59,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		repaint();
 	}
 
-	public void updateImprovement(JaideImprovement improvement, String originalCode, boolean isSuspicious) {
+	public void updateImprovement(JaideImprovement improvement, String originalCode) {
 		contentPanel.removeAll();
 
 		addTitle();
@@ -67,7 +67,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		addTextSection(JaideUiLabels.SUMMARY_SECTION, improvement.summary());
 		addCodeSection(JaideUiLabels.ORIGINAL_CODE_SECTION, originalCode);
 		addCodeSection(JaideUiLabels.IMPROVED_CODE_SECTION, improvement.improvedCode());
-		addChangesSection(improvement.changes(), isSuspicious);
+		addChangesSection(improvement.changes());
 		addTextSection(JaideUiLabels.RISK_HINT_SECTION, improvement.riskHint());
 		addTextSection(JaideUiLabels.CONFIDENCE_SECTION, improvement.confidence());
 
@@ -245,7 +245,7 @@ public class JaideImprovePreviewPanel extends JPanel {
 		return maxLineLength;
 	}
 
-	private void addChangesSection(java.util.List<String> changes, boolean isSuspicious) {
+	private void addChangesSection(java.util.List<String> changes) {
 		if (changes == null || changes.isEmpty()) {
 			return;
 		}
@@ -264,35 +264,6 @@ public class JaideImprovePreviewPanel extends JPanel {
 			return;
 		}
 
-		JPanel titlePanel = new JPanel();
-		titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
-		titlePanel.setBackground(JBColor.PanelBackground);
-		titlePanel.setAlignmentX(LEFT_ALIGNMENT);
-
-		JBLabel titleLabel = createSectionTitleLabel(JaideUiLabels.CHANGES_SECTION);
-		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
-		titlePanel.add(titleLabel);
-
-		if (isSuspicious) {
-			titlePanel.add(Box.createVerticalStrut(4));
-
-			JTextArea warningArea = createTextArea("⚠️ ВНИМАНИЕ: ОПИСАНИЕ МОЖЕТ РАСХОДИТЬСЯ С КОДОМ");
-			warningArea.setFont(titleLabel.getFont());
-			warningArea.setForeground(JBColor.ORANGE);
-			warningArea.setBorder(JBUI.Borders.empty(
-					JaidePreviewLayout.SECTION_TITLE_BORDER_TOP,
-					0,
-					JaidePreviewLayout.SECTION_TITLE_BORDER_BOTTOM,
-					JaidePreviewLayout.SECTION_TITLE_BORDER_RIGHT
-			));
-			titlePanel.add(warningArea);
-		}
-
-		JTextArea valueArea = createTextArea(result.toString());
-		valueArea.setBorder(JBUI.Borders.emptyTop(JaidePreviewLayout.SECTION_VALUE_TOP_PADDING));
-
-		contentPanel.add(titlePanel);
-		contentPanel.add(Box.createVerticalStrut(JaidePreviewLayout.SECTION_VERTICAL_GAP));
-		contentPanel.add(valueArea);
+		addTextSection(JaideUiLabels.CHANGES_SECTION, result.toString());
 	}
 }

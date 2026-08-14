@@ -67,16 +67,6 @@ public class AiService {
 		}
 	}
 
-	private void postProcessTestCode(StructuredTestGenerationResponse structured) {
-		String testCode = structured.getTestCode();
-		if (testCode != null) {
-			String fixedCode = testCode
-					.replaceAll("@Test\\s+public", "@Test\n    public")
-					.replaceAll("@Test\\s+void", "@Test\n    void");
-			structured.setTestCode(fixedCode);
-		}
-	}
-
 	private void validateStructuredErrorExplanationResponse(StructuredErrorExplanationResponse structured) {
 		validateRequiredAiField(structured.getSummary(), "summary");
 		validateRequiredAiField(structured.getLikelyCause(), "likelyCause");
@@ -112,8 +102,6 @@ public class AiService {
 				objectMapper.readValue(response, StructuredTestGenerationResponse.class);
 
 		validateStructuredTestGenerationResponse(structured);
-
-		postProcessTestCode(structured);
 
 		return structured;
 	}

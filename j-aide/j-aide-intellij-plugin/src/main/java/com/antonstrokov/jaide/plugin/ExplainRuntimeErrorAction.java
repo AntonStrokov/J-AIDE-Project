@@ -10,8 +10,8 @@ import com.antonstrokov.jaide.plugin.factory.error.JaideErrorExplainRequestFacto
 import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInput;
 import com.antonstrokov.jaide.plugin.model.JaideRuntimeErrorInputSource;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
-import com.antonstrokov.jaide.plugin.service.error.JaideRuntimeErrorInputExtractor;
-import com.antonstrokov.jaide.plugin.service.validation.JaideRuntimeErrorInputValidationService;
+import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputExtractor;
+import com.antonstrokov.jaide.plugin.service.JaideRuntimeErrorInputValidationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.intellij.openapi.actionSystem.AnAction;
