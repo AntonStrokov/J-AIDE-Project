@@ -60,6 +60,9 @@ public final class JaideNotificationMessages {
 	public static final String IMPROVED_CODE_COPIED =
 			"Improved code copied to clipboard";
 
+	public static final String EMPTY_GENERATED_TEST_RECEIVED =
+			"J-Aide received empty generated test code. Please try again.";
+
 	public static final String NO_GENERATED_TEST_TO_COPY =
 			"No generated test code to copy";
 
