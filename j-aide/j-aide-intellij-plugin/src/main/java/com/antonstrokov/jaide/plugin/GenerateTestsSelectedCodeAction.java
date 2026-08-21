@@ -74,6 +74,17 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 						return;
 					}
 
+					if (validationService.hasMarkdownCodeFence(result.testCode())) {
+						log.warn("Generate tests action stopped: generated test code contains markdown formatting");
+
+						notificationService.showWarning(
+								e.getProject(),
+								JaideNotificationMessages.INVALID_GENERATED_TEST_FORMAT
+						);
+
+						return;
+					}
+
 					JaideTestGenerationState.setLatestGeneratedTest(
 							new JaideLastGeneratedTest(
 									result.testCode(),
