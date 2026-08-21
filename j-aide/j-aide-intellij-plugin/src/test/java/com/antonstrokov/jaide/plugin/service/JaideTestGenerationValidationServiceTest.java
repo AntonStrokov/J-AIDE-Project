@@ -23,4 +23,21 @@ class JaideTestGenerationValidationServiceTest {
 				"class ExampleTest {\n\t@Test\n\tvoid shouldRun() {}\n}"
 		));
 	}
+
+	@Test
+	void shouldDetectMarkdownCodeFence() {
+		assertTrue(validationService.hasMarkdownCodeFence(
+				"```java\nclass ExampleTest {}\n```"
+		));
+		assertTrue(validationService.hasMarkdownCodeFence(
+				"```\nclass ExampleTest {}\n```"
+		));
+	}
+
+	@Test
+	void shouldAcceptTestCodeWithoutMarkdownCodeFence() {
+		assertFalse(validationService.hasMarkdownCodeFence(
+				"class ExampleTest {\n\t@Test\n\tvoid shouldRun() {}\n}"
+		));
+	}
 }
