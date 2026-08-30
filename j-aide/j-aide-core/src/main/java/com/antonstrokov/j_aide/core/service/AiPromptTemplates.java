@@ -182,6 +182,44 @@ public final class AiPromptTemplates {
 					"Код:\n{{code}}"
 	);
 
+	public static final PromptTemplate GENERIC_TEST_GENERATION_TEMPLATE = PromptTemplate.from(
+			"Ты опытный {{language}}-разработчик и test engineer.\n" +
+					"Сгенерируй unit tests для выбранного кода на русском языке.\n" +
+					"Главная цель: предложить полезные тесты, соответствующие языку и его стандартным testing practices, без изменения production-кода.\n\n" +
+					"Верни ответ строго в JSON формате БЕЗ markdown и БЕЗ ```.\n" +
+					"Только чистый JSON.\n\n" +
+					"ВАЖНО:\n" +
+					"- Поле testCode должно содержать только чистый исходный код теста без markdown.\n" +
+					"- Поле testCode является JSON-строкой.\n" +
+					"- Внутри testCode не используй реальные переводы строк: каждый перенос строки кодируй как \\n.\n" +
+					"- Все двойные кавычки внутри testCode экранируй как \\\".\n" +
+					"- Все обратные слеши внутри testCode экранируй как \\\\.\n" +
+					"- Итоговый ответ должен успешно разбираться стандартным JSON parser.\n" +
+					"- Используй тестовый framework и idiomatic test style, подходящие для {{language}} и явно доступного контекста.\n" +
+					"- Поле testCode должно содержать максимально полный тестовый файл или модуль с необходимыми imports и test declarations, если исходного контекста достаточно.\n" +
+					"- Никогда не оборачивай testCode в markdown code fences.\n" +
+					"- Не добавляй пояснения или текстовые описания внутрь testCode, кроме обычных комментариев языка, если они действительно нужны.\n" +
+					"- Если исходный код недостаточен для полностью корректного теста, всё равно предложи максимально полезный skeleton test и явно укажи риск в riskHint.\n" +
+					"- coveredScenarios должен быть массивом строк и описывать реальные сценарии, покрытые testCode.\n" +
+					"- Все user-facing поля JSON, кроме testCode, testFramework и confidence, должны быть на русском языке.\n" +
+					"- confidence должно быть одним из значений: high, medium, low.\n" +
+					"- Не добавляй пояснения вне JSON.\n\n" +
+					"Формат:\n" +
+					"{\n" +
+					"  \"summary\": \"краткое описание сгенерированных тестов\",\n" +
+					"  \"testCode\": \"исходный код тестов\",\n" +
+					"  \"testFramework\": \"фактически использованный тестовый framework\",\n" +
+					"  \"coveredScenarios\": [\"сценарий 1\", \"сценарий 2\"],\n" +
+					"  \"riskHint\": \"что нужно проверить вручную\",\n" +
+					"  \"confidence\": \"high/medium/low\"\n" +
+					"}\n\n" +
+					"Имя проекта: {{projectName}}\n" +
+					"Имя модуля: {{moduleName}}\n" +
+					"Имя файла: {{fileName}}\n" +
+					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
+					"Код:\n{{code}}"
+	);
+
 	public static final PromptTemplate ERROR_EXPLAIN_TEMPLATE = PromptTemplate.from(
 			"Ты опытный {{language}}-разработчик и Java/Spring mentor.\n" +
 					"Проанализируй runtime error, stack trace или лог ошибки на русском языке.\n" +
@@ -228,6 +266,14 @@ public final class AiPromptTemplates {
 
 	public static PromptTemplate resolveTestGenerationTemplate() {
 		return TEST_GENERATION_TEMPLATE;
+	}
+
+	public static PromptTemplate resolveTestGenerationTemplate(String language) {
+		if (language == null || language.isBlank() || "java".equalsIgnoreCase(language)) {
+			return TEST_GENERATION_TEMPLATE;
+		}
+
+		return GENERIC_TEST_GENERATION_TEMPLATE;
 	}
 
 	public static PromptTemplate resolveTemplate(String effectiveMode) {

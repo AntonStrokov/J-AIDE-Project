@@ -573,7 +573,7 @@ public class AiService {
 			String projectName,
 			String moduleName
 	) {
-		PromptTemplate template = AiPromptTemplates.resolveTestGenerationTemplate();
+		PromptTemplate template = AiPromptTemplates.resolveTestGenerationTemplate(effectiveLanguage);
 
 		return template.apply(Map.of(
 				"code", code,
