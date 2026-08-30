@@ -13,6 +13,7 @@ public class JaideBackendTestGenerationRequestFactory {
 
 		return new JaideBackendTestGenerationRequest(
 				request.code(),
+				request.surroundingContext(),
 				request.mode().name(),
 				language,
 				request.fileName(),

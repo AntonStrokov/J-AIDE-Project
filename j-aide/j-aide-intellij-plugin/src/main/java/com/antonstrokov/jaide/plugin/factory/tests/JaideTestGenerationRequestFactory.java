@@ -9,6 +9,7 @@ public class JaideTestGenerationRequestFactory {
 	public JaideTestGenerationRequest create(JaideEditorContext context) {
 		return new JaideTestGenerationRequest(
 				context.selectedCode(),
+				"",
 				JaideExplainMode.SMART,
 				context.fileName(),
 				context.lineStart(),
