@@ -4,6 +4,7 @@ import com.antonstrokov.jaide.plugin.model.JaideExplainMode;
 
 public record JaideTestGenerationRequest(
 		String code,
+		String structuralContext,
 		String surroundingContext,
 		JaideExplainMode mode,
 		String fileName,

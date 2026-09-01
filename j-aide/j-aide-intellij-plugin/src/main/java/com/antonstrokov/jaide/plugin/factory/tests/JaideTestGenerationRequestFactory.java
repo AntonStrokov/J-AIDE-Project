@@ -10,6 +10,7 @@ public class JaideTestGenerationRequestFactory {
 		return new JaideTestGenerationRequest(
 				context.selectedCode(),
 				"",
+				"",
 				JaideExplainMode.SMART,
 				context.fileName(),
 				context.lineStart(),

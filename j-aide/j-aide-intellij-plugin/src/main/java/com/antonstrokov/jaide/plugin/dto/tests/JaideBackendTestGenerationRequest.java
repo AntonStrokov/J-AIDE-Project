@@ -2,6 +2,7 @@ package com.antonstrokov.jaide.plugin.dto.tests;
 
 public record JaideBackendTestGenerationRequest(
 		String code,
+		String structuralContext,
 		String surroundingContext,
 		String mode,
 		String language,
