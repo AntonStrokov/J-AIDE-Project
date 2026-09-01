@@ -25,6 +25,7 @@ dependencies {
 
     intellijPlatform {
         intellijIdeaCommunity("2025.1")
+        bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
     }
 }
