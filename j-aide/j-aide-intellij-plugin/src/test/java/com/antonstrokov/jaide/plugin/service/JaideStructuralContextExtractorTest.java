@@ -313,4 +313,60 @@ class JaideStructuralContextExtractorTest
 				@interface Validator
 				String value()""", structuralContext);
 	}
+
+	@Test
+	void shouldExtractKotlinStructuralContextWithoutMethodBody() {
+		String source = """
+				package com.example
+				class Calculator {
+				    fun add(a: Int, b: Int): Int {
+				        return a + b
+				    }
+				    fun subtract(a: Int, b: Int): Int {
+				        return a - b
+				    }
+				}
+				""";
+
+		PsiFile psiFile = getFixture().configureByText(
+				"Calculator.kt",
+				source
+		);
+		Document document = getFixture().getDocument(psiFile);
+
+		int methodStart = findRequiredOffset(
+				source,
+				"fun add(a: Int, b: Int): Int",
+				0
+		);
+
+		int selectionEnd = findRequiredOffset(
+				source,
+				"\n    }",
+				methodStart
+		) + "\n    }".length();
+
+		JaideStructuralContextExtractor extractor =
+				new JaideStructuralContextExtractor();
+
+		String structuralContext = extractor.extract(
+				getFixture().getProject(),
+				document,
+				methodStart,
+				selectionEnd
+		);
+
+		assertFalse(
+				structuralContext.isBlank(),
+				"Kotlin structural context must not be empty"
+		);
+
+		assertTrue(structuralContext.contains("package com.example"));
+		assertTrue(structuralContext.contains("Calculator"));
+		assertTrue(structuralContext.contains("add"));
+
+		assertFalse(structuralContext.contains("return a + b"));
+		assertFalse(structuralContext.contains("subtract"));
+		assertFalse(structuralContext.contains("return a - b"));
+	}
 }
