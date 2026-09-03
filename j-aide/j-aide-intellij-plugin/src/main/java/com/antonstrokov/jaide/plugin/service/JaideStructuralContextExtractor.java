@@ -1,6 +1,5 @@
 package com.antonstrokov.jaide.plugin.service;
 
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -19,7 +18,10 @@ public class JaideStructuralContextExtractor {
 			int selectionStart,
 			int selectionEnd
 	) {
-		return ReadAction.compute(() ->
+		PsiDocumentManager psiDocumentManager =
+				PsiDocumentManager.getInstance(project);
+
+		return psiDocumentManager.commitAndRunReadAction(() ->
 				extractInsideReadAction(
 						project,
 						document,

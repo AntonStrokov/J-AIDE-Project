@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase5;
@@ -368,5 +369,69 @@ class JaideStructuralContextExtractorTest
 		assertFalse(structuralContext.contains("return a + b"));
 		assertFalse(structuralContext.contains("subtract"));
 		assertFalse(structuralContext.contains("return a - b"));
+	}
+
+	@Test
+	void shouldExtractStructureFromLatestDocumentState() {
+		String source = """
+				package com.example;
+				class Calculator {
+				    int add(int a, int b) {
+				        return a + b;
+				    }
+				}
+				""";
+
+		PsiFile psiFile = getFixture().configureByText(
+				"Calculator.java",
+				source
+		);
+		Document document = getFixture().getDocument(psiFile);
+
+		String updatedMethod = """
+				int multiply(int a, int b) {
+				        return a * b;
+				    }""";
+
+		int methodStart = findRequiredOffset(
+				source,
+				"int add(int a, int b)",
+				0
+		);
+
+		int methodEnd = findRequiredOffset(
+				source,
+				"\n    }",
+				methodStart
+		) + "\n    }".length();
+
+		WriteCommandAction.runWriteCommandAction(
+				getFixture().getProject(),
+				() -> document.replaceString(
+						methodStart,
+						methodEnd,
+						updatedMethod
+				)
+		);
+
+		int selectionEnd = methodStart + updatedMethod.length();
+
+		JaideStructuralContextExtractor extractor =
+				new JaideStructuralContextExtractor();
+
+		String structuralContext = extractor.extract(
+				getFixture().getProject(),
+				document,
+				methodStart,
+				selectionEnd
+		);
+
+		assertEquals("""
+				package com.example
+				class Calculator
+				int multiply(int a, int b)""", structuralContext);
+
+		assertFalse(structuralContext.contains("return a * b"));
+		assertFalse(structuralContext.contains("add"));
 	}
 }
