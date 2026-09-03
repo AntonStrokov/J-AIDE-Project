@@ -10,6 +10,7 @@ import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.service.JaideStructuralContextExtractor;
 import com.antonstrokov.jaide.plugin.service.JaideTestGenerationValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
 import com.antonstrokov.jaide.plugin.state.JaideTestGenerationState;
@@ -33,6 +34,8 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 	private final JaideTestGenerationRequestFactory requestFactory = new JaideTestGenerationRequestFactory();
 	private final JaideTestGenerationValidationService validationService =
 			new JaideTestGenerationValidationService();
+	private final JaideStructuralContextExtractor structuralContextExtractor =
+			new JaideStructuralContextExtractor();
 
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
@@ -55,10 +58,22 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
 				try {
+					log.info("Extracting structural context");
+
+					String structuralContext = structuralContextExtractor.extract(
+							e.getProject(),
+							context.document(),
+							context.selectionStart(),
+							context.selectionEnd()
+					);
+
+					log.info("Structural context extracted, length="
+							+ structuralContext.length());
+
 					log.info("Creating test generation request");
 
-					JaideTestGenerationRequest request = requestFactory.create(context);
-
+					JaideTestGenerationRequest request =
+							requestFactory.create(context, structuralContext);
 					log.info("Sending test generation request");
 
 					JaideTestGenerationResult result = backendClient.generateTests(request);
