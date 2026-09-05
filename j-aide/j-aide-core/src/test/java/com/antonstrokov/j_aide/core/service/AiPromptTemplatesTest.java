@@ -15,8 +15,15 @@ class AiPromptTemplatesTest {
 		PromptTemplate template =
 				AiPromptTemplates.resolveTestGenerationTemplate("kotlin");
 
+		String structuralContext =
+				"""
+						package demo
+						class Example
+						fun calculate(): Int""";
+
 		String prompt = template.apply(Map.of(
 				"code", "fun calculate(): Int = 42",
+				"structuralContext", structuralContext,
 				"language", "kotlin",
 				"fileName", "Example.kt",
 				"lineStart", "1",
@@ -26,6 +33,7 @@ class AiPromptTemplatesTest {
 		)).text();
 
 		assertTrue(prompt.contains("kotlin"));
+		assertTrue(prompt.contains(structuralContext));
 		assertFalse(prompt.contains("Java test engineer"));
 		assertFalse(prompt.contains("JUnit 5 / Mockito"));
 		assertFalse(prompt.contains("обычный Java-код"));
@@ -36,8 +44,15 @@ class AiPromptTemplatesTest {
 		PromptTemplate template =
 				AiPromptTemplates.resolveTestGenerationTemplate("java");
 
+		String structuralContext =
+				"""
+						package demo
+						class Example
+						int calculate()""";
+
 		String prompt = template.apply(Map.of(
-				"code", "class Example {}",
+				"code", "int calculate() { return 42; }",
+				"structuralContext", structuralContext,
 				"language", "java",
 				"fileName", "Example.java",
 				"lineStart", "1",
@@ -49,5 +64,6 @@ class AiPromptTemplatesTest {
 		assertTrue(prompt.contains("Java test engineer"));
 		assertTrue(prompt.contains("JUnit 5 / Mockito"));
 		assertTrue(prompt.contains("обычный Java-код"));
+		assertTrue(prompt.contains(structuralContext));
 	}
 }

@@ -6,7 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TestGenerationRequest {
+
 	private String code;
+	private String structuralContext;
+	private String surroundingContext;
 	private String mode;
 	private String language;
 	private String fileName;

@@ -322,6 +322,7 @@ public class AiService {
 
 	public AiTestGenerationResult generateTests(
 			String code,
+			String structuralContext,
 			String mode,
 			String language,
 			String fileName,
@@ -350,6 +351,7 @@ public class AiService {
 
 		String prompt = buildTestGenerationPrompt(
 				code,
+				structuralContext,
 				effectiveLanguage,
 				fileName,
 				lineStart,
@@ -566,6 +568,7 @@ public class AiService {
 
 	private String buildTestGenerationPrompt(
 			String code,
+			String structuralContext,
 			String effectiveLanguage,
 			String fileName,
 			Integer lineStart,
@@ -573,10 +576,12 @@ public class AiService {
 			String projectName,
 			String moduleName
 	) {
-		PromptTemplate template = AiPromptTemplates.resolveTestGenerationTemplate(effectiveLanguage);
+		PromptTemplate template =
+				AiPromptTemplates.resolveTestGenerationTemplate(effectiveLanguage);
 
 		return template.apply(Map.of(
 				"code", code,
+				"structuralContext", safeText(structuralContext),
 				"language", effectiveLanguage,
 				"fileName", safeText(fileName),
 				"lineStart", safeNumber(lineStart),

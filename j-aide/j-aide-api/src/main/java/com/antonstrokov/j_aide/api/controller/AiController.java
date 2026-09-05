@@ -154,6 +154,7 @@ public class AiController {
 
 		AiTestGenerationResult result = aiService.generateTests(
 				request.getCode(),
+				request.getStructuralContext(),
 				request.getMode(),
 				request.getLanguage(),
 				request.getFileName(),

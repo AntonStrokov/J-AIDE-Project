@@ -179,6 +179,7 @@ public final class AiPromptTemplates {
 					"Имя модуля: {{moduleName}}\n" +
 					"Имя файла: {{fileName}}\n" +
 					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
+					"Структурный контекст:\n{{structuralContext}}\n\n" +
 					"Код:\n{{code}}"
 	);
 
@@ -217,6 +218,7 @@ public final class AiPromptTemplates {
 					"Имя модуля: {{moduleName}}\n" +
 					"Имя файла: {{fileName}}\n" +
 					"Диапазон строк: {{lineStart}}-{{lineEnd}}\n\n" +
+					"Структурный контекст:\n{{structuralContext}}\n\n" +
 					"Код:\n{{code}}"
 	);
 
