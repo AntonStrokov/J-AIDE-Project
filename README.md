@@ -328,50 +328,63 @@ The IntelliJ plugin displays the original and improved code together with the ch
 
 ### POST /ai/tests
 
-Generates JUnit 5 / Mockito-style test code for selected source code and returns a structured AI response.
+Generates JUnit 5 / Mockito-style test code for explicitly selected source code and returns a structured AI response.
 
 This endpoint supports the implemented `Generate Tests` IntelliJ plugin action. The plugin displays the generated test code in a structured preview and allows the user to copy it. The MVP does not create test files automatically and does not modify user code.
+
+Generate Tests follows a privacy-safe context model:
+
+- `code` contains only the source code explicitly selected by the user.
+- `structuralContext` contains minimal structural metadata extracted by the plugin, such as package, enclosing class declaration, and selected method signature.
+- `structuralContext` must not contain unselected method bodies or neighboring implementation code.
+- `surroundingContext` is part of the transport contract for future compatibility but is empty by default.
+- The current backend does not include `surroundingContext` in the AI prompt.
+- The selected source code remains the explicit raw-source consent boundary.
 
 Example request:
 
 ```json
 {
   "code": "public int sum(int a, int b) {\n    return a + b;\n}",
+  "structuralContext": "package com.example\nclass Calculator\nint sum(int a, int b)",
+  "surroundingContext": "",
   "mode": "SMART",
   "language": "java",
   "fileName": "Calculator.java",
-  "lineStart": 1,
-  "lineEnd": 3,
+  "lineStart": 5,
+  "lineEnd": 7,
   "projectName": "j-aide-test",
   "moduleName": "app",
-  "pluginVersion": "0.1.0",
+  "pluginVersion": "0.1.1",
   "ideVersion": "2025.1"
 }
 ```
+
 Example response:
 
 ```json
 {
   "testResult": {
-    "summary": "Тесты для метода sum класса Calculator",
+    "summary": "Tests for the sum method of Calculator",
     "testCode": "import static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\nclass CalculatorTest {\n\n    @Test\n    void testSumWithPositiveNumbers() {\n        Calculator calculator = new Calculator();\n        assertEquals(5, calculator.sum(2, 3));\n    }\n}",
     "testFramework": "JUnit 5",
     "coveredScenarios": [
-      "сумма двух положительных чисел"
+      "sum of two positive numbers"
     ],
-    "riskHint": "Явных рисков не обнаружено",
+    "riskHint": "No explicit risks detected",
     "confidence": "high"
   },
   "rawJson": null,
   "success": true,
   "metadata": {
     "traceId": "example-trace-id",
-    "backendVersion": "0.1.0",
+    "backendVersion": "0.1.1",
     "responseTimeMs": 11109,
     "retried": false
   }
 }
 ```
+
 Current status:
 
 - Backend endpoint `POST /ai/tests` is implemented.
@@ -379,10 +392,16 @@ Current status:
 - The plugin displays a structured test generation preview.
 - Generated test code can be copied from the preview.
 - The endpoint returns `summary`, `testCode`, `testFramework`, `coveredScenarios`, `riskHint`, and `confidence`.
-- `testCode` is expected to contain a full test class with imports, class declaration, and test methods when enough source context is available.
+- Generated `testCode` is validated to reject markdown-fenced output and is expected to contain a complete test class with required imports when sufficient context is available.
+- Generate Tests uses a language-aware request and prompt flow.
+- The plugin extracts privacy-safe `structuralContext` through UAST without sending neighboring method bodies.
+- Java and Kotlin structural-context behavior is covered by automated plugin regression tests.
+- Default-package Java files omit the package line from `structuralContext`.
+- The backend includes `structuralContext` in the actual test-generation AI prompt.
+- `surroundingContext` remains empty by default and is not included in the current AI prompt.
 - Empty `riskHint` values are normalized to a safe default message.
 - Automatic test file creation and direct project modification are not included in the MVP.
-- The backend and plugin flow were manually regression-tested.
+- Backend unit tests, IntelliJ plugin automated tests, full regression suites, and end-to-end Sandbox runtime smoke tests are used to verify the flow.
 
 ### POST /ai/explain-error
 
@@ -515,17 +534,22 @@ Examples of validation rules:
 
 Current status:
 
-- Backend MVP version `0.1.0` is implemented and successfully builds as an executable Spring Boot JAR.
-- IntelliJ Plugin MVP version `0.1.0` is implemented and connected to the backend.
+- J-Aide `v0.1.1` is the current stable patch-release baseline.
+- The original `v0.1.0-mvp` release remains frozen and is not rewritten or retagged.
+- The Spring Boot backend and IntelliJ plugin are implemented and connected end-to-end.
 - Explain Selected Code supports `FAST`, `SMART`, and `DEEP` modes.
-- Improve Selected Code supports structured preview, code copying, Diff View, explicit Apply, and Undo.
+- Improve Selected Code supports structured preview, code copying, Diff View, explicit Apply, safety checks, and Undo.
 - Explain Runtime Error supports editor selection, console selection, and clipboard fallback.
-- Generate Tests supports structured preview and generated test code copying.
+- Generate Tests supports structured preview, generated test code copying, language-aware generation, deterministic response validation, and privacy-safe structural context.
+- Generate Tests sends explicitly selected raw source together with minimal `structuralContext`; raw surrounding source is not sent automatically.
 - Check AI Setup reports backend, provider, and model health through the IntelliJ Tool Window and the `Tools` menu.
-- Backend and plugin MVP flows were manually regression-tested.
+- Backend flows are covered by automated Maven tests and runtime smoke testing.
+- IntelliJ plugin behavior is covered by automated regression tests where test infrastructure exists, together with Sandbox runtime smoke testing.
+- Java and Kotlin structural-context extraction is tested through IntelliJ fixture tests.
 - The plugin was installed and verified in a regular IntelliJ IDEA instance outside the Gradle Sandbox.
-- The MVP scope is frozen. New functionality is deferred unless a release-blocking defect is discovered.
-- RAG context, Mentor View, cloud AI providers, automatic remediation, and advanced project-wide analysis remain post-MVP work.
+- `0.1.x` development is limited to focused UX, correctness, validation, and stability improvements.
+- Larger new capabilities belong to `0.2.0` or later.
+- RAG context, Mentor View, cloud AI providers, automatic remediation, security expansion, and advanced project-wide analysis remain future work.
 
 ## IntelliJ Plugin MVP
 
@@ -557,7 +581,10 @@ Current plugin capabilities:
 - Displays suggested improved code in the J-Aide Tool Window.
 - Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
 - Provides `J-Aide: Generate Tests` action from the editor context menu.
-- Sends selected code and editor context to the backend `POST /ai/tests` endpoint.
+- Sends explicitly selected source code together with privacy-safe `structuralContext` to the backend `POST /ai/tests` endpoint.
+- Extracts `structuralContext` through UAST as minimal metadata such as package, enclosing class declaration, and selected method signature.
+- Does not include neighboring method bodies or other unselected raw source in `structuralContext`.
+- Keeps `surroundingContext` empty by default; raw surrounding source is not sent automatically.
 - Displays generated test code in the J-Aide Tool Window through a dedicated Generate Tests Preview.
 - Generate Tests Preview follows the same Tool Window UI style as Explain, Improve, and Runtime Error previews.
 - Generate Tests Preview shows structured sections: status, summary, test framework, generated test code, covered scenarios, risk hint, and confidence.
@@ -731,16 +758,17 @@ Module responsibilities:
 
 ## Known Limitations and Post-MVP Work
 
-The following limitations are accepted for J-Aide `v0.1.0-mvp`.
+The following limitations apply to the current J-Aide `v0.1.1` stable baseline.
 
-### Known MVP Limitations
+### Known Current Limitations
 
 - Generate Tests displays and copies generated test code but does not create test files automatically.
-- Generated test quality depends on the amount and completeness of the selected source context.
+- Generated test quality depends on the explicitly selected source code and the available privacy-safe structural metadata.
+- Raw surrounding source is intentionally not sent automatically to improve test quality; `surroundingContext` remains empty by default.
 - AI setup checks report problems but do not automatically start Ollama, download models, or repair environment settings.
 - IntelliJ restores the J-Aide Tool Window visibility after restart, while J-Aide intentionally shows a safe empty state instead of restoring stale AI previews or Apply context.
 - Opening the Diff Viewer may cause a short visual flicker while the Tool Window is hidden.
-- Automated IntelliJ plugin tests are not enabled; plugin behavior is verified through manual regression testing.
+- Automated IntelliJ plugin regression tests are enabled for supported service and fixture-level behavior, but not every UI/action path is covered automatically; Sandbox runtime smoke testing remains part of regression verification.
 - AI-generated improvements and tests must be reviewed by the user before use.
 
 ### Post-MVP Backlog
@@ -749,11 +777,11 @@ The following limitations are accepted for J-Aide `v0.1.0-mvp`.
 - Clearer guided AI health diagnostics and remediation instructions.
 - Optional persistence for safe, non-actionable Tool Window previews; stale Apply context must not be restored.
 - Automatic test file creation with explicit user confirmation.
-- Stronger generated test validation and formatting checks.
-- Semantic validation of Improve Code responses.
+- Expand generated-test semantic and compilation-oriented validation beyond the current deterministic checks.
+- Strengthen semantic consistency validation of Improve Code descriptions against the actual code diff.
 - Additional Runtime Error input formats and console integrations.
 - Cleaner Tool Window mode and visibility state management.
-- Automated plugin testing strategy.
+- Expand automated IntelliJ plugin test coverage for action and UI integration while keeping Sandbox runtime smoke tests for end-to-end verification.
 
 ### Future Research
 
