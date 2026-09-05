@@ -125,6 +125,57 @@ class JaideStructuralContextExtractorTest
 				int add(int a, int b)""", structuralContext);
 	}
 
+	@Test
+	void shouldOmitPackageLineForJavaDefaultPackage() {
+		String source = """
+                        class DefaultPackageSmoke {
+                            int add(int a, int b) {
+                                return a + b;
+                            }
+
+                            int subtract(int a, int b) {
+                                return a - b;
+                            }
+                        }
+                        """;
+
+		PsiFile psiFile = getFixture().configureByText(
+				"DefaultPackageSmoke.java",
+				source
+		);
+		Document document = getFixture().getDocument(psiFile);
+
+		int methodStart = findRequiredOffset(
+				source,
+				"int add(int a, int b)",
+				0
+		);
+
+		int selectionEnd = findRequiredOffset(
+				source,
+				"\n    }",
+				methodStart
+		) + "\n    }".length();
+
+		JaideStructuralContextExtractor extractor =
+				new JaideStructuralContextExtractor();
+
+		String structuralContext = extractor.extract(
+				getFixture().getProject(),
+				document,
+				methodStart,
+				selectionEnd
+		);
+
+		assertEquals("""
+                        class DefaultPackageSmoke
+                        int add(int a, int b)""", structuralContext);
+
+		assertFalse(structuralContext.contains("package "));
+		assertFalse(structuralContext.contains("subtract"));
+		assertFalse(structuralContext.contains("return a - b"));
+	}
+
 	private int findRequiredOffset(
 			String source,
 			String marker,

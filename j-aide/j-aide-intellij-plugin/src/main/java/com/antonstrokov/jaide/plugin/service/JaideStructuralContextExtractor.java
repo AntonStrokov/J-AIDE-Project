@@ -128,18 +128,20 @@ public class JaideStructuralContextExtractor {
 
 		String classKind = resolveClassKind(uClass);
 
-		return """
-				package %s
-				%s %s
-				%s%s(%s)"""
-				.formatted(
-						uFile.getPackageName(),
-						classKind,
-						uClass.getName(),
-						returnType,
-						uMethod.getName(),
-						parameters
-				);
+		String packageName = uFile.getPackageName();
+
+		String packageLine = packageName.isBlank()
+				? ""
+				: "package " + packageName + "\n";
+
+		return packageLine
+				+ "%s %s\n%s%s(%s)".formatted(
+				classKind,
+				uClass.getName(),
+				returnType,
+				uMethod.getName(),
+				parameters
+		);
 	}
 
 	private String formatParameter(UParameter parameter) {
