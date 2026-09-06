@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class JaideTestGenerationSyntaxValidationServiceTest
+class JaideTestGenerationSourceValidationServiceTest
 		extends LightJavaCodeInsightFixtureTestCase5 {
 
 	@Override
@@ -16,8 +16,8 @@ class JaideTestGenerationSyntaxValidationServiceTest
 
 	@Test
 	void shouldDetectSyntaxErrorsForJavaGeneratedTests() {
-		JaideTestGenerationSyntaxValidationService validationService =
-				new JaideTestGenerationSyntaxValidationService();
+		JaideTestGenerationSourceValidationService validationService =
+				new JaideTestGenerationSourceValidationService();
 
 		String testCode = """
 				class CalculatorTest {
@@ -38,8 +38,8 @@ class JaideTestGenerationSyntaxValidationServiceTest
 
 	@Test
 	void shouldNotHardBlockUnsupportedLanguageWithJavaParser() {
-		JaideTestGenerationSyntaxValidationService validationService =
-				new JaideTestGenerationSyntaxValidationService();
+		JaideTestGenerationSourceValidationService validationService =
+				new JaideTestGenerationSourceValidationService();
 
 		String testCode = """
 				class CalculatorTest {
@@ -51,6 +51,26 @@ class JaideTestGenerationSyntaxValidationServiceTest
 				validationService.hasSyntaxErrors(
 						getFixture().getProject(),
 						"CalculatorTest.kt",
+						testCode
+				)
+		);
+	}
+
+	@Test
+	void shouldDetectMissingTopLevelTypeForJavaGeneratedTests() {
+		JaideTestGenerationSourceValidationService validationService =
+				new JaideTestGenerationSourceValidationService();
+
+		String testCode = """
+            package com.example;
+
+            import org.junit.jupiter.api.Test;
+            """;
+
+		assertTrue(
+				validationService.hasStructuralErrors(
+						getFixture().getProject(),
+						"CalculatorTest.java",
 						testCode
 				)
 		);
