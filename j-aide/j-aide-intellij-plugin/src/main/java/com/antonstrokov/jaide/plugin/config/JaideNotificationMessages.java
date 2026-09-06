@@ -72,6 +72,9 @@ public final class JaideNotificationMessages {
 	public static final String INVALID_GENERATED_TEST_STRUCTURE =
 			"J-Aide received generated Java test code without a top-level type declaration. Please try again.";
 
+	public static final String INVALID_GENERATED_TEST_REFERENCE =
+			"J-Aide received generated Java test code with an invalid reference to the selected class. Please try again.";
+
 	public static final String NO_GENERATED_TEST_TO_COPY =
 			"No generated test code to copy";
 

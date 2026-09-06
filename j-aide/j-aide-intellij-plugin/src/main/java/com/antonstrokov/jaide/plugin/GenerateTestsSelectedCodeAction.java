@@ -135,6 +135,25 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 						return;
 					}
 
+					if (sourceValidationService.hasSelectedClassReferenceErrors(
+							e.getProject(),
+							context.document(),
+							context.selectionStart(),
+							context.fileName(),
+							result.testCode()
+					)) {
+						log.warn(
+								"Generate tests action stopped: generated Java test code contains an invalid selected-class reference"
+						);
+
+						notificationService.showWarning(
+								e.getProject(),
+								JaideNotificationMessages.INVALID_GENERATED_TEST_REFERENCE
+						);
+
+						return;
+					}
+
 					JaideTestGenerationState.setLatestGeneratedTest(
 							new JaideLastGeneratedTest(
 									result.testCode(),
