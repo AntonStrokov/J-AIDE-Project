@@ -344,6 +344,8 @@ public class AiService {
 				ideVersion
 		);
 
+		validateStructuralContext(structuralContext);
+
 		String effectiveMode = resolveMode(mode);
 
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
@@ -488,6 +490,24 @@ public class AiService {
 
 		if (errorText.length() > maxErrorLength) {
 			throw new IllegalArgumentException("Error text is too long");
+		}
+	}
+
+	private void validateStructuralContext(String structuralContext) {
+		if (structuralContext == null || structuralContext.isBlank()) {
+			return;
+		}
+
+		int maxStructuralContextLength =
+				aiProperties.limits().structuralContextMaxLength();
+
+		log.info(
+				"Configured maxStructuralContextLength={}",
+				maxStructuralContextLength
+		);
+
+		if (structuralContext.length() > maxStructuralContextLength) {
+			throw new IllegalArgumentException("Structural context is too long");
 		}
 	}
 

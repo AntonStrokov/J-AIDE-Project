@@ -16,6 +16,7 @@ j-aide:
     limits:
       code-max-length: ${J_AIDE_CODE_MAX_LENGTH:5000}
       error-max-length: ${J_AIDE_ERROR_MAX_LENGTH:15000}
+      structural-context-max-length: ${J_AIDE_STRUCTURAL_CONTEXT_MAX_LENGTH:10000}
   app:
     name: ${J_AIDE_APP_NAME:J-Aide}
     version: ${J_AIDE_APP_VERSION:0.1.0}

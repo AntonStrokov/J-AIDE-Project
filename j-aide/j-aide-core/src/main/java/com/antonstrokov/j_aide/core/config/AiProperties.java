@@ -16,8 +16,7 @@ public record AiProperties(
 
 	public record Limits(
 			int codeMaxLength,
-			int errorMaxLength
+			int errorMaxLength,
+			int structuralContextMaxLength
 	) {}
 }
-
-
