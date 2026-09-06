@@ -66,6 +66,9 @@ public final class JaideNotificationMessages {
 	public static final String INVALID_GENERATED_TEST_FORMAT =
 			"J-Aide received generated test code with markdown formatting. Please try again.";
 
+	public static final String INVALID_GENERATED_TEST_SYNTAX =
+			"J-Aide received generated Java test code with syntax errors. Please try again.";
+
 	public static final String NO_GENERATED_TEST_TO_COPY =
 			"No generated test code to copy";
 

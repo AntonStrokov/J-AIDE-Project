@@ -11,6 +11,7 @@ import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.service.JaideStructuralContextExtractor;
+import com.antonstrokov.jaide.plugin.service.JaideTestGenerationSyntaxValidationService;
 import com.antonstrokov.jaide.plugin.service.JaideTestGenerationValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
 import com.antonstrokov.jaide.plugin.state.JaideTestGenerationState;
@@ -34,6 +35,8 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 	private final JaideTestGenerationRequestFactory requestFactory = new JaideTestGenerationRequestFactory();
 	private final JaideTestGenerationValidationService validationService =
 			new JaideTestGenerationValidationService();
+	private final JaideTestGenerationSyntaxValidationService syntaxValidationService =
+			new JaideTestGenerationSyntaxValidationService();
 	private final JaideStructuralContextExtractor structuralContextExtractor =
 			new JaideStructuralContextExtractor();
 
@@ -95,6 +98,21 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 						notificationService.showWarning(
 								e.getProject(),
 								JaideNotificationMessages.INVALID_GENERATED_TEST_FORMAT
+						);
+
+						return;
+					}
+
+					if (syntaxValidationService.hasSyntaxErrors(
+							e.getProject(),
+							context.fileName(),
+							result.testCode()
+					)) {
+						log.warn("Generate tests action stopped: generated Java test code contains syntax errors");
+
+						notificationService.showWarning(
+								e.getProject(),
+								JaideNotificationMessages.INVALID_GENERATED_TEST_SYNTAX
 						);
 
 						return;
