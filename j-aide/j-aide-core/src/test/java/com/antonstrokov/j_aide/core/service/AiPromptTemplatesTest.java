@@ -66,4 +66,45 @@ class AiPromptTemplatesTest {
 		assertTrue(prompt.contains("обычный Java-код"));
 		assertTrue(prompt.contains(structuralContext));
 	}
+
+	@Test
+	void shouldRequireJavaGeneratedTestsToRespectProductionPackageContext() {
+		PromptTemplate template =
+				AiPromptTemplates.resolveTestGenerationTemplate("java");
+
+		String structuralContext =
+				"""
+						package com.example
+						class Calculator
+						int add(int a, int b)""";
+
+		String prompt = template.apply(Map.of(
+				"code", "int add(int a, int b) { return a + b; }",
+				"structuralContext", structuralContext,
+				"language", "java",
+				"fileName", "Calculator.java",
+				"lineStart", "5",
+				"lineEnd", "7",
+				"projectName", "demo-project",
+				"moduleName", "demo-module"
+		)).text();
+
+		assertTrue(
+				prompt.contains(
+						"Если structuralContext содержит package production-класса"
+				)
+		);
+
+		assertTrue(
+				prompt.contains(
+						"Предпочтительно помещай тест в тот же package"
+				)
+		);
+
+		assertTrue(
+				prompt.contains(
+						"Если тест находится в другом package, добавь корректный import production-класса"
+				)
+		);
+	}
 }
