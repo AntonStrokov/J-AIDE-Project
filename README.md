@@ -355,7 +355,7 @@ Example request:
   "lineEnd": 7,
   "projectName": "j-aide-test",
   "moduleName": "app",
-  "pluginVersion": "0.1.1",
+  "pluginVersion": "0.1.2",
   "ideVersion": "2025.1"
 }
 ```
@@ -378,7 +378,7 @@ Example response:
   "success": true,
   "metadata": {
     "traceId": "example-trace-id",
-    "backendVersion": "0.1.1",
+    "backendVersion": "0.1.2",
     "responseTimeMs": 11109,
     "retried": false
   }
@@ -534,7 +534,7 @@ Examples of validation rules:
 
 Current status:
 
-- J-Aide `v0.1.1` is the current stable patch-release baseline.
+- J-Aide `v0.1.2` is the current stable patch-release baseline.
 - The original `v0.1.0-mvp` release remains frozen and is not rewritten or retagged.
 - The Spring Boot backend and IntelliJ plugin are implemented and connected end-to-end.
 - Explain Selected Code supports `FAST`, `SMART`, and `DEEP` modes.
@@ -758,7 +758,7 @@ Module responsibilities:
 
 ## Known Limitations and Post-MVP Work
 
-The following limitations apply to the current J-Aide `v0.1.1` stable baseline.
+The following limitations apply to the current J-Aide `v0.1.2` stable baseline.
 
 ### Known Current Limitations
 
@@ -902,9 +902,10 @@ Available variables:
 - `OLLAMA_TEMPERATURE` — Ollama generation temperature. Default: `0.1`.
 - `OLLAMA_TIMEOUT_SECONDS` — Ollama request timeout in seconds. Default: `60`.
 - `J_AIDE_APP_NAME` — backend application name.
-- `J_AIDE_APP_VERSION` — backend version.
-- `J_AIDE_CODE_MAX_LENGTH` — maximum allowed source code length for code explain and improve requests.
+- `J_AIDE_APP_VERSION` — backend version. Default: `0.1.2`.
+- `J_AIDE_CODE_MAX_LENGTH` — maximum allowed source code length for code explain and improve requests. Default: `5000`.
 - `J_AIDE_ERROR_MAX_LENGTH` — maximum allowed error text length for runtime error explanation requests. Default: `15000`.
+- `J_AIDE_STRUCTURAL_CONTEXT_MAX_LENGTH` — maximum allowed structural context length for Generate Tests requests. Default: `10000`.
 
 If these variables are not provided, default values from `application.yaml` are used.
 

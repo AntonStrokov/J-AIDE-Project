@@ -19,5 +19,5 @@ j-aide:
       structural-context-max-length: ${J_AIDE_STRUCTURAL_CONTEXT_MAX_LENGTH:10000}
   app:
     name: ${J_AIDE_APP_NAME:J-Aide}
-    version: ${J_AIDE_APP_VERSION:0.1.0}
+    version: ${J_AIDE_APP_VERSION:0.1.2}
 
