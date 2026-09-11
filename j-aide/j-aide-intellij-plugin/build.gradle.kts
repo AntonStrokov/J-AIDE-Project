@@ -11,6 +11,31 @@ fun readRootMavenVersion(): String {
 
     val projectElement = document.documentElement
 
+    val propertiesElement = (0 until projectElement.childNodes.length)
+        .asSequence()
+        .map { projectElement.childNodes.item(it) }
+        .firstOrNull {
+            it.nodeType == Node.ELEMENT_NODE &&
+                    it.nodeName == "properties"
+        }
+
+    val revision = propertiesElement
+        ?.let { properties ->
+            (0 until properties.childNodes.length)
+                .asSequence()
+                .map { properties.childNodes.item(it) }
+                .firstOrNull {
+                    it.nodeType == Node.ELEMENT_NODE &&
+                            it.nodeName == "revision"
+                }
+        }
+        ?.textContent
+        ?.trim()
+
+    if (!revision.isNullOrBlank()) {
+        return revision
+    }
+
     return (0 until projectElement.childNodes.length)
         .asSequence()
         .map { projectElement.childNodes.item(it) }
