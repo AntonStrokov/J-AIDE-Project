@@ -2,13 +2,36 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.w3c.dom.Node
 import javax.xml.parsers.DocumentBuilderFactory
 
+fun readRootMavenVersion(): String {
+    val rootPom = file("../pom.xml")
+
+    val document = DocumentBuilderFactory.newInstance()
+        .newDocumentBuilder()
+        .parse(rootPom)
+
+    val projectElement = document.documentElement
+
+    return (0 until projectElement.childNodes.length)
+        .asSequence()
+        .map { projectElement.childNodes.item(it) }
+        .firstOrNull {
+            it.nodeType == Node.ELEMENT_NODE &&
+                    it.nodeName == "version"
+        }
+        ?.textContent
+        ?.trim()
+        ?: throw GradleException(
+            "Root Maven project version not found in ${rootPom.path}"
+        )
+}
+
 plugins {
     id("java")
     id("org.jetbrains.intellij.platform") version "2.16.0"
 }
 
 group = "com.antonstrokov.jaide"
-version = "0.1.2"
+version = readRootMavenVersion()
 
 repositories {
     mavenCentral()
@@ -36,20 +59,27 @@ dependencies {
 
 val verifyReleaseVersionAlignment by tasks.registering {
     group = "verification"
-    description = "Verifies that backend Maven and IntelliJ plugin versions match."
+    description = "Verifies that packaged plugin metadata matches the Maven release version."
+
+    dependsOn("patchPluginXml")
 
     doLast {
-        val rootPom = file("../pom.xml")
+        val expectedVersion = readRootMavenVersion()
+
+        val patchedPluginXml = layout.buildDirectory
+            .file("tmp/patchPluginXml/plugin.xml")
+            .get()
+            .asFile
 
         val document = DocumentBuilderFactory.newInstance()
             .newDocumentBuilder()
-            .parse(rootPom)
+            .parse(patchedPluginXml)
 
-        val projectElement = document.documentElement
+        val pluginElement = document.documentElement
 
-        val backendVersion = (0 until projectElement.childNodes.length)
+        val packagedPluginVersion = (0 until pluginElement.childNodes.length)
             .asSequence()
-            .map { projectElement.childNodes.item(it) }
+            .map { pluginElement.childNodes.item(it) }
             .firstOrNull {
                 it.nodeType == Node.ELEMENT_NODE &&
                         it.nodeName == "version"
@@ -57,20 +87,18 @@ val verifyReleaseVersionAlignment by tasks.registering {
             ?.textContent
             ?.trim()
             ?: throw GradleException(
-                "Root Maven project version not found in ${rootPom.path}"
+                "Plugin version not found in ${patchedPluginXml.path}"
             )
 
-        val pluginVersion = project.version.toString()
-
-        if (backendVersion != pluginVersion) {
+        if (expectedVersion != packagedPluginVersion) {
             throw GradleException(
-                "Release version drift detected: " +
-                        "backend=$backendVersion, plugin=$pluginVersion"
+                "Release version metadata mismatch: " +
+                        "maven=$expectedVersion, packagedPlugin=$packagedPluginVersion"
             )
         }
 
         logger.lifecycle(
-            "Release versions aligned: $backendVersion"
+            "Release version metadata verified: $expectedVersion"
         )
     }
 }
