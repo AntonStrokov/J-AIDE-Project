@@ -902,7 +902,7 @@ Available variables:
 - `OLLAMA_TEMPERATURE` — Ollama generation temperature. Default: `0.1`.
 - `OLLAMA_TIMEOUT_SECONDS` — Ollama request timeout in seconds. Default: `60`.
 - `J_AIDE_APP_NAME` — backend application name.
-- `J_AIDE_APP_VERSION` — backend version. Default: `0.1.2`.
+- `J_AIDE_APP_VERSION` — optional backend version override. By default, the version is derived from Maven build metadata.
 - `J_AIDE_CODE_MAX_LENGTH` — maximum allowed source code length for code explain and improve requests. Default: `5000`.
 - `J_AIDE_ERROR_MAX_LENGTH` — maximum allowed error text length for runtime error explanation requests. Default: `15000`.
 - `J_AIDE_STRUCTURAL_CONTEXT_MAX_LENGTH` — maximum allowed structural context length for Generate Tests requests. Default: `10000`.
