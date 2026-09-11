@@ -1,12 +1,15 @@
 package com.antonstrokov.jaide.plugin.factory.tests;
 
-import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideBackendTestGenerationRequest;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationRequest;
 import com.antonstrokov.jaide.plugin.language.JaideLanguageResolver;
+import com.antonstrokov.jaide.plugin.service.JaidePluginMetadataService;
 
 public class JaideBackendTestGenerationRequestFactory {
+
 	private final JaideLanguageResolver languageResolver = new JaideLanguageResolver();
+	private final JaidePluginMetadataService pluginMetadataService =
+			new JaidePluginMetadataService();
 
 	public JaideBackendTestGenerationRequest create(JaideTestGenerationRequest request) {
 		String language = languageResolver.resolve(request.fileName());
@@ -22,7 +25,7 @@ public class JaideBackendTestGenerationRequestFactory {
 				request.lineEnd(),
 				request.projectName(),
 				request.moduleName(),
-				JaideConstants.PLUGIN_VERSION,
+				pluginMetadataService.getPluginVersion(),
 				request.ideVersion()
 		);
 	}
