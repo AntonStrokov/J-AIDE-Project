@@ -17,7 +17,6 @@ public final class JaideConstants {
 	public static final String GENERATE_TESTS_TASK_TITLE = "J-Aide: Generating tests";
 	public static final String CHECK_AI_SETUP_TASK_TITLE = "J-Aide: Checking AI setup";
 
-	public static final int TEST_GENERATION_SURROUNDING_CONTEXT_MAX_LENGTH = 2000;
 	public static final int MAX_RUNTIME_ERROR_VALIDATION_TEXT_LENGTH = 32768;
 
 	private JaideConstants() {
