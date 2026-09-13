@@ -107,4 +107,26 @@ class AiPromptTemplatesTest {
 				)
 		);
 	}
+
+	@Test
+	void shouldRequireStructuredImproveChangeFacts() {
+		PromptTemplate template =
+				AiPromptTemplates.resolveImproveTemplate();
+
+		String prompt = template.apply(Map.of(
+				"code", "class Example { void main() {} }",
+				"language", "java",
+				"fileName", "Example.java",
+				"lineStart", "1",
+				"lineEnd", "1",
+				"projectName", "demo-project",
+				"moduleName", "demo-module"
+		)).text();
+
+		assertTrue(prompt.contains("\"changeFacts\""));
+		assertTrue(prompt.contains("\"operation\""));
+		assertTrue(prompt.contains("\"symbolKind\""));
+		assertTrue(prompt.contains("\"before\""));
+		assertTrue(prompt.contains("\"after\""));
+	}
 }

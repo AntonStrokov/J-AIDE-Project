@@ -1,11 +1,15 @@
 package com.antonstrokov.j_aide.core.service;
 
 import com.antonstrokov.j_aide.core.config.AiProperties;
+import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -119,5 +123,120 @@ class AiServiceTest {
 						"2025.1"
 				)
 		);
+	}
+
+	@Test
+	void shouldParseStructuredImproveChangeFacts() {
+		OllamaChatModel model = mock(OllamaChatModel.class);
+
+		AiProperties aiProperties = new AiProperties(
+				null,
+				new AiProperties.Limits(10_000, 10_000, 10_000)
+		);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		when(model.chat(anyString())).thenReturn("""
+                        {
+                          "summary": "Improved method name",
+                          "improvedCode": "class Example { void executeProgram() {} }",
+                          "changes": [
+                            "Метод main переименован в executeProgram"
+                          ],
+                          "changeFacts": [
+                            {
+                              "operation": "rename",
+                              "symbolKind": "method",
+                              "before": "main",
+                              "after": "executeProgram"
+                            }
+                          ],
+                          "riskHint": "none",
+                          "confidence": "high"
+                        }
+                        """);
+
+		AiService service = new AiService(
+				model,
+				aiProperties,
+				objectMapper
+		);
+
+		AiImproveResult result = service.improve(
+				"class Example { void main() {} }",
+				"FAST",
+				"java",
+				"Example.java",
+				1,
+				1,
+				"demo-project",
+				"demo-module",
+				"0.1.2",
+				"2025.1"
+		);
+
+		assertNotNull(result.getImprovement());
+		assertNotNull(result.getImprovement().getChangeFacts());
+		assertEquals(
+				1,
+				result.getImprovement().getChangeFacts().size()
+		);
+
+		var changeFact =
+				result.getImprovement()
+						.getChangeFacts()
+						.getFirst();
+
+		assertEquals("rename", changeFact.getOperation());
+		assertEquals("method", changeFact.getSymbolKind());
+		assertEquals("main", changeFact.getBefore());
+		assertEquals("executeProgram", changeFact.getAfter());
+	}
+
+	@Test
+	void shouldAllowImproveResponseWithoutChangeFacts() {
+		OllamaChatModel model = mock(OllamaChatModel.class);
+
+		AiProperties aiProperties = new AiProperties(
+				null,
+				new AiProperties.Limits(10_000, 10_000, 10_000)
+		);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		when(model.chat(anyString())).thenReturn("""
+                        {
+                          "summary": "Improved code",
+                          "improvedCode": "class Example {}",
+                          "changes": [
+                            "Существенные изменения не требуются"
+                          ],
+                          "riskHint": "none",
+                          "confidence": "high"
+                        }
+                        """);
+
+		AiService service = new AiService(
+				model,
+				aiProperties,
+				objectMapper
+		);
+
+		AiImproveResult result = service.improve(
+				"class Example {}",
+				"FAST",
+				"java",
+				"Example.java",
+				1,
+				1,
+				"demo-project",
+				"demo-module",
+				"0.1.2",
+				"2025.1"
+		);
+
+		assertNotNull(result.getImprovement());
+		assertNull(result.getRawJson());
+		assertNull(result.getImprovement().getChangeFacts());
 	}
 }
