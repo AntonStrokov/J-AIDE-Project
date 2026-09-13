@@ -71,7 +71,8 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("junit:junit:4.13.2")
+    testImplementation("junit:junit:4.13.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.14.4")
 
     intellijPlatform {
         intellijIdeaCommunity("2025.1")
