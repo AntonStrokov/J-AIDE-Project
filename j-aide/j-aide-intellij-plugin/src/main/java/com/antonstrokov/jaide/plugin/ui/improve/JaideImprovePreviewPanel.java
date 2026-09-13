@@ -4,6 +4,7 @@ import com.antonstrokov.jaide.plugin.config.JaidePreviewLayout;
 import com.antonstrokov.jaide.plugin.config.JaideUiColors;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
+import com.antonstrokov.jaide.plugin.service.JaideChangeVerificationResult;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
@@ -59,11 +60,26 @@ public class JaideImprovePreviewPanel extends JPanel {
 		repaint();
 	}
 
-	public void updateImprovement(JaideImprovement improvement, String originalCode) {
+	public void updateImprovement(
+			JaideImprovement improvement,
+			String originalCode,
+			JaideChangeVerificationResult verificationResult
+	) {
 		contentPanel.removeAll();
 
 		addTitle();
-		addTextSection(JaideUiLabels.STATUS_SECTION, JaideUiLabels.IMPROVE_PREVIEW_STATUS);
+		addTextSection(
+				JaideUiLabels.STATUS_SECTION,
+				JaideUiLabels.IMPROVE_PREVIEW_STATUS
+		);
+
+		if (verificationResult == JaideChangeVerificationResult.INCONSISTENT) {
+			addTextSection(
+					JaideUiLabels.SEMANTIC_WARNING_SECTION,
+					JaideUiLabels.INCONSISTENT_IMPROVEMENT_WARNING
+			);
+		}
+
 		addTextSection(JaideUiLabels.SUMMARY_SECTION, improvement.summary());
 		addCodeSection(JaideUiLabels.ORIGINAL_CODE_SECTION, originalCode);
 		addCodeSection(JaideUiLabels.IMPROVED_CODE_SECTION, improvement.improvedCode());

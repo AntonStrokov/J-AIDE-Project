@@ -7,6 +7,7 @@ import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.service.JaideAiSetupCheckService;
+import com.antonstrokov.jaide.plugin.service.JaideChangeVerificationResult;
 import com.antonstrokov.jaide.plugin.service.JaideCopyGeneratedTestCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideCopyImprovedCodeService;
 import com.antonstrokov.jaide.plugin.service.JaideToolWindowActionsService;
@@ -60,13 +61,15 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	public static void updateImprovement(
 			Project project,
 			JaideImprovement improvement,
-			String originalCode
+			String originalCode,
+			JaideChangeVerificationResult verificationResult
 	) {
 		ApplicationManager.getApplication().invokeLater(() ->
 				project.getService(JaideToolWindowController.class)
 						.showImprovement(
 								improvement,
-								originalCode
+								originalCode,
+								verificationResult
 						)
 		);
 	}

@@ -9,6 +9,8 @@ import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideImproveRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.service.JaideChangeVerificationResult;
+import com.antonstrokov.jaide.plugin.service.JaideImprovementSemanticValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
 import com.antonstrokov.jaide.plugin.state.JaideLastImprovement;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
@@ -16,10 +18,12 @@ import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.diagnostic.Logger;
 import com.antonstrokov.jaide.plugin.service.JaideImprovementValidationService;
+import com.intellij.psi.PsiJavaFile;
 import org.jetbrains.annotations.NotNull;
 
 public class ImproveSelectedCodeAction extends AnAction {
@@ -32,9 +36,11 @@ public class ImproveSelectedCodeAction extends AnAction {
 	private final JaideToolWindowService toolWindowService = new JaideToolWindowService();
 	private final JaideImproveRequestFactory requestFactory = new JaideImproveRequestFactory();
 	private final JaideImprovementValidationService validationService = new JaideImprovementValidationService();
+	private final JaideImprovementSemanticValidationService semanticValidationService =
+			new JaideImprovementSemanticValidationService();
 
 	@Override
-	public void actionPerformed(AnActionEvent e) {
+	public void actionPerformed(@NotNull AnActionEvent e) {
 		log.info("Improve selected code action started");
 
 		JaideEditorContext context = contextExtractor.extract(e);
@@ -44,6 +50,9 @@ public class ImproveSelectedCodeAction extends AnAction {
 			notificationService.showWarning(e.getProject(), JaideNotificationMessages.SELECT_CODE_FIRST);
 			return;
 		}
+
+		boolean javaSource =
+				e.getData(CommonDataKeys.PSI_FILE) instanceof PsiJavaFile;
 
 		log.info("Improve context extracted, fileName=" + context.fileName()
 				+ ", selectedCodeLength=" + context.selectedCode().length()
@@ -113,6 +122,21 @@ public class ImproveSelectedCodeAction extends AnAction {
 						return;
 					}
 
+					JaideChangeVerificationResult verificationResult =
+							javaSource
+									? semanticValidationService.verifyJavaChangeFacts(
+									e.getProject(),
+									context.selectedCode(),
+									improvement.improvedCode(),
+									improvement.changeFacts()
+							)
+									: JaideChangeVerificationResult.NOT_VERIFIABLE;
+
+					log.info(
+							"Improve semantic verification result="
+									+ verificationResult
+					);
+
 					log.info("Storing latest improvement");
 
 					JaideImprovementState.setLatestImprovement(
@@ -133,10 +157,12 @@ public class ImproveSelectedCodeAction extends AnAction {
 					log.info("Latest improvement stored, updating tool window");
 
 					toolWindowService.open(e.getProject());
+
 					JaideToolWindowFactory.updateImprovement(
 							e.getProject(),
 							improvement,
-							context.selectedCode()
+							context.selectedCode(),
+							verificationResult
 					);
 
 					log.info("Improve tool window updated");

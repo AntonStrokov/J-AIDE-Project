@@ -73,8 +73,11 @@ public final class JaideUiLabels {
 	public static final String CODE_SMELL_SECTION = "Code Smell";
 	public static final String IMPROVE_PREVIEW_TITLE = "J-Aide Improve Preview";
 	public static final String STATUS_SECTION = "Status";
+	public static final String SEMANTIC_WARNING_SECTION = "Semantic Warning";
 	public static final String IMPROVE_PREVIEW_STATUS =
 			"This is a preview only. No files were changed.";
+	public static final String INCONSISTENT_IMPROVEMENT_WARNING =
+			"Structured change claims do not match the generated code.";
 	public static final String TEST_GENERATION_PREVIEW_TITLE = "J-Aide Test Generation Preview";
 	public static final String TEST_GENERATION_PREVIEW_STATUS =
 			"This is a preview only. No test files were created.";

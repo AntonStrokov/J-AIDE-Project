@@ -6,6 +6,7 @@ import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
+import com.antonstrokov.jaide.plugin.service.JaideChangeVerificationResult;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
@@ -40,6 +41,8 @@ public final class JaideToolWindowController {
 	private JaideErrorExplanation latestErrorExplanation;
 	private JaideImprovement latestImprovement;
 	private String latestOriginalCode;
+	private JaideChangeVerificationResult latestImprovementVerificationResult =
+			JaideChangeVerificationResult.NOT_VERIFIABLE;
 	private JaideTestGenerationResult latestTestGenerationResult;
 	private JaideHealthResponse latestHealthResponse;
 	private boolean aiHealthLoading;
@@ -195,11 +198,13 @@ public final class JaideToolWindowController {
 
 	public void showImprovement(
 			JaideImprovement improvement,
-			String originalCode
+			String originalCode,
+			JaideChangeVerificationResult verificationResult
 	) {
 		currentMode = JaideToolWindowMode.IMPROVEMENT;
 		latestImprovement = improvement;
 		latestOriginalCode = originalCode;
+		latestImprovementVerificationResult = verificationResult;
 
 		renderImprovement();
 		applyCurrentViewState();
@@ -214,10 +219,13 @@ public final class JaideToolWindowController {
 		}
 
 		previewContainer.removeAll();
+
 		improvePreviewPanel.updateImprovement(
 				latestImprovement,
-				latestOriginalCode
+				latestOriginalCode,
+				latestImprovementVerificationResult
 		);
+
 		previewContainer.add(improvePreviewPanel, BorderLayout.CENTER);
 		previewContainer.revalidate();
 		previewContainer.repaint();
