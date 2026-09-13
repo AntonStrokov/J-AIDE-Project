@@ -19,6 +19,7 @@ import com.antonstrokov.j_aide.core.dto.explain.AiExplainResult;
 import com.antonstrokov.j_aide.core.dto.improve.AiImproveResult;
 import com.antonstrokov.j_aide.core.dto.tests.AiTestGenerationResult;
 import com.antonstrokov.j_aide.core.service.AiService;
+import com.antonstrokov.j_aide.api.dto.improve.ImproveChangeFact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -115,6 +116,35 @@ public class AiController {
 		improvement.setSummary(result.getImprovement().getSummary());
 		improvement.setImprovedCode(result.getImprovement().getImprovedCode());
 		improvement.setChanges(result.getImprovement().getChanges());
+
+		if (result.getImprovement().getChangeFacts() != null) {
+			improvement.setChangeFacts(
+					result.getImprovement()
+							.getChangeFacts()
+							.stream()
+							.map(changeFact -> {
+								ImproveChangeFact mapped =
+										new ImproveChangeFact();
+
+								mapped.setOperation(
+										changeFact.getOperation()
+								);
+								mapped.setSymbolKind(
+										changeFact.getSymbolKind()
+								);
+								mapped.setBefore(
+										changeFact.getBefore()
+								);
+								mapped.setAfter(
+										changeFact.getAfter()
+								);
+
+								return mapped;
+							})
+							.toList()
+			);
+		}
+
 		improvement.setRiskHint(result.getImprovement().getRiskHint());
 		improvement.setConfidence(result.getImprovement().getConfidence());
 

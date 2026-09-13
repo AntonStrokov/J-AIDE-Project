@@ -11,6 +11,7 @@ public class ImproveResult {
 	private String summary;
 	private String improvedCode;
 	private List<String> changes;
+	private List<ImproveChangeFact> changeFacts;
 	private String riskHint;
 	private String confidence;
 }

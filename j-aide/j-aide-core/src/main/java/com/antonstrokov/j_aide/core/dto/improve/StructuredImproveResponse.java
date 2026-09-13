@@ -11,6 +11,7 @@ public class StructuredImproveResponse {
 	private String summary;
 	private String improvedCode;
 	private List<String> changes;
+	private List<StructuredImproveChangeFact> changeFacts;
 	private String riskHint;
 	private String confidence;
 }
