@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.antonstrokov.jaide.plugin.dto.improve.JaideImproveChangeFact;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
@@ -12,9 +13,53 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.util.PsiTreeUtil;
 
+import java.util.List;
 import java.util.Objects;
 
 public class JaideImprovementSemanticValidationService {
+
+	public JaideChangeVerificationResult verifyJavaChangeFacts(
+			Project project,
+			String originalCode,
+			String improvedCode,
+			List<JaideImproveChangeFact> changeFacts
+	) {
+		if (changeFacts == null || changeFacts.isEmpty()) {
+			return JaideChangeVerificationResult.NOT_VERIFIABLE;
+		}
+
+		boolean hasNotVerifiableFact = false;
+
+		for (JaideImproveChangeFact changeFact : changeFacts) {
+			if (changeFact == null
+					|| !"rename".equals(changeFact.operation())
+					|| !"method".equals(changeFact.symbolKind())) {
+				hasNotVerifiableFact = true;
+				continue;
+			}
+
+			JaideChangeVerificationResult result =
+					verifyJavaMethodRename(
+							project,
+							originalCode,
+							improvedCode,
+							changeFact.before(),
+							changeFact.after()
+					);
+
+			if (result == JaideChangeVerificationResult.INCONSISTENT) {
+				return JaideChangeVerificationResult.INCONSISTENT;
+			}
+
+			if (result == JaideChangeVerificationResult.NOT_VERIFIABLE) {
+				hasNotVerifiableFact = true;
+			}
+		}
+
+		return hasNotVerifiableFact
+				? JaideChangeVerificationResult.NOT_VERIFIABLE
+				: JaideChangeVerificationResult.CONSISTENT;
+	}
 
 	public JaideChangeVerificationResult verifyJavaMethodRename(
 			Project project,
