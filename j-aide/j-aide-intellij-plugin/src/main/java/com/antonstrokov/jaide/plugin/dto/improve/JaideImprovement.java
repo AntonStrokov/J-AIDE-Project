@@ -9,6 +9,7 @@ public record JaideImprovement(
 		String summary,
 		String improvedCode,
 		List<String> changes,
+		List<JaideImproveChangeFact> changeFacts,
 		String riskHint,
 		String confidence
 ) {
