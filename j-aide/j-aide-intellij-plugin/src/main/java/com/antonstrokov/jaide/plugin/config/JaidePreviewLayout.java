@@ -20,6 +20,18 @@ public final class JaidePreviewLayout {
 	public static final int SECTION_VALUE_TOP_PADDING = 4;
 	public static final int SECTION_VERTICAL_GAP = 4;
 
+	public static final int CODE_SCROLL_PREFERRED_WIDTH = 10;
+	public static final int CODE_BLOCK_BORDER_WIDTH = 1;
+	public static final int CODE_BLOCK_PADDING = 8;
+	public static final int CODE_BLOCK_MIN_HEIGHT = 80;
+	public static final int CODE_BLOCK_MAX_HEIGHT = 260;
+	public static final int CODE_CONTENT_MIN_WIDTH = 600;
+	public static final int CODE_CONTENT_MAX_WIDTH = 2400;
+	public static final int DEFAULT_LINE_COUNT = 1;
+	public static final int DEFAULT_MAX_LINE_LENGTH = 1;
+	public static final int CODE_LINE_HEIGHT_PADDING = 8;
+	public static final int CODE_CONTENT_HEIGHT_PADDING = 24;
+
 	private JaidePreviewLayout() {
 	}
 }
