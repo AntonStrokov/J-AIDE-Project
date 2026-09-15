@@ -156,12 +156,7 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 
 					JaideTestGenerationState.setLatestGeneratedTest(
 							new JaideLastGeneratedTest(
-									result.testCode(),
-									context.fileName(),
-									context.projectName(),
-									context.moduleName(),
-									context.lineStart(),
-									context.lineEnd()
+									result.testCode()
 							)
 					);
 
