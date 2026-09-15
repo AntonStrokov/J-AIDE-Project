@@ -72,7 +72,7 @@ public class JaideDiffViewerService {
 				toolWindowService.open(project);
 			}
 
-			log.info("Improve diff dialog opened");
+			log.info("Improve diff dialog closed");
 		});
 	}
 
