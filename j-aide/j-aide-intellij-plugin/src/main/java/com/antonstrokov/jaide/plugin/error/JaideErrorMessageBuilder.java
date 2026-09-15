@@ -1,6 +1,7 @@
 package com.antonstrokov.jaide.plugin.error;
 
 import com.antonstrokov.jaide.plugin.client.JaideBackendException;
+import com.antonstrokov.jaide.plugin.config.JaideConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -18,7 +19,9 @@ public class JaideErrorMessageBuilder {
 		String causeMessage = cause == null ? null : cause.getMessage();
 
 		if (containsConnectionRefused(message) || containsConnectionRefused(causeMessage)) {
-			return "J-Aide backend is not available. Please start the backend on http://localhost:8080.";
+			return "J-Aide backend is not available. Please start the backend on "
+					+ JaideConstants.BACKEND_BASE_URL
+					+ ".";
 		}
 
 		if (message == null || message.isBlank()) {
