@@ -30,7 +30,7 @@ public class JaideDiffDialog extends DialogWrapper {
 		this.diffRequest = diffRequest;
 		this.applyImprovementService = applyImprovementService;
 
-		setTitle("J-Aide Improve Diff");
+		setTitle(JaideUiLabels.IMPROVE_DIFF_TITLE);
 		init();
 	}
 

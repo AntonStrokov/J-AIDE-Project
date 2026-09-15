@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.service;
 
+import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
 import com.antonstrokov.jaide.plugin.ui.diff.JaideDiffDialog;
 import com.intellij.diff.DiffContentFactory;
@@ -78,10 +79,10 @@ public class JaideDiffViewerService {
 
 	private String buildTitle(String fileName) {
 		if (fileName == null || fileName.isBlank()) {
-			return "J-Aide Improve Diff";
+			return JaideUiLabels.IMPROVE_DIFF_TITLE;
 		}
 
-		return "J-Aide Improve Diff: " + fileName;
+		return JaideUiLabels.IMPROVE_DIFF_TITLE + ": " + fileName;
 	}
 
 	private int getLength(String value) {

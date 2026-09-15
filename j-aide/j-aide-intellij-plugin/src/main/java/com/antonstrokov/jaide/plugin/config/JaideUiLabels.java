@@ -4,6 +4,7 @@ public final class JaideUiLabels {
 
 	// Button labels
 	public static final String SHOW_DIFF_BUTTON = "Show Diff";
+	public static final String IMPROVE_DIFF_TITLE = "J-Aide Improve Diff";
 	public static final String APPLY_BUTTON = "Apply";
 	public static final String BACK_TO_CODE_BUTTON = "Back to Code";
 	public static final String START_WITH_CODE_BUTTON =  "Start with Code";
