@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -243,7 +244,7 @@ public class AiService {
 		String effectiveMode = resolveMode(mode);
 
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
-		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase(Locale.ROOT);
 
 		String prompt = buildPrompt(
 				effectiveMode,
@@ -295,7 +296,7 @@ public class AiService {
 		String effectiveMode = resolveMode(mode);
 
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
-		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase(Locale.ROOT);
 
 		String prompt = buildImprovePrompt(
 				code,
@@ -349,7 +350,7 @@ public class AiService {
 		String effectiveMode = resolveMode(mode);
 
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
-		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase(Locale.ROOT);
 
 		String prompt = buildTestGenerationPrompt(
 				code,
@@ -398,7 +399,7 @@ public class AiService {
 		String effectiveMode = resolveMode(mode);
 
 		SupportedLanguage resolvedLanguage = resolveLanguage(language);
-		String effectiveLanguage = resolvedLanguage.name().toLowerCase();
+		String effectiveLanguage = resolvedLanguage.name().toLowerCase(Locale.ROOT);
 
 		String prompt = buildErrorExplainPrompt(
 				errorText,
@@ -428,21 +429,14 @@ public class AiService {
 			return SupportedLanguage.JAVA;
 		}
 
-		switch (language.toLowerCase()) {
-			case "java":
-				return SupportedLanguage.JAVA;
-			case "kotlin":
-				return SupportedLanguage.KOTLIN;
-			case "sql":
-				return SupportedLanguage.SQL;
-			case "xml":
-				return SupportedLanguage.XML;
-			case "javascript":
-			case "js":
-				return SupportedLanguage.JAVASCRIPT;
-			default:
-				return SupportedLanguage.PLAIN_TEXT;
-		}
+		return switch (language.toLowerCase(Locale.ROOT)) {
+			case "java" -> SupportedLanguage.JAVA;
+			case "kotlin" -> SupportedLanguage.KOTLIN;
+			case "sql" -> SupportedLanguage.SQL;
+			case "xml" -> SupportedLanguage.XML;
+			case "javascript", "js" -> SupportedLanguage.JAVASCRIPT;
+			default -> SupportedLanguage.PLAIN_TEXT;
+		};
 	}
 
 	private void validateOptionalTextField(String value, String fieldName) {

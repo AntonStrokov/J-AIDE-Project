@@ -7,6 +7,8 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -238,5 +240,64 @@ class AiServiceTest {
 		assertNotNull(result.getImprovement());
 		assertNull(result.getRawJson());
 		assertNull(result.getImprovement().getChangeFacts());
+	}
+
+	@Test
+	void shouldNormalizeLanguageIndependentlyOfDefaultLocale() {
+		Locale originalLocale = Locale.getDefault();
+
+		try {
+			Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+
+			OllamaChatModel model = mock(OllamaChatModel.class);
+
+			AiProperties aiProperties = new AiProperties(
+					null,
+					new AiProperties.Limits(10_000, 10_000, 10_000)
+			);
+
+			when(model.chat(anyString())).thenReturn("""
+                                {
+                                  "summary": "Generated tests",
+                                  "testCode": "class ExampleTest {}",
+                                  "testFramework": "JUnit 5",
+                                  "coveredScenarios": ["example"],
+                                  "riskHint": "none",
+                                  "confidence": "high"
+                                }
+                                """);
+
+			AiService service = new AiService(
+					model,
+					aiProperties,
+					new ObjectMapper()
+			);
+
+			service.generateTests(
+					"fun example() {}",
+					null,
+					"FAST",
+					"KOTLIN",
+					"Example.kt",
+					1,
+					1,
+					"demo-project",
+					"demo-module",
+					"0.1.1",
+					"2025.1"
+			);
+
+			ArgumentCaptor<String> promptCaptor =
+					ArgumentCaptor.forClass(String.class);
+
+			verify(model).chat(promptCaptor.capture());
+
+			assertTrue(
+					promptCaptor.getValue()
+							.contains("kotlin")
+			);
+		} finally {
+			Locale.setDefault(originalLocale);
+		}
 	}
 }
