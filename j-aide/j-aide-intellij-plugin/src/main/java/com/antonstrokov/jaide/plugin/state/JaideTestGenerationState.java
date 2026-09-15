@@ -11,12 +11,4 @@ public class JaideTestGenerationState {
 	public static void setLatestGeneratedTest(JaideLastGeneratedTest latestGeneratedTest) {
 		JaideTestGenerationState.latestGeneratedTest = latestGeneratedTest;
 	}
-
-	public static boolean hasLatestGeneratedTest() {
-		return latestGeneratedTest != null;
-	}
-
-	public static void clear() {
-		latestGeneratedTest = null;
-	}
 }
