@@ -8,8 +8,6 @@ public record JaideLastImprovement(
 		String fileName,
 		String projectName,
 		String moduleName,
-		int lineStart,
-		int lineEnd,
 		int selectionStart,
 		int selectionEnd,
 		Document document

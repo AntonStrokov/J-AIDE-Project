@@ -146,8 +146,6 @@ public class ImproveSelectedCodeAction extends AnAction {
 									context.fileName(),
 									context.projectName(),
 									context.moduleName(),
-									context.lineStart(),
-									context.lineEnd(),
 									context.selectionStart(),
 									context.selectionEnd(),
 									context.document()
