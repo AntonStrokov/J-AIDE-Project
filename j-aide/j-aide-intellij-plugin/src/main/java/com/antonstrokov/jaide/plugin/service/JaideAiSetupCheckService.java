@@ -11,6 +11,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 public class JaideAiSetupCheckService {
@@ -53,34 +54,56 @@ public class JaideAiSetupCheckService {
 		) {
 			@Override
 			public void run(@NotNull ProgressIndicator indicator) {
-				try {
-					JaideHealthResponse response =
-							backendClient.checkAiHealth();
-
-					log.info(
-							"AI setup check completed, backendStatus="
-									+ response.backendStatus()
-									+ ", providerStatus="
-									+ response.providerStatus()
-									+ ", modelStatus="
-									+ response.modelStatus()
-									+ ", responseTimeMs="
-									+ response.responseTimeMs()
-					);
-
-					resultConsumer.accept(response);
-				} catch (Exception exception) {
-					log.warn(
-							"AI setup check failed: "
-									+ exception.getMessage(),
-							exception
-					);
-
-					String errorMessage = errorMessageBuilder.build(exception);
-
-					errorConsumer.accept(errorMessage);
-				}
+				runCheck(
+						backendClient::checkAiHealth,
+						resultConsumer,
+						errorConsumer
+				);
 			}
 		}.queue();
+	}
+
+	void runCheck(
+			Callable<JaideHealthResponse> healthCall,
+			Consumer<JaideHealthResponse> resultConsumer,
+			Consumer<String> errorConsumer
+	) {
+		JaideHealthResponse response;
+
+		try {
+			response = healthCall.call();
+		} catch (Exception exception) {
+			log.warn(
+					"AI setup backend check failed: "
+							+ exception.getMessage(),
+					exception
+			);
+
+			String errorMessage = errorMessageBuilder.build(exception);
+			errorConsumer.accept(errorMessage);
+			return;
+		}
+
+		log.info(
+				"AI setup check completed, backendStatus="
+						+ response.backendStatus()
+						+ ", providerStatus="
+						+ response.providerStatus()
+						+ ", modelStatus="
+						+ response.modelStatus()
+						+ ", responseTimeMs="
+						+ response.responseTimeMs()
+		);
+
+		try {
+			resultConsumer.accept(response);
+		} catch (RuntimeException exception) {
+			log.warn(
+					"AI setup result update failed: "
+							+ exception.getMessage(),
+					exception
+			);
+			throw exception;
+		}
 	}
 }
