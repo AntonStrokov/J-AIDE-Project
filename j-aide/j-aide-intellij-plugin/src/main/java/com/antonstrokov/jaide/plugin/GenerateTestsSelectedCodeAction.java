@@ -11,6 +11,7 @@ import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.service.JaideStructuralContextExtractor;
+import com.antonstrokov.jaide.plugin.service.JaideTestGenerationConsentService;
 import com.antonstrokov.jaide.plugin.service.JaideTestGenerationSourceValidationService;
 import com.antonstrokov.jaide.plugin.service.JaideTestGenerationValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
@@ -39,6 +40,8 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 			new JaideTestGenerationSourceValidationService();
 	private final JaideStructuralContextExtractor structuralContextExtractor =
 			new JaideStructuralContextExtractor();
+	private final JaideTestGenerationConsentService consentService =
+			new JaideTestGenerationConsentService();
 
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
@@ -49,6 +52,11 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 		if (context == null) {
 			log.warn("Generate tests action stopped: no selected code");
 			notificationService.showWarning(e.getProject(), JaideNotificationMessages.SELECT_CODE_FIRST);
+			return;
+		}
+
+		if (!consentService.confirm(e.getProject())) {
+			log.info("Generate tests action canceled: data sharing not approved");
 			return;
 		}
 
@@ -143,7 +151,8 @@ public class GenerateTestsSelectedCodeAction extends AnAction {
 							result.testCode()
 					)) {
 						log.warn(
-								"Generate tests action stopped: generated Java test code contains an invalid selected-class reference"
+								"Generate tests action stopped: generated Java test code contains an invalid " +
+										"selected-class reference"
 						);
 
 						notificationService.showWarning(

@@ -341,6 +341,8 @@ Generate Tests sends explicitly selected source code together with limited struc
 - `surroundingContext` is part of the transport contract for future compatibility but is empty by default.
 - The current backend does not include `surroundingContext` in the AI prompt.
 - The selected source code is the boundary for raw source; the structural metadata described above is also sent with the request.
+- Before the first Generate Tests request in a project, the plugin asks for approval. It discloses that selected code, structural details (including details outside the selection), project/module/file names, and line numbers go to the local backend and its configured AI provider. Plugin and IDE versions go to the backend.
+- Canceling sends no request. Approval is stored for that project and reused after restarting the IDE.
 
 Example request:
 
