@@ -12,6 +12,8 @@ public final class JaideUiLabels {
 	public static final String COPY_IMPROVED_CODE_BUTTON = "Copy Code";
 	public static final String CLOSE_BUTTON = "Close";
 	public static final String CHECK_AI_SETUP_BUTTON = "Check AI Setup";
+	public static final String REVOKE_TEST_GENERATION_APPROVAL_BUTTON =
+			"Revoke Generate Tests Approval";
 	public static final String RETRY_BUTTON = "Retry";
 
 	// Preview section labels

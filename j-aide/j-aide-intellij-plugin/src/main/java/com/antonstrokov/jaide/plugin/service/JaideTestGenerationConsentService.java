@@ -38,6 +38,10 @@ public class JaideTestGenerationConsentService {
 		return true;
 	}
 
+	public void revoke(Project project) {
+		PropertiesComponent.getInstance(project).unsetValue(CONSENT_KEY);
+	}
+
 	private static boolean askUser(Project project) {
 		String message =
 				"Selected code, package/class names and method signature "

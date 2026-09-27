@@ -1,16 +1,14 @@
 package com.antonstrokov.jaide.plugin.ui;
 
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.config.JaideUiLabels;
 import com.antonstrokov.jaide.plugin.dto.error.JaideErrorExplanation;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplanation;
 import com.antonstrokov.jaide.plugin.dto.health.JaideHealthResponse;
 import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
-import com.antonstrokov.jaide.plugin.service.JaideAiSetupCheckService;
-import com.antonstrokov.jaide.plugin.service.JaideChangeVerificationResult;
-import com.antonstrokov.jaide.plugin.service.JaideCopyGeneratedTestCodeService;
-import com.antonstrokov.jaide.plugin.service.JaideCopyImprovedCodeService;
-import com.antonstrokov.jaide.plugin.service.JaideToolWindowActionsService;
+import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
+import com.antonstrokov.jaide.plugin.service.*;
 import com.antonstrokov.jaide.plugin.ui.error.JaideErrorExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.explain.JaideExplanationPreviewPanel;
 import com.antonstrokov.jaide.plugin.ui.health.JaideAiHealthPreviewPanel;
@@ -37,6 +35,10 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 	private static final JaideToolWindowActionsService toolWindowActionsService = new JaideToolWindowActionsService();
 	private static final JaideAiSetupCheckService aiSetupCheckService =
 			new JaideAiSetupCheckService();
+	private final JaideTestGenerationConsentService testGenerationConsentService =
+			new JaideTestGenerationConsentService();
+	private final JaideNotificationService notificationService =
+			new JaideNotificationService();
 
 	public static void updateExplanation(
 			Project project,
@@ -150,12 +152,26 @@ public class JaideToolWindowFactory implements ToolWindowFactory {
 				event -> aiSetupCheckService.check(project)
 		);
 
-		JPanel setupButtonPanel =
-				new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		JButton revokeTestApprovalButton =
+				JaideActionButtonFactory.create(
+						JaideUiLabels.REVOKE_TEST_GENERATION_APPROVAL_BUTTON
+				);
 
-		setupButtonPanel.add(checkAiSetupButton);
+		revokeTestApprovalButton.addActionListener(event -> {
+			testGenerationConsentService.revoke(project);
+			notificationService.showInfo(
+					project,
+					JaideNotificationMessages.TEST_GENERATION_CONSENT_REVOKED
+			);
+		});
 
-		headerPanel.add(setupButtonPanel, BorderLayout.NORTH);
+		JPanel headerButtonPanel =
+				new JPanel(new JaideWrapLayout(FlowLayout.CENTER, 8, 6));
+
+		headerButtonPanel.add(checkAiSetupButton);
+		headerButtonPanel.add(revokeTestApprovalButton);
+
+		headerPanel.add(headerButtonPanel, BorderLayout.NORTH);
 		headerPanel.add(explainModeSelectorPanel, BorderLayout.CENTER);
 
 		panel.add(headerPanel, BorderLayout.NORTH);
