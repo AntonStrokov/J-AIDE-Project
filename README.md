@@ -332,14 +332,15 @@ Generates JUnit 5 / Mockito-style test code for explicitly selected source code 
 
 This endpoint supports the implemented `Generate Tests` IntelliJ plugin action. The plugin displays the generated test code in a structured preview and allows the user to copy it. The MVP does not create test files automatically and does not modify user code.
 
-Generate Tests follows a privacy-safe context model:
+Generate Tests sends explicitly selected source code together with limited structural metadata:
 
 - `code` contains only the source code explicitly selected by the user.
 - `structuralContext` contains minimal structural metadata extracted by the plugin, such as package, enclosing class declaration, and selected method signature.
+- Structural metadata can reveal package and class names and method parameter or return types even when their declarations are outside the selection.
 - `structuralContext` must not contain unselected method bodies or neighboring implementation code.
 - `surroundingContext` is part of the transport contract for future compatibility but is empty by default.
 - The current backend does not include `surroundingContext` in the AI prompt.
-- The selected source code remains the explicit raw-source consent boundary.
+- The selected source code is the boundary for raw source; the structural metadata described above is also sent with the request.
 
 Example request:
 
@@ -394,7 +395,7 @@ Current status:
 - The endpoint returns `summary`, `testCode`, `testFramework`, `coveredScenarios`, `riskHint`, and `confidence`.
 - Generated `testCode` is validated to reject markdown-fenced output and is expected to contain a complete test class with required imports when sufficient context is available.
 - Generate Tests uses a language-aware request and prompt flow.
-- The plugin extracts privacy-safe `structuralContext` through UAST without sending neighboring method bodies.
+- The plugin extracts minimal `structuralContext` through UAST without sending neighboring method bodies.
 - Java and Kotlin structural-context behavior is covered by automated plugin regression tests.
 - Default-package Java files omit the package line from `structuralContext`.
 - The backend includes `structuralContext` in the actual test-generation AI prompt.
@@ -540,7 +541,7 @@ Current status:
 - Explain Selected Code supports `FAST`, `SMART`, and `DEEP` modes.
 - Improve Selected Code supports structured preview, code copying, Diff View, explicit Apply, safety checks, and Undo.
 - Explain Runtime Error supports editor selection, console selection, and clipboard fallback.
-- Generate Tests supports structured preview, generated test code copying, language-aware generation, deterministic response validation, and privacy-safe structural context.
+- Generate Tests supports structured preview, generated test code copying, language-aware generation, deterministic response validation, and minimal structural context.
 - Generate Tests sends explicitly selected raw source together with minimal `structuralContext`; raw surrounding source is not sent automatically.
 - Check AI Setup reports backend, provider, and model health through the IntelliJ Tool Window and the `Tools` menu.
 - Backend flows are covered by automated Maven tests and runtime smoke testing.
@@ -581,7 +582,7 @@ Current plugin capabilities:
 - Displays suggested improved code in the J-Aide Tool Window.
 - Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
 - Provides `J-Aide: Generate Tests` action from the editor context menu.
-- Sends explicitly selected source code together with privacy-safe `structuralContext` to the backend `POST /ai/tests` endpoint.
+- Sends explicitly selected source code together with minimal `structuralContext` to the backend `POST /ai/tests` endpoint.
 - Extracts `structuralContext` through UAST as minimal metadata such as package, enclosing class declaration, and selected method signature.
 - Does not include neighboring method bodies or other unselected raw source in `structuralContext`.
 - Keeps `surroundingContext` empty by default; raw surrounding source is not sent automatically.
@@ -763,7 +764,7 @@ The following limitations apply to the current J-Aide `v0.1.2` stable baseline.
 ### Known Current Limitations
 
 - Generate Tests displays and copies generated test code but does not create test files automatically.
-- Generated test quality depends on the explicitly selected source code and the available privacy-safe structural metadata.
+- Generated test quality depends on the explicitly selected source code and the available structural metadata.
 - Raw surrounding source is intentionally not sent automatically to improve test quality; `surroundingContext` remains empty by default.
 - AI setup checks report problems but do not automatically start Ollama, download models, or repair environment settings.
 - IntelliJ restores the J-Aide Tool Window visibility after restart, while J-Aide intentionally shows a safe empty state instead of restoring stale AI previews or Apply context.
