@@ -485,4 +485,40 @@ class JaideStructuralContextExtractorTest
 		assertFalse(structuralContext.contains("return a * b"));
 		assertFalse(structuralContext.contains("add"));
 	}
+
+	@Test
+	void shouldExtractPackageAndClassWhenSelectionStartsAtClassDeclaration() {
+		String source = """
+                        package com.example;
+
+                        public class Calculator {
+                            public int add(int a, int b) {
+                                return a + b;
+                            }
+                        }
+                        """;
+
+		PsiFile psiFile = getFixture().configureByText(
+				"Calculator.java",
+				source
+		);
+		Document document = getFixture().getDocument(psiFile);
+		int classStart = findRequiredOffset(
+				source,
+				"public class Calculator",
+				0
+		);
+
+		String structuralContext = new JaideStructuralContextExtractor().extract(
+				getFixture().getProject(),
+				document,
+				classStart,
+				source.length()
+		);
+
+		assertEquals(
+				"package com.example\nclass Calculator",
+				structuralContext
+		);
+	}
 }

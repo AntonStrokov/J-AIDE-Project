@@ -265,4 +265,58 @@ class JaideTestGenerationSourceValidationServiceTest
 				)
 		);
 	}
+
+	@Test
+	void shouldAcceptSameClassReferenceForMethodAndClassSelection() {
+		String source = """
+                        package com.example;
+
+                        public class Calculator {
+                                public int add(int a, int b) {
+                                        return a + b;
+                                }
+                        }
+                        """;
+
+		getFixture().addFileToProject("com/example/Calculator.java", source);
+		PsiFile sourceFile = getFixture().configureFromTempProjectFile(
+				"com/example/Calculator.java"
+		);
+
+		Document sourceDocument = getFixture().getDocument(sourceFile);
+
+		String testCode = """
+                        package com.example;
+
+                        class CalculatorTest {
+                                void shouldAdd() {
+                                        Calculator calculator = new Calculator();
+                                        int result = calculator.add(2, 3);
+                                }
+                        }
+                        """;
+
+		JaideTestGenerationSourceValidationService validationService =
+				new JaideTestGenerationSourceValidationService();
+
+		assertFalse(
+				validationService.hasSelectedClassReferenceErrors(
+						getFixture().getProject(),
+						sourceDocument,
+						source.indexOf("public int add(int a, int b)"),
+						"Calculator.java",
+						testCode
+				)
+		);
+
+		assertFalse(
+				validationService.hasSelectedClassReferenceErrors(
+						getFixture().getProject(),
+						sourceDocument,
+						source.indexOf("public class Calculator"),
+						"Calculator.java",
+						testCode
+				)
+		);
+	}
 }

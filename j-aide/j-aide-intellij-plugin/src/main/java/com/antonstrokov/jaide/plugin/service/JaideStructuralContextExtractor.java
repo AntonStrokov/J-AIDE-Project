@@ -79,21 +79,21 @@ public class JaideStructuralContextExtractor {
 				UMethod.class
 		);
 
-		if (uMethod == null) {
-			return "";
+		UClass uClass;
+		if (uMethod != null) {
+			uClass = findEnclosingClass(uMethod);
+		} else {
+			uClass = UastContextKt.getUastParentOfType(
+					elementAtSelectionStart,
+					UClass.class
+			);
 		}
-
-		UClass uClass = findEnclosingClass(uMethod);
 
 		if (uClass == null) {
 			return "";
 		}
 
-		return formatStructuralContext(
-				uFile,
-				uClass,
-				uMethod
-		);
+		return formatStructuralContext(uFile, uClass, uMethod);
 	}
 
 	private int findFirstNonWhitespaceOffset(
@@ -117,6 +117,20 @@ public class JaideStructuralContextExtractor {
 			UClass uClass,
 			UMethod uMethod
 	) {
+		String packageName = uFile.getPackageName();
+		String packageLine = packageName.isBlank()
+				? ""
+				: "package " + packageName + "\n";
+
+		String classContext = packageLine
+				+ resolveClassKind(uClass)
+				+ " "
+				+ uClass.getName();
+
+		if (uMethod == null) {
+			return classContext;
+		}
+
 		String parameters = uMethod.getUastParameters()
 				.stream()
 				.map(this::formatParameter)
@@ -126,22 +140,13 @@ public class JaideStructuralContextExtractor {
 				? ""
 				: uMethod.getReturnType().getPresentableText() + " ";
 
-		String classKind = resolveClassKind(uClass);
-
-		String packageName = uFile.getPackageName();
-
-		String packageLine = packageName.isBlank()
-				? ""
-				: "package " + packageName + "\n";
-
-		return packageLine
-				+ "%s %s\n%s%s(%s)".formatted(
-				classKind,
-				uClass.getName(),
-				returnType,
-				uMethod.getName(),
-				parameters
-		);
+		return classContext
+				+ "\n"
+				+ returnType
+				+ uMethod.getName()
+				+ "("
+				+ parameters
+				+ ")";
 	}
 
 	private String formatParameter(UParameter parameter) {
