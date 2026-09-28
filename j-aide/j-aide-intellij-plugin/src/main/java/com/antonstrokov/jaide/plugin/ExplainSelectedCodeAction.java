@@ -2,6 +2,7 @@ package com.antonstrokov.jaide.plugin;
 
 import com.antonstrokov.jaide.plugin.client.JaideBackendClient;
 import com.antonstrokov.jaide.plugin.config.JaideConstants;
+import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.dto.explain.JaideExplainRequest;
@@ -11,15 +12,13 @@ import com.antonstrokov.jaide.plugin.factory.explain.JaideExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
-import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
-public class ExplainSelectedCodeAction extends AnAction {
+public class ExplainSelectedCodeAction extends JaideSelectedCodeAction {
 	private static final Logger log = Logger.getInstance(ExplainSelectedCodeAction.class);
 
 	private final JaideBackendClient backendClient = new JaideBackendClient();

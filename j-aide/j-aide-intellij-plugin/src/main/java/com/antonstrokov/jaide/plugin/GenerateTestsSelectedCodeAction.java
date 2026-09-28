@@ -18,14 +18,13 @@ import com.antonstrokov.jaide.plugin.state.JaideLastGeneratedTest;
 import com.antonstrokov.jaide.plugin.state.JaideTestGenerationState;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowFactory;
 import com.antonstrokov.jaide.plugin.ui.JaideToolWindowService;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
-public class GenerateTestsSelectedCodeAction extends AnAction {
+public class GenerateTestsSelectedCodeAction extends JaideSelectedCodeAction {
 	private static final Logger log = Logger.getInstance(GenerateTestsSelectedCodeAction.class);
 
 	private final JaideBackendClient backendClient = new JaideBackendClient();

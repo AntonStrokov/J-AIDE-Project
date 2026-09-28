@@ -26,39 +26,44 @@
                 id="J-Aide.ExplainSelectedCode"
                 class="com.antonstrokov.jaide.plugin.ExplainSelectedCodeAction"
                 text="J-Aide: Explain Selected Code"
-                description="Explain selected code using J-Aide backend">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
+                description="Explain selected code using J-Aide backend"/>
+
         <action
                 id="J-Aide.ImproveSelectedCode"
                 class="com.antonstrokov.jaide.plugin.ImproveSelectedCodeAction"
                 text="J-Aide: Improve Selected Code"
-                description="Improve selected code using J-Aide backend">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
+                description="Improve selected code using J-Aide backend"/>
+
         <action
                 id="J-Aide.GenerateTestsSelectedCode"
                 class="com.antonstrokov.jaide.plugin.GenerateTestsSelectedCodeAction"
                 text="J-Aide: Generate Tests"
-                description="Generate tests for selected code using J-Aide backend">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
+                description="Generate tests for selected code using J-Aide backend"/>
+
         <action
                 id="J-Aide.ExplainRuntimeError"
                 class="com.antonstrokov.jaide.plugin.ExplainRuntimeErrorAction"
                 text="J-Aide: Explain Runtime Error"
                 description="Explain runtime error, stack trace, or application log using J-Aide backend">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
         </action>
+
         <action
                 id="J-Aide.CheckAiSetup"
                 class="com.antonstrokov.jaide.plugin.CheckAiSetupAction"
                 text="J-Aide: Check AI Setup"
-                description="Check backend, Ollama, and configured AI model readiness">
+                description="Check backend, Ollama, and configured AI model readiness"/>
+
+        <group id="J-Aide.Actions" text="J-Aide" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
-        </action>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+
+            <reference ref="J-Aide.ExplainSelectedCode"/>
+            <reference ref="J-Aide.ImproveSelectedCode"/>
+            <reference ref="J-Aide.GenerateTestsSelectedCode"/>
+            <reference ref="J-Aide.ExplainRuntimeError"/>
+            <reference ref="J-Aide.CheckAiSetup"/>
+        </group>
     </actions>
 
 </idea-plugin>
