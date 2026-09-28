@@ -462,7 +462,7 @@ Current status:
 - The endpoint was tested manually through Postman.
 - IntelliJ plugin action `J-Aide: Explain Runtime Error` is implemented.
 - The plugin can explain selected error text from the editor.
-- The plugin can also explain error text copied to the clipboard through `Tools -> J-Aide: Explain Runtime Error`.
+- The plugin can also explain error text copied to the clipboard through `Tools > J-Aide > J-Aide: Explain Runtime Error`.
 - The plugin action is also available from the console popup menu for build output and runtime logs.
 - Runtime error input is validated before sending the request: regular source code is rejected with a warning, while stack traces, compiler errors, and build logs are accepted.
 - Runtime error explanations are displayed in the J-Aide Tool Window using a structured preview panel aligned with the existing Explain/Improve UI style.
@@ -561,6 +561,8 @@ The project includes an IntelliJ IDEA plugin MVP.
 
 Current plugin capabilities:
 
+In the current version, both `Tools > J-Aide` and the editor context menu's `J-Aide` submenu provide the same five actions: Explain Selected Code, Improve Selected Code, Generate Tests, Explain Runtime Error, and Check AI Setup. The first three remain visible but are disabled without selected text. Explain Runtime Error can use clipboard text when nothing is selected and is also available directly from the console context menu.
+
 - Reads selected code from the editor.
 - Sends selected code and editor context to the backend.
 - Detects language from file extension.
@@ -568,7 +570,7 @@ Current plugin capabilities:
 - Allows selecting Explain mode (`FAST`, `SMART`, `DEEP`) from the J-Aide Tool Window for source code explanations.
 - Rejects runtime error text in `J-Aide: Explain Selected Code` and suggests using `J-Aide: Explain Runtime Error`.
 - Explains selected runtime errors, stack traces, and application logs through `J-Aide: Explain Runtime Error`.
-- Supports clipboard fallback for runtime error explanation through `Tools -> J-Aide: Explain Runtime Error`.
+- Supports clipboard fallback for runtime error explanation through `Tools > J-Aide > J-Aide: Explain Runtime Error`.
 - Supports runtime error explanation directly from the console popup menu.
 - Validates runtime error input to avoid sending regular source code to the error explanation flow.
 - Displays runtime error explanations in a structured Tool Window preview aligned with the existing Explain/Improve UI style.
@@ -584,7 +586,7 @@ Current plugin capabilities:
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
 - Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
-- Provides `J-Aide: Generate Tests` action from the editor context menu.
+- Provides `J-Aide: Generate Tests` through the `J-Aide` submenu in both the `Tools` menu and the editor context menu.
 - Sends explicitly selected source code together with minimal `structuralContext` to the backend `POST /ai/tests` endpoint.
 - Extracts `structuralContext` through UAST as minimal metadata such as package, enclosing class declaration, and selected method signature.
 - Does not include neighboring method bodies or other unselected raw source in `structuralContext`.
@@ -594,9 +596,9 @@ Current plugin capabilities:
 - Generate Tests Preview shows structured sections: status, summary, test framework, generated test code, covered scenarios, risk hint, and confidence.
 - Generate Tests Preview supports copying generated test code through the shared `Copy Code` button.
 - Generate Tests MVP does not create test files automatically and does not modify user code.
-- Provides `J-Aide: Check AI Setup` from the IntelliJ `Tools` menu.
+- Provides `J-Aide: Check AI Setup` through the `J-Aide` submenu in both the `Tools` menu and the editor context menu.
 - Provides a permanent `Check AI Setup` button in the J-Aide Tool Window.
-- Opens the J-Aide Tool Window automatically when the check is started from the `Tools` menu.
+- Opens the J-Aide Tool Window automatically when the check is started from either menu.
 - Shows a loading state directly in the Tool Window while the AI setup check is running.
 - Displays the full AI health result directly in the Tool Window.
 - Shows backend, provider, and model statuses together with the Ollama version, response time, and diagnostic message.
@@ -730,14 +732,15 @@ Module responsibilities:
 | Improve response validation      | Done MVP        | Rejects blank, no-op, markdown-fenced, and incomplete responses                  |
 | Explain Runtime Error            | Done MVP        | Supports stack traces, compiler failures, build output, and runtime logs         |
 | Runtime error editor input       | Done MVP        | Reads selected error text from the active editor                                 |
-| Runtime error clipboard fallback | Done MVP        | Available through `Tools -> J-Aide: Explain Runtime Error`                       |
+| Runtime error clipboard fallback | Done MVP        | Available through `Tools > J-Aide > J-Aide: Explain Runtime Error`               |
 | Runtime error console popup      | Done MVP        | Reads selected build output and runtime logs from the console                    |
 | Runtime error input validation   | Done MVP        | Rejects regular source code and accepts supported diagnostic formats             |
 | Generate Tests                   | Done MVP        | Sends selected source context to `POST /ai/tests`                                |
 | Generate Tests preview           | Done MVP        | Displays summary, framework, code, scenarios, risk, and confidence               |
 | Copy generated test code         | Done MVP        | Copies the generated test class from the Tool Window preview                     |
 | Automatic test file creation     | Post-MVP        | The MVP does not create or modify project test files                             |
-| Check AI Setup from Tools        | Done MVP+       | Opens the J-Aide Tool Window and runs the full setup check in-panel              |
+| Unified J-Aide menus             | Done MVP+       | Five shared actions in Tools and editor; selected-code actions disabled without selection |
+| Check AI Setup from menus        | Done MVP+       | Opens the J-Aide Tool Window and runs the full setup check from either menu       |
 | Check AI Setup from Tool Window  | Done MVP+       | Shows loading, result, error, and Retry for connection failures or non-ready statuses |
 | Quick backend health             | Done MVP        | `/backend-info` checks backend, provider reachability, and model presence        |
 | Full AI health check             | Done MVP        | `/ai/health` includes a lightweight trial generation request                     |
