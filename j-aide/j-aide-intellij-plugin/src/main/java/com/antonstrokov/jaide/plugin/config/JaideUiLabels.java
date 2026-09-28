@@ -83,7 +83,7 @@ public final class JaideUiLabels {
 			"Structured change claims do not match the generated code.";
 	public static final String TEST_GENERATION_PREVIEW_TITLE = "J-Aide Test Generation Preview";
 	public static final String TEST_GENERATION_PREVIEW_STATUS =
-			"This is a preview only. No test files were created.";
+			"Test code generated. This is a preview only. No test files were created.";
 	public static final String GENERATED_TEST_CODE_SECTION = "Generated Test Code";
 	public static final String TEST_FRAMEWORK_SECTION = "Test Framework";
 	public static final String COVERED_SCENARIOS_SECTION = "Covered Scenarios";

@@ -177,11 +177,6 @@ public class GenerateTestsSelectedCodeAction extends JaideSelectedCodeAction {
 							result
 					);
 
-					notificationService.showInfo(
-							e.getProject(),
-							JaideNotificationMessages.TESTS_GENERATED_SUCCESSFULLY
-					);
-
 				} catch (Exception ex) {
 					log.warn("Generate tests action failed: " + ex.getMessage(), ex);
 

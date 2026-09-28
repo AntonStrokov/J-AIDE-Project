@@ -81,8 +81,6 @@ public final class JaideNotificationMessages {
 	public static final String GENERATED_TEST_CODE_COPIED =
 			"Generated test code copied to clipboard";
 
-	public static final String TESTS_GENERATED_SUCCESSFULLY = "Tests generated successfully";
-
 	public static final String TEST_GENERATION_CONSENT_REVOKED =
 			"Generate Tests will ask for approval before the next request in this project.";
 
