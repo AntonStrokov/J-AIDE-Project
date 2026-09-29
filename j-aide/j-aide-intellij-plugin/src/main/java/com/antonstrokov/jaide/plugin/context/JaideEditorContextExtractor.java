@@ -52,7 +52,7 @@ public class JaideEditorContextExtractor {
 		int selectionEnd = selectionModel.getSelectionEnd();
 
 		int lineStart = editor.getDocument().getLineNumber(selectionStart) + 1;
-		int lineEnd = editor.getDocument().getLineNumber(selectionEnd) + 1;
+		int lineEnd = editor.getDocument().getLineNumber(selectionEnd - 1) + 1;
 
 		String ideVersion = ApplicationInfo.getInstance().getFullVersion();
 
