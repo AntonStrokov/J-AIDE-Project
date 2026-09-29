@@ -565,7 +565,8 @@ In the current version, both `Tools > J-Aide` and the editor context menu's `J-A
 
 - Reads selected code from the editor.
 - Sends selected code and editor context to the backend.
-- Explain Selected Code and Improve Selected Code use a recognized editor PSI language and fall back to the file extension; Generate Tests and Explain Runtime Error continue to use file names where available.
+- Explain Selected Code, Improve Selected Code, and Generate Tests use a recognized editor PSI language with a file extension fallback; Explain Runtime Error uses a file name when available.
+- Generate Tests uses the resolved source language to decide whether to run Java-specific checks on generated test code.
 - Displays structured AI explanation in the J-Aide Tool Window.
 - Allows selecting Explain mode (`FAST`, `SMART`, `DEEP`) from the J-Aide Tool Window for source code explanations.
 - Rejects runtime error text in `J-Aide: Explain Selected Code` and suggests using `J-Aide: Explain Runtime Error`.
