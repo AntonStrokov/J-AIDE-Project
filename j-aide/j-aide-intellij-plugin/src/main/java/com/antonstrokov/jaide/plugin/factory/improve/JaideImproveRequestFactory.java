@@ -11,6 +11,7 @@ public class JaideImproveRequestFactory {
 				context.selectedCode(),
 				JaideExplainMode.SMART,
 				context.fileName(),
+				context.sourceLanguage(),
 				context.lineStart(),
 				context.lineEnd(),
 				context.projectName(),

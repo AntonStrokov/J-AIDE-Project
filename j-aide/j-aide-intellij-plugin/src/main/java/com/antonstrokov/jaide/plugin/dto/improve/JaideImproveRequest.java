@@ -6,6 +6,7 @@ public record JaideImproveRequest(
 		String code,
 		JaideExplainMode mode,
 		String fileName,
+		String sourceLanguage,
 		int lineStart,
 		int lineEnd,
 		String projectName,
