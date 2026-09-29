@@ -119,7 +119,7 @@ public class GenerateTestsSelectedCodeAction extends JaideSelectedCodeAction {
 
 					if (sourceValidationService.hasSyntaxErrors(
 							e.getProject(),
-							context.fileName(),
+							context.sourceLanguage(),
 							result.testCode()
 					)) {
 						log.warn("Generate tests action stopped: generated Java test code contains syntax errors");
@@ -134,7 +134,7 @@ public class GenerateTestsSelectedCodeAction extends JaideSelectedCodeAction {
 
 					if (sourceValidationService.hasStructuralErrors(
 							e.getProject(),
-							context.fileName(),
+							context.sourceLanguage(),
 							result.testCode()
 					)) {
 						log.warn(
@@ -153,7 +153,7 @@ public class GenerateTestsSelectedCodeAction extends JaideSelectedCodeAction {
 							e.getProject(),
 							context.document(),
 							context.selectionStart(),
-							context.fileName(),
+							context.sourceLanguage(),
 							result.testCode()
 					)) {
 						log.warn(

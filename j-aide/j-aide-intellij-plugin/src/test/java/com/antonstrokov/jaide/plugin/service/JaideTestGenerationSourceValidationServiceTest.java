@@ -32,7 +32,7 @@ class JaideTestGenerationSourceValidationServiceTest
 		assertTrue(
 				validationService.hasSyntaxErrors(
 						getFixture().getProject(),
-						"CalculatorTest.java",
+						"java",
 						testCode
 				)
 		);
@@ -52,7 +52,7 @@ class JaideTestGenerationSourceValidationServiceTest
 		assertFalse(
 				validationService.hasSyntaxErrors(
 						getFixture().getProject(),
-						"CalculatorTest.kt",
+						"kotlin",
 						testCode
 				)
 		);
@@ -72,7 +72,7 @@ class JaideTestGenerationSourceValidationServiceTest
 		assertTrue(
 				validationService.hasStructuralErrors(
 						getFixture().getProject(),
-						"CalculatorTest.java",
+						"java",
 						testCode
 				)
 		);
@@ -118,7 +118,7 @@ class JaideTestGenerationSourceValidationServiceTest
 						getFixture().getProject(),
 						sourceDocument,
 						selectionStart,
-						"Calculator.java",
+						"java",
 						testCode
 				)
 		);
@@ -166,7 +166,7 @@ class JaideTestGenerationSourceValidationServiceTest
 						getFixture().getProject(),
 						sourceDocument,
 						selectionStart,
-						"Calculator.java",
+						"java",
 						testCode
 				)
 		);
@@ -211,7 +211,7 @@ class JaideTestGenerationSourceValidationServiceTest
 						getFixture().getProject(),
 						sourceDocument,
 						selectionStart,
-						"Calculator.java",
+						"java",
 						testCode
 				)
 		);
@@ -260,7 +260,7 @@ class JaideTestGenerationSourceValidationServiceTest
 						getFixture().getProject(),
 						sourceDocument,
 						selectionStart,
-						"Calculator.java",
+						"java",
 						testCode
 				)
 		);
@@ -304,7 +304,7 @@ class JaideTestGenerationSourceValidationServiceTest
 						getFixture().getProject(),
 						sourceDocument,
 						source.indexOf("public int add(int a, int b)"),
-						"Calculator.java",
+						"java",
 						testCode
 				)
 		);
@@ -314,7 +314,7 @@ class JaideTestGenerationSourceValidationServiceTest
 						getFixture().getProject(),
 						sourceDocument,
 						source.indexOf("public class Calculator"),
-						"Calculator.java",
+						"java",
 						testCode
 				)
 		);

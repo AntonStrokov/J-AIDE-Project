@@ -13,13 +13,14 @@ class JaideBackendTestGenerationRequestFactoryTest {
 			new JaideBackendTestGenerationRequestFactory();
 
 	@Test
-	void shouldResolveKotlinLanguageFromFileName() {
+	void shouldUseResolvedKotlinLanguage() {
 		JaideTestGenerationRequest request = new JaideTestGenerationRequest(
 				"fun calculate(): Int = 42",
 				"",
 				"",
 				JaideExplainMode.SMART,
-				"Example.kt",
+				"Example.java",
+				"kotlin",
 				1,
 				1,
 				"demo-project",
@@ -33,13 +34,14 @@ class JaideBackendTestGenerationRequestFactoryTest {
 	}
 
 	@Test
-	void shouldKeepJavaLanguageFromFileName() {
+	void shouldUseResolvedJavaLanguage() {
 		JaideTestGenerationRequest request = new JaideTestGenerationRequest(
 				"class Example {}",
 				"",
 				"",
 				JaideExplainMode.SMART,
 				"Example.java",
+				"java",
 				1,
 				1,
 				"demo-project",
@@ -66,6 +68,7 @@ class JaideBackendTestGenerationRequestFactoryTest {
 				surroundingContext,
 				JaideExplainMode.SMART,
 				"Calculator.kt",
+				"kotlin",
 				1,
 				1,
 				"demo-project",
@@ -92,6 +95,7 @@ class JaideBackendTestGenerationRequestFactoryTest {
 				"",
 				JaideExplainMode.SMART,
 				"Calculator.kt",
+				"kotlin",
 				1,
 				1,
 				"demo-project",

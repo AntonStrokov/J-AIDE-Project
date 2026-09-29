@@ -8,6 +8,7 @@ public record JaideTestGenerationRequest(
 		String surroundingContext,
 		JaideExplainMode mode,
 		String fileName,
+		String sourceLanguage,
 		Integer lineStart,
 		Integer lineEnd,
 		String projectName,

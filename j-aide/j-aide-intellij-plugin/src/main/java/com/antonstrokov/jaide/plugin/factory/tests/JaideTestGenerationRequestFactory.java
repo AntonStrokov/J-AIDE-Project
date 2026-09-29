@@ -20,6 +20,7 @@ public class JaideTestGenerationRequestFactory {
 				"",
 				JaideExplainMode.SMART,
 				context.fileName(),
+				context.sourceLanguage(),
 				context.lineStart(),
 				context.lineEnd(),
 				context.projectName(),

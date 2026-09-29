@@ -1,25 +1,20 @@
 package com.antonstrokov.jaide.plugin.service;
 
-import com.antonstrokov.jaide.plugin.language.JaideLanguageResolver;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 
 public class JaideTestGenerationSourceValidationService {
-
-	private final JaideLanguageResolver languageResolver =
-			new JaideLanguageResolver();
 
 	private final JaideJavaTestSourceValidationService javaValidationService =
 			new JaideJavaTestSourceValidationService();
 
 	public boolean hasSyntaxErrors(
 			Project project,
-			String fileName,
+			String sourceLanguage,
 			String testCode
 	) {
-		String language = languageResolver.resolve(fileName);
 
-		if (!"java".equals(language)) {
+		if (!"java".equals(sourceLanguage)) {
 			return false;
 		}
 
@@ -31,12 +26,11 @@ public class JaideTestGenerationSourceValidationService {
 
 	public boolean hasStructuralErrors(
 			Project project,
-			String fileName,
+			String sourceLanguage,
 			String testCode
 	) {
-		String language = languageResolver.resolve(fileName);
 
-		if (!"java".equals(language)) {
+		if (!"java".equals(sourceLanguage)) {
 			return false;
 		}
 
@@ -50,12 +44,11 @@ public class JaideTestGenerationSourceValidationService {
 			Project project,
 			Document sourceDocument,
 			int selectionStart,
-			String fileName,
+			String sourceLanguage,
 			String testCode
 	) {
-		String language = languageResolver.resolve(fileName);
 
-		if (!"java".equals(language)) {
+		if (!"java".equals(sourceLanguage)) {
 			return false;
 		}
 
