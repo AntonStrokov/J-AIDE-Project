@@ -60,6 +60,9 @@ public final class JaideNotificationMessages {
 	public static final String EMPTY_GENERATED_TEST_RECEIVED =
 			"J-Aide received empty generated test code. Please try again.";
 
+	public static final String TEST_GENERATION_RESPONSE_NOT_STRUCTURED =
+			"J-Aide could not parse the AI response into test results. Please try again.";
+
 	public static final String INVALID_GENERATED_TEST_FORMAT =
 			"J-Aide received generated test code with markdown formatting. Please try again.";
 

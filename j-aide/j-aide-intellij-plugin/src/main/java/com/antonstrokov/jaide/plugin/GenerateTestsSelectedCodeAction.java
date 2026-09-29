@@ -6,6 +6,7 @@ import com.antonstrokov.jaide.plugin.config.JaideNotificationMessages;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContext;
 import com.antonstrokov.jaide.plugin.context.JaideEditorContextExtractor;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationRequest;
+import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResponse;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.tests.JaideTestGenerationRequestFactory;
@@ -86,16 +87,22 @@ public class GenerateTestsSelectedCodeAction extends JaideSelectedCodeAction {
 							requestFactory.create(context, structuralContext);
 					log.info("Sending test generation request");
 
-					JaideTestGenerationResult result = backendClient.generateTests(request);
+					JaideTestGenerationResponse response = backendClient.generateTests(request);
+					JaideTestGenerationResult result = response.testResult();
 
-					if (validationService.isBlankTestCode(result.testCode())) {
-						log.warn("Generate tests action stopped: empty generated test code");
+					boolean blankTestCode =
+							result == null || validationService.isBlankTestCode(result.testCode());
+
+					if (!response.success() || blankTestCode) {
+						log.warn("Generate tests action stopped: responseSuccess="
+								+ response.success() + ", blankTestCode=" + blankTestCode);
 
 						notificationService.showWarning(
 								e.getProject(),
-								JaideNotificationMessages.EMPTY_GENERATED_TEST_RECEIVED
+								response.success()
+										? JaideNotificationMessages.EMPTY_GENERATED_TEST_RECEIVED
+										: JaideNotificationMessages.TEST_GENERATION_RESPONSE_NOT_STRUCTURED
 						);
-
 						return;
 					}
 

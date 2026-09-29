@@ -16,7 +16,6 @@ import com.antonstrokov.jaide.plugin.dto.improve.JaideImprovement;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideBackendTestGenerationRequest;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationRequest;
 import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResponse;
-import com.antonstrokov.jaide.plugin.dto.tests.JaideTestGenerationResult;
 import com.antonstrokov.jaide.plugin.factory.error.JaideBackendErrorExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.factory.explain.JaideBackendExplainRequestFactory;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideBackendImproveRequestFactory;
@@ -67,7 +66,7 @@ public class JaideBackendClient {
 		return parseImprovement(responseBody);
 	}
 
-	public JaideTestGenerationResult generateTests(JaideTestGenerationRequest request)
+	public JaideTestGenerationResponse generateTests(JaideTestGenerationRequest request)
 			throws IOException, InterruptedException {
 		String requestBody = buildTestGenerationRequestBody(request);
 
@@ -79,7 +78,7 @@ public class JaideBackendClient {
 
 		log.info("Test generation response received, responseBodyLength=" + responseBody.length());
 
-		return parseTestGenerationResult(responseBody);
+		return parseTestGenerationResponse(responseBody);
 	}
 
 	public JaideErrorExplanation explainError(JaideErrorExplainRequest request)
@@ -204,24 +203,9 @@ public class JaideBackendClient {
 		return improveResponse.improvement();
 	}
 
-	private JaideTestGenerationResult parseTestGenerationResult(String responseBody) throws IOException {
-		JaideTestGenerationResponse testGenerationResponse = objectMapper.readValue(
-				responseBody,
-				JaideTestGenerationResponse.class
-		);
-
-		if (testGenerationResponse.testResult() == null) {
-			return new JaideTestGenerationResult(
-					"Test generation result not found",
-					null,
-					null,
-					null,
-					null,
-					null
-			);
-		}
-
-		return testGenerationResponse.testResult();
+	private JaideTestGenerationResponse parseTestGenerationResponse(String responseBody)
+			throws IOException {
+		return objectMapper.readValue(responseBody, JaideTestGenerationResponse.class);
 	}
 
 	private JaideErrorExplanation parseErrorExplanation(String responseBody) throws IOException {
