@@ -596,6 +596,7 @@ In the current version, both `Tools > J-Aide` and the editor context menu's `J-A
 - Generate Tests Preview follows the same Tool Window UI style as Explain, Improve, and Runtime Error previews.
 - Generate Tests Preview shows structured sections: status, summary, test framework, generated test code, covered scenarios, risk hint, and confidence.
 - Generate Tests Preview reports completion in its status section without a separate success notification.
+- The generated test code is shown as a preview; the plugin does not compile or run it.
 - Generate Tests shows separate warnings for an AI response that could not be parsed and for empty generated test code; neither is displayed as a successful preview.
 - Generate Tests Preview supports copying generated test code through the shared `Copy Code` button.
 - Generate Tests MVP does not create test files automatically and does not modify user code.
