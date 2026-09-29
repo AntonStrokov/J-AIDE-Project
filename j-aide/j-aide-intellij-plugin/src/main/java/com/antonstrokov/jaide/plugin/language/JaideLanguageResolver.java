@@ -1,17 +1,31 @@
 package com.antonstrokov.jaide.plugin.language;
 
+import java.util.Locale;
+
 public class JaideLanguageResolver {
 
 	public String resolve(String fileName) {
-		String extension = resolveExtension(fileName);
+		String language = mapKnownLanguage(resolveExtension(fileName));
+		return language == null ? "plain_text" : language;
+	}
 
-		return switch (extension) {
+	public String resolve(String psiLanguageId, String fileName) {
+		String language = mapKnownLanguage(psiLanguageId);
+		return language == null ? resolve(fileName) : language;
+	}
+
+	private String mapKnownLanguage(String identifier) {
+		if (identifier == null) {
+			return null;
+		}
+
+		return switch (identifier.toLowerCase(Locale.ROOT)) {
 			case "java" -> "java";
-			case "kt" -> "kotlin";
+			case "kt", "kotlin" -> "kotlin";
 			case "sql" -> "sql";
 			case "xml" -> "xml";
-			case "js" -> "javascript";
-			default -> "plain_text";
+			case "js", "javascript" -> "javascript";
+			default -> null;
 		};
 	}
 
@@ -26,6 +40,6 @@ public class JaideLanguageResolver {
 			return "";
 		}
 
-		return fileName.substring(dotIndex + 1).toLowerCase();
+		return fileName.substring(dotIndex + 1);
 	}
 }

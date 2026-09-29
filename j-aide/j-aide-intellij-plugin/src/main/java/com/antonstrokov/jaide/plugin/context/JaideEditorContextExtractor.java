@@ -1,5 +1,6 @@
 package com.antonstrokov.jaide.plugin.context;
 
+import com.antonstrokov.jaide.plugin.language.JaideLanguageResolver;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationInfo;
@@ -9,8 +10,10 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 
 public class JaideEditorContextExtractor {
+	private final JaideLanguageResolver languageResolver = new JaideLanguageResolver();
 
 	public JaideEditorContext extract(AnActionEvent e) {
 		Editor editor = e.getData(CommonDataKeys.EDITOR);
@@ -23,6 +26,13 @@ public class JaideEditorContextExtractor {
 		Project project = e.getProject();
 
 		String fileName = virtualFile == null ? null : virtualFile.getName();
+
+		PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+		String sourceLanguage = languageResolver.resolve(
+				psiFile == null ? null : psiFile.getLanguage().getID(),
+				fileName
+		);
+
 		String projectName = project == null ? null : project.getName();
 
 		Module module = virtualFile == null || project == null
@@ -49,6 +59,7 @@ public class JaideEditorContextExtractor {
 		return new JaideEditorContext(
 				selectedText,
 				fileName,
+				sourceLanguage,
 				lineStart,
 				lineEnd,
 				selectionStart,

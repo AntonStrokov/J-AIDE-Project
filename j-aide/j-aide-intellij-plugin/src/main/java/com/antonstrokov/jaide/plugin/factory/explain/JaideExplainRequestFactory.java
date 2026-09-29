@@ -11,6 +11,7 @@ public class JaideExplainRequestFactory {
 				context.selectedCode(),
 				JaideExplainModeState.getCurrentMode(),
 				context.fileName(),
+				context.sourceLanguage(),
 				context.lineStart(),
 				context.lineEnd(),
 				context.projectName(),

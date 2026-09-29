@@ -16,6 +16,7 @@ class JaideTestGenerationRequestFactoryTest {
 		JaideEditorContext context = new JaideEditorContext(
 				"fun add(a: Int, b: Int): Int = a + b",
 				"Calculator.kt",
+				"kotlin",
 				2,
 				2,
 				20,

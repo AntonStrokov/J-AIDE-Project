@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Document;
 public record JaideEditorContext(
 		String selectedCode,
 		String fileName,
+		String sourceLanguage,
 		int lineStart,
 		int lineEnd,
 		int selectionStart,
