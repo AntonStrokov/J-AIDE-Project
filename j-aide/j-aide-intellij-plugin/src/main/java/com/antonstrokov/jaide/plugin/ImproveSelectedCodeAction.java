@@ -11,6 +11,7 @@ import com.antonstrokov.jaide.plugin.error.JaideErrorMessageBuilder;
 import com.antonstrokov.jaide.plugin.factory.improve.JaideImproveRequestFactory;
 import com.antonstrokov.jaide.plugin.notification.JaideNotificationService;
 import com.antonstrokov.jaide.plugin.service.JaideChangeVerificationResult;
+import com.antonstrokov.jaide.plugin.service.JaideImprovementIndentationService;
 import com.antonstrokov.jaide.plugin.service.JaideImprovementSemanticValidationService;
 import com.antonstrokov.jaide.plugin.service.JaideImprovementValidationService;
 import com.antonstrokov.jaide.plugin.state.JaideImprovementState;
@@ -37,6 +38,8 @@ public class ImproveSelectedCodeAction extends JaideSelectedCodeAction {
 	private final JaideImprovementValidationService validationService = new JaideImprovementValidationService();
 	private final JaideImprovementSemanticValidationService semanticValidationService =
 			new JaideImprovementSemanticValidationService();
+	private final JaideImprovementIndentationService indentationService =
+			new JaideImprovementIndentationService();
 
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
@@ -82,6 +85,22 @@ public class ImproveSelectedCodeAction extends JaideSelectedCodeAction {
 						);
 
 						return;
+					}
+
+					String alignedCode = indentationService.alignWithSelection(
+							context.selectedCode(),
+							improvement.improvedCode()
+					);
+
+					if (!alignedCode.equals(improvement.improvedCode())) {
+						improvement = new JaideImprovement(
+								improvement.summary(),
+								alignedCode,
+								improvement.changes(),
+								improvement.changeFacts(),
+								improvement.riskHint(),
+								improvement.confidence()
+						);
 					}
 
 					if (validationService.isNoOpImprovement(context.selectedCode(), improvement.improvedCode())) {
