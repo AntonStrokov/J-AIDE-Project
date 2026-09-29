@@ -538,7 +538,7 @@ Examples of validation rules:
 
 Current status:
 
-- J-Aide `v0.1.2` is the current stable patch-release baseline.
+- J-Aide `v0.1.3` is the current stable patch-release baseline.
 - The original `v0.1.0-mvp` release remains frozen and is not rewritten or retagged.
 - The Spring Boot backend and IntelliJ plugin are implemented and connected end-to-end.
 - Explain Selected Code supports `FAST`, `SMART`, and `DEEP` modes.
@@ -587,6 +587,7 @@ In the current version, both `Tools > J-Aide` and the editor context menu's `J-A
 - Sends selected code to the backend for code improvement.
 - Displays suggested improved code in the J-Aide Tool Window.
 - Allows copying improved code through a dedicated `Copy Code` action without applying changes to the file.
+- Improve Selected Code restores missing common indentation from the selected block before validation and preview; Diff and Apply use the same aligned code. A response that only removes this indentation is treated as a no-op.
 - Provides `J-Aide: Generate Tests` through the `J-Aide` submenu in both the `Tools` menu and the editor context menu.
 - Sends explicitly selected source code together with minimal `structuralContext` to the backend `POST /ai/tests` endpoint.
 - Extracts `structuralContext` through UAST as minimal metadata such as package, enclosing class declaration, and selected method signature.
@@ -769,7 +770,7 @@ Module responsibilities:
 
 ## Known Limitations and Post-MVP Work
 
-The following limitations apply to the current J-Aide `v0.1.2` stable baseline.
+The following limitations apply to the current J-Aide `v0.1.3` stable baseline.
 
 ### Known Current Limitations
 
