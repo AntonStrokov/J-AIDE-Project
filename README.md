@@ -192,7 +192,7 @@ Current `/backend-info` health behavior:
 - `providerVersion` reports the detected Ollama version when available.
 - If Ollama is unavailable, `providerStatus` becomes `FAILED` and `modelStatus` becomes `UNKNOWN`.
 - If Ollama is reachable but the configured model is missing, `providerStatus` remains `READY` and `modelStatus` becomes `FAILED`.
-- Guided remediation and automatic setup recovery are not included in the MVP.
+- Automatic Ollama startup, model downloads, and environment repair are not performed.
 
 ### GET /ai/health
 
@@ -226,6 +226,20 @@ Current `/ai/health` behavior:
 - May take longer than `/backend-info` because Ollama may need to load the model.
 - Reports the full check duration in `responseTimeMs`.
 - Does not automatically start Ollama, download a missing model, or change local environment settings.
+
+Optional diagnostic metadata is available through `GET /ai/health?diagnostics=true`.
+
+- Without the parameter, `/ai/health` preserves the original six response fields for compatibility with older plugins.
+- With `diagnostics=true`, the response also includes `diagnosticCode` and `configuredModel`.
+- The `health` section of `/backend-info` preserves its original six fields.
+- Diagnostic codes distinguish a missing model (`MODEL_NOT_FOUND`), a failed trial generation (`MODEL_TRIAL_FAILED`), and an invalid model list (`INVALID_PROVIDER_RESPONSE`).
+- The updated plugin also accepts older backend responses without diagnostic metadata.
+
+Example request with diagnostic metadata:
+
+```bash
+curl "http://localhost:8080/ai/health?diagnostics=true"
+```
 
 ### POST /ai/explain
 
@@ -539,6 +553,7 @@ Examples of validation rules:
 Current status:
 
 - J-Aide `v0.1.3` is the current stable patch-release baseline.
+- The current `main` branch includes optional AI health diagnostics and missing-model guidance added after `v0.1.3`; these changes are not yet released.
 - The original `v0.1.0-mvp` release remains frozen and is not rewritten or retagged.
 - The Spring Boot backend and IntelliJ plugin are implemented and connected end-to-end.
 - Explain Selected Code supports `FAST`, `SMART`, and `DEEP` modes.
@@ -606,10 +621,13 @@ In the current version, both `Tools > J-Aide` and the editor context menu's `J-A
 - Opens the J-Aide Tool Window automatically when the check is started from either menu.
 - Shows a loading state directly in the Tool Window while the AI setup check is running.
 - Displays the full AI health result directly in the Tool Window.
-- Shows backend, provider, and model statuses together with the Ollama version, response time, and diagnostic message.
+- Shows backend, provider, and model statuses together with the configured model name when available, Ollama version, response time, and diagnostic message.
 - Uses colored health status indicators: `READY` is green, `DEGRADED` uses a warning color, `FAILED` is red, and `UNKNOWN` is gray.
 - Displays a `Retry` action for backend connection errors and non-ready health results with `DEGRADED`, `FAILED`, or `UNKNOWN` statuses.
-- Uses the backend `GET /ai/health` endpoint, including a lightweight trial generation request when the provider and configured model are available.
+- Shows a `Recommended Action` when backend diagnostics confirm that the configured model is missing.
+- Suggests an `ollama pull` command with the exact configured model name, to be run manually on the machine hosting Ollama.
+- Limits model download guidance to confirmed missing-model results.
+- Uses `GET /ai/health?diagnostics=true`, including a lightweight trial generation request when the provider and configured model are available.
 - Reports unavailable Ollama and missing model states without requiring an IntelliJ or backend restart after the local AI setup is restored.
 - Uses the Tool Window as the primary UX channel for AI setup checks instead of popup notifications.
 - Uses Jackson for safe backend request serialization and response parsing.
@@ -751,7 +769,8 @@ Module responsibilities:
 | Full AI health check             | Done MVP        | `/ai/health` includes a lightweight trial generation request                     |
 | AI setup recovery check          | Done MVP        | Restored Ollama or model availability is detected without restarting the backend |
 | Colored health indicators        | Done MVP+       | READY is green, DEGRADED uses a warning color, FAILED is red, and UNKNOWN is gray |
-| Guided AI setup remediation      | Post-MVP        | Automatic startup, model download, and environment repair are not included       |
+| Missing model guidance           | Done MVP+       | Shows the configured model, a manual download recommendation, and Retry          |
+| Automatic AI setup recovery      | Post-MVP        | Automatic startup, model download, and environment repair remain future work     |
 | Structured backend responses     | Done MVP        | Explain, Improve, Runtime Error, and Generate Tests return structured data       |
 | Request metadata                 | Done MVP        | Includes file, project, module, IDE, plugin, trace, and timing information       |
 | Plugin notifications             | Done MVP        | Information, warning, and error notifications expire automatically               |
@@ -887,21 +906,16 @@ After Ollama is restored, run `Check AI Setup` again. The J-Aide backend does no
 
 ### AI Health Reports Model Failed
 
-If the provider is `READY` but the model is `FAILED`, verify that the configured model is installed in the active Ollama model directory.
+If the provider is `READY` but the model is `FAILED`, inspect the diagnostic message and any `Recommended Action` shown in the Tool Window.
 
-Run:
+- For a confirmed missing model, check installed models with `ollama list` on the machine running Ollama.
+- Download the exact model shown in `Configured Model`, including its tag. For the default configuration, the command is `ollama pull qwen2.5-coder:7b`.
+- If the model is already installed, check that its name and tag match the backend configuration and that the running Ollama instance uses the expected model directory.
+- A failed trial generation also produces a `FAILED` model status. In that case, inspect backend and Ollama logs; a download recommendation is shown only for a confirmed missing model.
 
-```powershell
-ollama list
-```
+After installing the model or restoring Ollama, click `Retry` in the existing panel. These recovery actions do not require a backend restart.
 
-If `qwen2.5-coder:7b` is missing, download it:
-
-```powershell
-ollama pull qwen2.5-coder:7b
-```
-
-After the model download completes, run `Check AI Setup` again. The backend restart is not required.
+Changing the backend's configured model requires restarting the backend.
 
 ## Environment Configuration
 
