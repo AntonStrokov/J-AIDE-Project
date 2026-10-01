@@ -6,11 +6,12 @@ import com.antonstrokov.j_aide.core.config.AppProperties;
 import com.antonstrokov.j_aide.core.dto.common.ExplainMode;
 import com.antonstrokov.j_aide.core.dto.common.SupportedFeature;
 import com.antonstrokov.j_aide.core.dto.common.SupportedLanguage;
-import com.antonstrokov.j_aide.core.service.HealthService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthResult;
 import com.antonstrokov.j_aide.core.service.AiProviderHealthService;
+import com.antonstrokov.j_aide.core.service.HealthService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 
@@ -66,18 +67,21 @@ public class HealthController {
 		AiProviderHealthResult healthResult =
 				aiProviderHealthService.getHealthInfo();
 
-		BackendHealthInfo health = buildBackendHealthInfo(healthResult);
+		BackendHealthInfo health = buildBackendHealthInfo(healthResult, false);
 		response.setHealth(health);
 
 		return response;
 	}
 
 	@GetMapping("/ai/health")
-	public BackendHealthInfo aiHealth() {
+	public BackendHealthInfo aiHealth(
+			@RequestParam(name = "diagnostics", defaultValue = "false")
+			boolean includeDiagnostics
+	) {
 		AiProviderHealthResult healthResult =
 				aiProviderHealthService.getSetupHealthInfo();
 
-		return buildBackendHealthInfo(healthResult);
+		return buildBackendHealthInfo(healthResult, includeDiagnostics);
 	}
 
 	private BackendMetadata buildBackendMetadata() {
@@ -132,16 +136,28 @@ public class HealthController {
 	}
 
 	private BackendHealthInfo buildBackendHealthInfo(
-			AiProviderHealthResult healthResult
+			AiProviderHealthResult healthResult,
+			boolean includeDiagnostics
 	) {
-
 		BackendHealthInfo health = new BackendHealthInfo();
-		health.setBackendStatus(BackendHealthStatus.valueOf(healthResult.backendStatus().name()));
-		health.setProviderStatus(BackendHealthStatus.valueOf(healthResult.providerStatus().name()));
-		health.setModelStatus(BackendHealthStatus.valueOf(healthResult.modelStatus().name()));
+
+		health.setBackendStatus(
+				BackendHealthStatus.valueOf(healthResult.backendStatus().name())
+		);
+		health.setProviderStatus(
+				BackendHealthStatus.valueOf(healthResult.providerStatus().name())
+		);
+		health.setModelStatus(
+				BackendHealthStatus.valueOf(healthResult.modelStatus().name())
+		);
 		health.setProviderVersion(healthResult.providerVersion());
 		health.setResponseTimeMs(healthResult.responseTimeMs());
 		health.setMessage(healthResult.message());
+
+		if (includeDiagnostics) {
+			health.setDiagnosticCode(healthResult.diagnosticCode().name());
+			health.setConfiguredModel(healthResult.configuredModel());
+		}
 
 		return health;
 	}

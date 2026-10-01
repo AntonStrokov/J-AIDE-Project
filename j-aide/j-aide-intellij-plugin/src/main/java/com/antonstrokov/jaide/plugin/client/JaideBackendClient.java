@@ -99,7 +99,9 @@ public class JaideBackendClient {
 	public JaideHealthResponse checkAiHealth()
 			throws IOException, InterruptedException {
 		HttpRequest httpRequest =
-				backendTransport.buildGetRequest(JaideConstants.AI_HEALTH_URL);
+				backendTransport.buildGetRequest(
+						JaideConstants.AI_HEALTH_URL + "?diagnostics=true"
+				);
 
 		String responseBody = send(httpRequest);
 

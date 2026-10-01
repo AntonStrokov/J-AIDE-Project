@@ -104,6 +104,25 @@ public final class JaideUiLabels {
 			"AI Setup Check Failed";
 	public static final String AI_HEALTH_ERROR_MESSAGE_SECTION =
 			"Error";
+	public static final String CONFIGURED_MODEL_SECTION = "Configured Model";
+	public static final String AI_HEALTH_GUIDANCE_SECTION = "Recommended Action";
+
+	public static final String AI_MODEL_NOT_FOUND_GUIDANCE = """
+        On the machine running Ollama,
+        download the configured model:
+
+        ollama pull %s
+
+        After the download finishes, click Retry.
+        If the model is already installed,
+        check the backend model name and tag.
+        """;
+
+	public static final String AI_MODEL_NOT_FOUND_WITHOUT_NAME_GUIDANCE = """
+        Check the model name in the backend configuration.
+        Install that exact model on the machine running Ollama,
+        then click Retry.
+        """;
 
 	private JaideUiLabels() {
 	}

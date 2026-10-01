@@ -19,6 +19,8 @@ import java.awt.*;
 public final class JaideAiHealthPreviewPanel extends JPanel {
 
 	private final JPanel contentPanel;
+	private final JaideAiHealthGuidanceBuilder guidanceBuilder =
+			new JaideAiHealthGuidanceBuilder();
 
 	public JaideAiHealthPreviewPanel() {
 		super(new BorderLayout());
@@ -48,6 +50,10 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 				JaideUiLabels.PROVIDER_STATUS_SECTION,
 				response.providerStatus()
 		);
+		addTextSection(
+				JaideUiLabels.CONFIGURED_MODEL_SECTION,
+				response.configuredModel()
+		);
 		addStatusSection(
 				JaideUiLabels.MODEL_STATUS_SECTION,
 				response.modelStatus()
@@ -63,6 +69,10 @@ public final class JaideAiHealthPreviewPanel extends JPanel {
 		addTextSection(
 				JaideUiLabels.HEALTH_MESSAGE_SECTION,
 				response.message()
+		);
+		addTextSection(
+				JaideUiLabels.AI_HEALTH_GUIDANCE_SECTION,
+				guidanceBuilder.build(response)
 		);
 
 		if (!isFullyReady(response)) {

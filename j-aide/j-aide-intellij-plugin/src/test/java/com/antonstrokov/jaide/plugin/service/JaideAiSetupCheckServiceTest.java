@@ -21,7 +21,9 @@ class JaideAiSetupCheckServiceTest {
 	@Test
 	void shouldNotReportResultConsumerFailureAsBackendFailure() {
 		JaideHealthResponse response = new JaideHealthResponse(
-				null, null, null, null, 0L, "Test response"
+				null, null, null,
+				null, 0L, "Test response",
+				null, null
 		);
 		IllegalStateException uiFailure =
 				new IllegalStateException("Preview update failed");

@@ -6,6 +6,8 @@ public record AiProviderHealthResult(
 		AiProviderHealthStatus modelStatus,
 		String providerVersion,
 		Long responseTimeMs,
-		String message
+		String message,
+		AiProviderHealthDiagnosticCode diagnosticCode,
+		String configuredModel
 ) {
 }
