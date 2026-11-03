@@ -620,6 +620,7 @@ In the current version, both `Tools > J-Aide` and the editor context menu's `J-A
 - Provides a permanent `Check AI Setup` button in the J-Aide Tool Window.
 - Opens the J-Aide Tool Window automatically when the check is started from either menu.
 - Shows a loading state directly in the Tool Window while the AI setup check is running.
+- Explains that the check may load the model into memory and run a short trial generation, so the first check may take longer.
 - Displays the full AI health result directly in the Tool Window.
 - Shows backend, provider, and model statuses together with the configured model name when available, Ollama version, response time, and diagnostic message.
 - Uses colored health status indicators: `READY` is green, `DEGRADED` uses a warning color, `FAILED` is red, and `UNKNOWN` is gray.
