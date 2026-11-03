@@ -123,6 +123,78 @@ class JaideAiHealthGuidanceBuilderTest {
 		assertNull(guidanceBuilder.build(null));
 	}
 
+	@Test
+	void shouldBuildProviderGuidanceRegardlessOfMessageWording() {
+		JaideHealthResponse response = new JaideHealthResponse(
+				READY,
+				FAILED,
+				UNKNOWN,
+				null,
+				12L,
+				"Human-readable wording can change.",
+				"PROVIDER_UNREACHABLE",
+				MODEL
+		);
+
+		String guidance = guidanceBuilder.build(response);
+
+		assertNotNull(guidance);
+		assertTrue(guidance.contains("Ollama"));
+		assertTrue(guidance.contains("base URL"));
+		assertTrue(guidance.contains("Retry"));
+		assertFalse(guidance.contains("ollama pull"));
+	}
+
+	@Test
+	void shouldNotGuideProviderRecoveryForContradictoryStatuses() {
+		String code = "PROVIDER_UNREACHABLE";
+
+		List<JaideHealthResponse> responses = List.of(
+				healthResponse(FAILED, FAILED, UNKNOWN, code, MODEL),
+				healthResponse(READY, READY, UNKNOWN, code, MODEL),
+				healthResponse(READY, FAILED, READY, code, MODEL),
+				healthResponse(READY, FAILED, FAILED, code, MODEL),
+				healthResponse(null, FAILED, UNKNOWN, code, MODEL),
+				healthResponse(READY, null, UNKNOWN, code, MODEL),
+				healthResponse(READY, FAILED, null, code, MODEL)
+		);
+
+		for (JaideHealthResponse response : responses) {
+			assertNull(
+					guidanceBuilder.build(response),
+					response.toString()
+			);
+		}
+	}
+
+	@Test
+	void shouldNotGuideProviderRecoveryWithoutMatchingDiagnosticCode() {
+		String[] diagnosticCodes = {
+				null,
+				"",
+				"NONE",
+				"MODEL_NOT_FOUND",
+				"MODEL_TRIAL_FAILED",
+				"INVALID_PROVIDER_RESPONSE",
+				"FUTURE_DIAGNOSTIC_CODE"
+		};
+
+		for (String diagnosticCode : diagnosticCodes) {
+			JaideHealthResponse response = healthResponse(
+					READY,
+					FAILED,
+					UNKNOWN,
+					diagnosticCode,
+					MODEL
+			);
+
+			assertNull(
+					guidanceBuilder.build(response),
+					"Unexpected guidance for code: " + diagnosticCode
+			);
+		}
+	}
+
 	private JaideHealthResponse healthResponse(
 			JaideHealthStatus backendStatus,
 			JaideHealthStatus providerStatus,

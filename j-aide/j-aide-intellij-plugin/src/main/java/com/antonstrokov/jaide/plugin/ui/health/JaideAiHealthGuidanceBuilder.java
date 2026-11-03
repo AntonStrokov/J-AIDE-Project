@@ -7,11 +7,21 @@ import com.antonstrokov.jaide.plugin.dto.health.JaideHealthStatus;
 public final class JaideAiHealthGuidanceBuilder {
 
 	private static final String MODEL_NOT_FOUND = "MODEL_NOT_FOUND";
+	private static final String PROVIDER_UNREACHABLE = "PROVIDER_UNREACHABLE";
 
 	public String build(JaideHealthResponse response) {
 		if (response == null
-				|| response.backendStatus() != JaideHealthStatus.READY
-				|| response.providerStatus() != JaideHealthStatus.READY
+				|| response.backendStatus() != JaideHealthStatus.READY) {
+			return null;
+		}
+
+		if (response.providerStatus() == JaideHealthStatus.FAILED
+				&& response.modelStatus() == JaideHealthStatus.UNKNOWN
+				&& PROVIDER_UNREACHABLE.equals(response.diagnosticCode())) {
+			return JaideUiLabels.AI_PROVIDER_UNREACHABLE_GUIDANCE;
+		}
+
+		if (response.providerStatus() != JaideHealthStatus.READY
 				|| response.modelStatus() != JaideHealthStatus.FAILED
 				|| !MODEL_NOT_FOUND.equals(response.diagnosticCode())) {
 			return null;

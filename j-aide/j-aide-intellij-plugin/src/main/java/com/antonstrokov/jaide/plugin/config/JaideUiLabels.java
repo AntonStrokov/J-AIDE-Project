@@ -123,6 +123,19 @@ public final class JaideUiLabels {
         check the backend model name and tag.
         """;
 
+	public static final String AI_PROVIDER_UNREACHABLE_GUIDANCE = """
+        The backend could not complete the Ollama check.
+        Check that Ollama is running on its host machine
+        and verify its base URL in the backend configuration.
+
+        If Ollama fails to start, check its logs
+        for a port conflict.
+        If it is already running, inspect backend
+        and Ollama logs for connection or response errors.
+
+        After resolving the issue, click Retry.
+        """;
+
 	public static final String AI_MODEL_NOT_FOUND_WITHOUT_NAME_GUIDANCE = """
         Check the model name in the backend configuration.
         Install that exact model on the machine running Ollama,
