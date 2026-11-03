@@ -98,8 +98,13 @@ public final class JaideUiLabels {
 	public static final String HEALTH_MESSAGE_SECTION = "Message";
 	public static final String AI_HEALTH_LOADING_TITLE =
 			"Checking AI Setup";
-	public static final String AI_HEALTH_LOADING_MESSAGE =
-			"Checking backend, provider and configured model...";
+	public static final String AI_HEALTH_LOADING_MESSAGE = """
+        Checking backend, provider and configured model...
+
+        This check may load the model into memory
+        and run a short test generation.
+        The first check may take longer.
+        """;
 	public static final String AI_HEALTH_ERROR_TITLE =
 			"AI Setup Check Failed";
 	public static final String AI_HEALTH_ERROR_MESSAGE_SECTION =
