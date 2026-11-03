@@ -826,21 +826,26 @@ The following limitations apply to the current J-Aide `v0.1.3` stable baseline.
 
 ## IntelliJ Plugin Testing Notes
 
-Pure unit tests for the IntelliJ plugin module are currently not enabled.
+Automated tests are enabled in `j-aide-intellij-plugin`.
 
-A first attempt to add JUnit 5 test infrastructure directly to `j-aide-intellij-plugin` was reverted because the IntelliJ Platform Gradle Plugin test task started the test JVM with `com.intellij.util.lang.PathClassLoader`, which caused console `gradlew build` to fail before JUnit execution.
+- The Gradle `test` task uses JUnit Platform with JUnit Jupiter and the JUnit Vintage engine.
+- IntelliJ Platform and Java test frameworks support tests that depend on IDE APIs.
+- Automated coverage includes service and validation logic, request factories, JSON handling, language resolution, and editor/structural-context extraction.
+- Sandbox runtime smoke tests remain part of verification for UI rendering, threading, and end-to-end action flows. Automated tests do not cover every UI/action path.
 
-Current rule:
+From the repository root, run the plugin tests:
 
-- do not reintroduce plugin test infrastructure until `gradlew build` remains green;
-- prefer manual sandbox checks for plugin behavior in the current MVP stage;
-- future testing strategy should be investigated separately.
+```powershell
+cd .\j-aide\j-aide-intellij-plugin
+.\gradlew.bat test
+```
 
-Possible future directions:
+The standard `.\gradlew.bat build` also includes automated tests.
 
-- extract pure Java validation logic into a plain Java module and test it with regular JUnit;
-- configure a separate clean unit test source set/task that does not use IntelliJ Platform runtime;
-- use proper IntelliJ Platform tests only for plugin behavior that depends on IDE APIs.
+Reports are written under the plugin module:
+
+- HTML report: `build/reports/tests/test/index.html`
+- XML reports: `build/test-results/test/`
 
 ## Troubleshooting
 
