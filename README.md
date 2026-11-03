@@ -902,13 +902,17 @@ Do not run the Ollama desktop server and a separate manual `ollama serve` proces
 
 ### AI Health Reports Provider Failed
 
-If `Check AI Setup` reports that the provider is `FAILED` and the model is `UNKNOWN`, verify that Ollama is running and listening on:
+If `Check AI Setup` reports backend `READY`, provider `FAILED`, and model `UNKNOWN`, inspect the diagnostic message and any `Recommended Action` shown in the Tool Window.
 
-```text
-http://127.0.0.1:11434
-```
+With `diagnosticCode=PROVIDER_UNREACHABLE`, the plugin suggests these manual checks:
 
-After Ollama is restored, run `Check AI Setup` again. The J-Aide backend does not need to be restarted.
+- Make sure Ollama is running on its host machine and verify the Ollama base URL in the backend configuration.
+- If Ollama fails to start, inspect its logs for a port conflict.
+- If Ollama is already running, inspect backend and Ollama logs for connection or response errors.
+
+`PROVIDER_UNREACHABLE` currently groups HTTP client failures during the provider version and model-list checks. It does not identify the exact underlying cause.
+
+After restoring access at the configured address, click `Retry` in the existing panel. The backend can detect recovery without being restarted.
 
 ### AI Health Reports Model Failed
 
