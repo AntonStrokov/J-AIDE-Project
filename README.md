@@ -878,6 +878,12 @@ Windows cannot delete or replace the executable JAR while its Java process is st
 
 Use only one Ollama server process on port `11434`.
 
+When using the Ollama desktop application, also check `Settings > Model location`. The application can use a saved model directory that differs from `OLLAMA_MODELS`.
+
+Use `Browse` to select the existing directory containing the configured model, for example `C:\ollama-models`.
+
+After changing the location, run `Check AI Setup` again and confirm that backend, provider, and model statuses are `READY`.
+
 If Ollama tries to load models from an unexpected user-profile directory, stop the Ollama desktop application and any existing `ollama serve` process before starting it again with the correct model path.
 
 ```powershell
