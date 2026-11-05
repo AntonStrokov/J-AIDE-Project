@@ -918,6 +918,8 @@ With `diagnosticCode=PROVIDER_UNREACHABLE`, the plugin suggests these manual che
 
 `PROVIDER_UNREACHABLE` currently groups HTTP client failures during the provider version and model-list checks. It does not identify the exact underlying cause.
 
+The backend logs these failures at `WARN` level with the configured Ollama base URL and the full exception stack trace, including nested causes. Search the backend log for `Ollama provider health check failed` to inspect the underlying error.
+
 After restoring access at the configured address, click `Retry` in the existing panel. The backend can detect recovery without being restarted.
 
 ### AI Health Reports Model Failed
