@@ -233,6 +233,7 @@ Optional diagnostic metadata is available through `GET /ai/health?diagnostics=tr
 - With `diagnostics=true`, the response also includes `diagnosticCode` and `configuredModel`.
 - The `health` section of `/backend-info` preserves its original six fields.
 - Diagnostic codes distinguish a missing model (`MODEL_NOT_FOUND`), a failed trial generation (`MODEL_TRIAL_FAILED`), and an invalid model list (`INVALID_PROVIDER_RESPONSE`).
+- Provider version and model-list checks report HTTP error responses as `PROVIDER_HTTP_ERROR`. Other `RestClientException` failures remain grouped under `PROVIDER_UNREACHABLE`.
 - The updated plugin also accepts older backend responses without diagnostic metadata.
 
 Example request with diagnostic metadata:
@@ -916,7 +917,9 @@ With `diagnosticCode=PROVIDER_UNREACHABLE`, the plugin suggests these manual che
 - If Ollama fails to start, inspect its logs for a port conflict.
 - If Ollama is already running, inspect backend and Ollama logs for connection or response errors.
 
-`PROVIDER_UNREACHABLE` currently groups HTTP client failures during the provider version and model-list checks. It does not identify the exact underlying cause.
+`PROVIDER_HTTP_ERROR` means that the server at the configured address returned an HTTP error (4xx/5xx) during a provider version or model-list check. `Message` includes the HTTP status and configured base URL. The plugin recommends checking the status, verifying that the base URL points to the Ollama API, and inspecting backend logs and, if the address is correct, Ollama logs.
+
+`PROVIDER_UNREACHABLE` groups other `RestClientException` failures during those checks, including connection and I/O errors. It does not identify the exact underlying cause.
 
 The backend logs these failures at `WARN` level with the configured Ollama base URL and the full exception stack trace, including nested causes. Search the backend log for `Ollama provider health check failed` to inspect the underlying error.
 
