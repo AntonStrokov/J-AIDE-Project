@@ -7,11 +7,15 @@ import com.antonstrokov.j_aide.core.dto.health.AiProviderHealthStatus;
 import com.antonstrokov.j_aide.core.integration.ollama.OllamaClient;
 import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaGenerateResponse;
 import com.antonstrokov.j_aide.core.integration.ollama.dto.OllamaTagsResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 @Service
 public class AiProviderHealthService {
+	private static final Logger log =
+			LoggerFactory.getLogger(AiProviderHealthService.class);
 	private static final String MODEL_TRIAL_PROMPT = "Reply with OK.";
 
 	private final OllamaClient ollamaClient;
@@ -95,6 +99,11 @@ public class AiProviderHealthService {
 					configuredModel
 			);
 		} catch (RestClientException ex) {
+			log.warn(
+					"Ollama provider health check failed: baseUrl={}",
+					aiProperties.ollama().baseUrl(),
+					ex
+			);
 			return new AiProviderHealthResult(
 					AiProviderHealthStatus.READY,
 					AiProviderHealthStatus.FAILED,
