@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 @Service
 public class AiProviderHealthService {
@@ -98,12 +99,35 @@ public class AiProviderHealthService {
 					diagnosticCode,
 					configuredModel
 			);
+		} catch (RestClientResponseException ex) {
+			int statusCode = ex.getStatusCode().value();
+
+			log.warn(
+					"Ollama provider health check failed: baseUrl={}, httpStatus={}",
+					aiProperties.ollama().baseUrl(),
+					statusCode,
+					ex
+			);
+
+			return new AiProviderHealthResult(
+					AiProviderHealthStatus.READY,
+					AiProviderHealthStatus.FAILED,
+					AiProviderHealthStatus.UNKNOWN,
+					null,
+					System.currentTimeMillis() - startedAt,
+					"AI provider returned HTTP " + statusCode + ": "
+							+ aiProperties.ollama().baseUrl(),
+					AiProviderHealthDiagnosticCode.PROVIDER_HTTP_ERROR,
+					configuredModel
+			);
 		} catch (RestClientException ex) {
+
 			log.warn(
 					"Ollama provider health check failed: baseUrl={}",
 					aiProperties.ollama().baseUrl(),
 					ex
 			);
+
 			return new AiProviderHealthResult(
 					AiProviderHealthStatus.READY,
 					AiProviderHealthStatus.FAILED,

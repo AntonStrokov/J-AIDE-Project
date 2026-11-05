@@ -195,6 +195,51 @@ class JaideAiHealthGuidanceBuilderTest {
 		}
 	}
 
+	@Test
+	void shouldBuildHttpErrorGuidanceRegardlessOfMessageWording() {
+		JaideHealthResponse response = new JaideHealthResponse(
+				READY,
+				FAILED,
+				UNKNOWN,
+				null,
+				12L,
+				"Human-readable wording can change.",
+				"PROVIDER_HTTP_ERROR",
+				MODEL
+		);
+
+		String guidance = guidanceBuilder.build(response);
+
+		assertNotNull(guidance);
+		assertTrue(guidance.contains("HTTP"));
+		assertTrue(guidance.contains("base URL"));
+		assertTrue(guidance.contains("logs"));
+		assertTrue(guidance.contains("Retry"));
+		assertFalse(guidance.contains("ollama pull"));
+	}
+
+	@Test
+	void shouldNotGuideHttpErrorForContradictoryStatuses() {
+		String code = "PROVIDER_HTTP_ERROR";
+
+		List<JaideHealthResponse> responses = List.of(
+				healthResponse(FAILED, FAILED, UNKNOWN, code, MODEL),
+				healthResponse(READY, READY, UNKNOWN, code, MODEL),
+				healthResponse(READY, FAILED, READY, code, MODEL),
+				healthResponse(READY, FAILED, FAILED, code, MODEL),
+				healthResponse(null, FAILED, UNKNOWN, code, MODEL),
+				healthResponse(READY, null, UNKNOWN, code, MODEL),
+				healthResponse(READY, FAILED, null, code, MODEL)
+		);
+
+		for (JaideHealthResponse response : responses) {
+			assertNull(
+					guidanceBuilder.build(response),
+					response.toString()
+			);
+		}
+	}
+
 	private JaideHealthResponse healthResponse(
 			JaideHealthStatus backendStatus,
 			JaideHealthStatus providerStatus,

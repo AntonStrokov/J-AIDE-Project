@@ -11,9 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.web.client.RestClientException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.*;
 
+import java.net.ConnectException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -142,5 +145,69 @@ class AiProviderHealthServiceTest {
 		assertEquals(CONFIGURED_MODEL, result.configuredModel());
 
 		verify(ollamaClient).generate(anyString());
+	}
+
+	@ParameterizedTest(name = "versionRequestFails={0}, HTTP={1}")
+	@CsvSource({
+			"true, 404",
+			"true, 500",
+			"false, 404",
+			"false, 500"
+	})
+	void shouldReportHttpErrorForProviderRequests(
+			boolean versionRequestFails,
+			int statusCode
+	) {
+		HttpStatus status = HttpStatus.valueOf(statusCode);
+		RestClientResponseException exception = status.is4xxClientError()
+				? new HttpClientErrorException(status)
+				: new HttpServerErrorException(status);
+
+		if (versionRequestFails) {
+			when(ollamaClient.getVersion()).thenThrow(exception);
+		} else {
+			when(ollamaClient.getModels()).thenThrow(exception);
+		}
+
+		AiProviderHealthResult result = service.getSetupHealthInfo();
+
+		assertEquals(READY, result.backendStatus());
+		assertEquals(FAILED, result.providerStatus());
+		assertEquals(UNKNOWN, result.modelStatus());
+		assertEquals(
+				AiProviderHealthDiagnosticCode.PROVIDER_HTTP_ERROR,
+				result.diagnosticCode()
+		);
+		assertEquals(CONFIGURED_MODEL, result.configuredModel());
+		assertTrue(result.message().contains(String.valueOf(statusCode)));
+
+		verify(ollamaClient, never()).generate(anyString());
+
+		if (versionRequestFails) {
+			verify(ollamaClient, never()).getModels();
+		}
+	}
+
+	@Test
+	void shouldKeepProviderUnreachableForConnectionFailure() {
+		when(ollamaClient.getVersion())
+				.thenThrow(new ResourceAccessException(
+						"Connection failed",
+						new ConnectException("Connection refused")
+				));
+
+		AiProviderHealthResult result = service.getSetupHealthInfo();
+
+		assertEquals(READY, result.backendStatus());
+		assertEquals(FAILED, result.providerStatus());
+		assertEquals(UNKNOWN, result.modelStatus());
+		assertEquals(
+				AiProviderHealthDiagnosticCode.PROVIDER_UNREACHABLE,
+				result.diagnosticCode()
+		);
+		assertEquals(CONFIGURED_MODEL, result.configuredModel());
+
+		verify(ollamaClient, never()).getModels();
+		verify(ollamaClient, never()).generate(anyString());
 	}
 }

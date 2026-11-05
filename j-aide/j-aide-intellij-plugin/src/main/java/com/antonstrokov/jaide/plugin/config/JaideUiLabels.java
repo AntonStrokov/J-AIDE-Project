@@ -136,6 +136,21 @@ public final class JaideUiLabels {
         After resolving the issue, click Retry.
         """;
 
+	public static final String AI_PROVIDER_HTTP_ERROR_GUIDANCE = """
+        The server at the configured Ollama address
+        returned an HTTP error.
+
+        Check the HTTP status in Message.
+        Verify the Ollama base URL
+        in the backend configuration
+        and make sure it points to the Ollama API.
+
+        Inspect backend logs for request details.
+        If the address is correct, check Ollama logs.
+
+        After resolving the issue, click Retry.
+        """;
+
 	public static final String AI_MODEL_NOT_FOUND_WITHOUT_NAME_GUIDANCE = """
         Check the model name in the backend configuration.
         Install that exact model on the machine running Ollama,

@@ -8,11 +8,18 @@ public final class JaideAiHealthGuidanceBuilder {
 
 	private static final String MODEL_NOT_FOUND = "MODEL_NOT_FOUND";
 	private static final String PROVIDER_UNREACHABLE = "PROVIDER_UNREACHABLE";
+	private static final String PROVIDER_HTTP_ERROR = "PROVIDER_HTTP_ERROR";
 
 	public String build(JaideHealthResponse response) {
 		if (response == null
 				|| response.backendStatus() != JaideHealthStatus.READY) {
 			return null;
+		}
+
+		if (response.providerStatus() == JaideHealthStatus.FAILED
+				&& response.modelStatus() == JaideHealthStatus.UNKNOWN
+				&& PROVIDER_HTTP_ERROR.equals(response.diagnosticCode())) {
+			return JaideUiLabels.AI_PROVIDER_HTTP_ERROR_GUIDANCE;
 		}
 
 		if (response.providerStatus() == JaideHealthStatus.FAILED
